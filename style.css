@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: #1d4eee;
+    color: #222;
+    line-height: 1.6;
+}
+header {
+    background: #0f172a;
+    color: azure;
+    padding: 1rem 2rem;
+
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+}
+
+.logo span {
+    font-size: 3rem;
+    font-weight: bold;
+
+}
+
+nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
