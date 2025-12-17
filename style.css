@@ -18,10 +18,11 @@ header {
     display: flex;
     align-items: center;
     gap: 3rem;
+    justify-content: space-between;
 }
 
 .logo span {
-    font-size: 3rem;
+    font-size: 2rem;
     font-weight: bold;
 
 }
@@ -29,6 +30,9 @@ header {
 nav {
     display: flex;
     gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+
 }
 
 nav a {
@@ -38,5 +42,19 @@ nav a {
 }
 
 nav a:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    color: yellow;
+}
+
+.login {
+  background-color: #4CAF50; /* cor do botão */
+  color: white;              /* cor do texto */
+  padding: 5px 12px;        /* tamanho */
+  border: none;              /* tira a borda padrão */
+  border-radius: 8px;        /* deixa arredondado */
+  cursor: pointer;           /* mãozinha */
+  font-size: 16px;
+  text-decoration: none;
+  display: flex;
+
 }
