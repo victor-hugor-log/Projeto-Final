@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background-color: #ffffff;
+    color: #222;
+}
+header {
+    background: #0f172a;
+    color: azure;
+    padding: 1rem 2rem;
+
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    justify-content: space-between;
+}
+
+.logo span {
+    font-size: 22px;
+    font-weight: bold;
+
+}
+
+nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+nav a:hover {
+    text-decoration: none;
+    color: rgb(0, 162, 255);
+}
+
+.login {
+  background-color: #4CAF50; /* cor do botão */
+  color: white;              /* cor do texto */
+  padding: 5px 12px;        /* tamanho */
+  border: none;              /* tira a borda padrão */
+  border-radius: 8px;        /* deixa arredondado */
+  cursor: pointer;           /* mãozinha */
+  font-size: 16px;
+  text-decoration: none;
+  display: flex;
+
+}
+
+.chatbot-button {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background-color: #3836c7;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero {
+background: linear-gradient(135deg, #0ea5e9, #1e3a8a);
+  color: white;
+  text-align: center;
+  padding: 120px 20px;
+}
+ 
+/* ===== FEATURES ===== */
+.features {
+  padding: 80px 20px;
+  background: #f5f7fa;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 32px;
+  margin-bottom: 50px;
+  color: #1e3a8a;
+}
+
+/* Lista de cards */
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Card individual */
+.feature-item {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.feature-item h3 {
+  color: #2563eb;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.feature-item p {
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Hover (efeito de subir) */
+.feature-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+}
+
+/* ===== cards ===== */
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: wrap;
+}
+
+.hero-actions a {
+  display: inline-block;
+  padding: 10px 30px;
+   background: white;
+  color: #1e3a8a;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+/* Hover (efeito de subir) */
+.hero-actions a:hover {
+  background: #e0f2fe;
+  transform: translateY(-3px);
+}
