@@ -1,0 +1,118 @@
+/* ===== SOBRE ===== */
+
+/* Espaçamento geral da página */
+main {
+  padding: 60px 20px;
+  background-color: #ffffff;
+}
+
+/* Container padrão das seções */
+main section {
+  max-width: 900px;
+  margin: 0 auto 50px auto;
+}
+
+/* ===== INTRO (tipo mini hero) ===== */
+.sobre-intro {
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+  color: white;
+  padding: 60px 30px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.sobre-intro h1 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+}
+
+.sobre-intro p {
+  color: #ddd6fe;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+/* ===== SEÇÕES PADRÃO ===== */
+.sobre-missao,
+.sobre-valores {
+  background-color: #f5f3ff;
+  padding: 30px;
+  border-radius: 14px;
+  border: 1px solid #ddd6fe;
+  transition: 0.2s;
+}
+
+/* efeito igual aos cards */
+.sobre-missao:hover,
+.sobre-valores:hover,
+.sobre-dev:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
+}
+
+/* títulos */
+.sobre-missao h2,
+.sobre-valores h2,
+.sobre-dev h2 {
+  color: #7c3aed;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+}
+
+/* textos */
+.sobre-missao p,
+.sobre-dev p {
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+/* ===== LISTA DE VALORES ===== */
+.sobre-valores ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sobre-valores li {
+  background-color: #ffffff;
+  margin-bottom: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #7c3aed;
+  color: #555;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+.sobre-valores li:hover {
+  background-color: #ede9fe;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 600px) {
+  .sobre-intro {
+    padding: 40px 20px;
+  }
+
+  .sobre-intro h1 {
+    font-size: 1.7rem;
+  }
+
+  main section {
+    margin-bottom: 30px;
+  }
+}
+
+/* ===== FOOTER DENTRO DO SOBRE ===== */
+.dev-footer {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd6fe;
+  text-align: center;
+}
+
+.dev-footer p {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 5px;
+}
