@@ -1,0 +1,155 @@
+/* =============================================
+   FAVELA TECH — Página de Login / Cadastro
+   ============================================= */
+
+/* ===== SEÇÃO GERAL ===== */
+.login-cadastro {
+  min-height: calc(100vh - 120px);
+  background-color: #f5f3ff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 32px;
+  padding: 60px 20px;
+  flex-wrap: wrap;
+}
+
+/* ===== BOXES ===== */
+.login-box,
+.cadastro-box {
+  background-color: #ffffff;
+  border: 1px solid #ddd6fe;
+  border-radius: 14px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Linha roxa no topo do box de login */
+.login-box {
+  border-top: 4px solid #7c3aed;
+}
+
+/* Linha lilás no topo do box de cadastro */
+.cadastro-box {
+  border-top: 4px solid #a78bfa;
+}
+
+/* ===== TÍTULOS ===== */
+.login-box h1,
+.cadastro-box h2 {
+  font-size: 1.5rem;
+  color: #1e1b4b;
+  margin-bottom: 24px;
+}
+
+/* ===== FORMULÁRIOS ===== */
+.login-box form,
+.cadastro-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-box label,
+.cadastro-box label {
+  font-size: 0.9rem;
+  color: #1e1b4b;
+  font-weight: 600;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"],
+.cadastro-box input[type="text"],
+.cadastro-box input[type="email"],
+.cadastro-box input[type="password"] {
+  padding: 10px 14px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #1e1b4b;
+  outline: none;
+  transition: 0.2s;
+}
+
+.login-box input:focus,
+.cadastro-box input:focus {
+  border-color: #7c3aed;
+}
+
+/* ===== LINK ESQUECI SENHA ===== */
+.login-box a {
+  font-size: 0.85rem;
+  color: #7c3aed;
+  text-decoration: none;
+  text-align: right;
+}
+
+.login-box a:hover {
+  text-decoration: underline;
+}
+
+/* ===== CHECKBOX LGPD ===== */
+.cadastro-box label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-weight: 400;
+  color: #555;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.cadastro-box input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: #7c3aed;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* ===== BOTÕES ===== */
+.login-box button,
+.cadastro-box button {
+  margin-top: 6px;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login-box button {
+  background-color: #7c3aed;
+  color: white;
+}
+
+.login-box button:hover {
+  background-color: #6d28d9;
+}
+
+.cadastro-box button {
+  background-color: #1e1b4b;
+  color: white;
+}
+
+.cadastro-box button:hover {
+  background-color: #2e2a6e;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 600px) {
+  .login-cadastro {
+    padding: 30px 16px;
+  }
+
+  .login-box,
+  .cadastro-box {
+    padding: 28px 20px;
+  }
+}

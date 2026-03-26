@@ -1,0 +1,115 @@
+/* =============================================
+   FAVELA TECH — Página de Contato
+   ============================================= */
+
+/* ===== INTRO ===== */
+.contato-intro {
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.contato-intro h1 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.contato-intro p {
+  color: #ddd6fe;
+  font-size: 1.05rem;
+}
+
+/* ===== ÁREA CENTRAL ===== */
+.contato-form {
+  background-color: #f5f3ff;
+  padding: 60px 20px;
+}
+
+.contato-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 580px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 36px 32px;
+  border-radius: 14px;
+  border: 1px solid #ddd6fe;
+  border-top: 4px solid #7c3aed;
+}
+
+/* ===== LABELS ===== */
+.contato-form label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e1b4b;
+}
+
+/* ===== INPUTS ===== */
+.contato-form input,
+.contato-form select,
+.contato-form textarea {
+  padding: 10px 14px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #1e1b4b;
+  background-color: #ffffff;
+  outline: none;
+  transition: 0.2s;
+  resize: vertical;
+}
+
+.contato-form input:focus,
+.contato-form select:focus,
+.contato-form textarea:focus {
+  border-color: #7c3aed;
+}
+
+/* ===== BOTÃO ===== */
+.contato-form button {
+  margin-top: 6px;
+  padding: 11px;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.contato-form button:hover {
+  background-color: #6d28d9;
+}
+
+/* ===== OUTROS CANAIS ===== */
+.contato-info {
+  background-color: #ffffff;
+  border-top: 2px solid #ede9fe;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.contato-info h2 {
+  font-size: 1.4rem;
+  color: #1e1b4b;
+  margin-bottom: 16px;
+}
+
+.contato-info p {
+  color: #555;
+  font-size: 0.97rem;
+  line-height: 2;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 600px) {
+  .contato-form form {
+    padding: 24px 18px;
+  }
+}

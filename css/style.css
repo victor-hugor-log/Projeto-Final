@@ -1,61 +1,60 @@
+/* =============================================
+   FAVELA TECH — Portal de Oportunidades
+   ============================================= */
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background-color: #ffffff;
-    color: #222;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: #ffffff;
+  color: #1e1b4b;
 }
-header {
-    background: #0f172a;
-    color: azure;
-    padding: 1rem 2rem;
 
-    display: flex;
-    align-items: center;
-    gap: 3rem;
-    justify-content: space-between;
+/* ===== HEADER ===== */
+header {
+  background-color: #1e1b4b;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .logo span {
-    font-size: 22px;
-    font-weight: bold;
-
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
 }
 
 nav {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: center;
-
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
+  color: #c4b5fd;
+  text-decoration: none;
+  font-weight: 500;
 }
 
 nav a:hover {
-    text-decoration: none;
-    color: rgb(0, 162, 255);
+  color: #ffffff;
 }
 
 .login {
-  background-color: #4CAF50; /* cor do botão */
-  color: white;              /* cor do texto */
-  padding: 5px 12px;        /* tamanho */
-  border: none;              /* tira a borda padrão */
-  border-radius: 8px;        /* deixa arredondado */
-  cursor: pointer;           /* mãozinha */
-  font-size: 16px;
+  background-color: #7c3aed;
+  color: white;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   text-decoration: none;
-  display: flex;
-
 }
 
 .chatbot-button {
@@ -77,62 +76,28 @@ nav a:hover {
     transition: 0.3s;
   }
 
+/* ===== HERO ===== */
+/* Roxo escuro + gradiente suave para o roxo médio */
 .hero {
-background: linear-gradient(135deg, #0ea5e9, #1e3a8a);
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95);
   color: white;
   text-align: center;
-  padding: 120px 20px;
-}
- 
-/* ===== FEATURES ===== */
-.features {
-  padding: 80px 20px;
-  background: #f5f7fa;
-  text-align: center;
+  padding: 100px 20px;
 }
 
-.features h2 {
-  font-size: 32px;
-  margin-bottom: 50px;
-  color: #1e3a8a;
+.hero h1 {
+  font-size: 2.4rem;
+  margin-bottom: 16px;
+  color: #ffffff;
 }
 
-/* Lista de cards */
-.feature-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  max-width: 1100px;
+.hero p {
+  font-size: 1.1rem;
+  color: #ddd6fe;
+  max-width: 520px;
   margin: 0 auto;
 }
 
-/* Card individual */
-.feature-item {
-  background: white;
-  padding: 30px 25px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  transition: 0.3s;
-}
-
-.feature-item h3 {
-  color: #2563eb;
-  margin-bottom: 15px;
-  font-size: 20px;
-}
-
-.feature-item p {
-  color: #555;
-  line-height: 1.5;
-}
-
-/* Hover (efeito de subir) */
-.feature-item:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 35px rgba(0,0,0,0.12);
-}
-
-/* ===== cards ===== */
 .hero-actions {
   display: flex;
   justify-content: center;
@@ -147,11 +112,212 @@ background: linear-gradient(135deg, #0ea5e9, #1e3a8a);
   color: #1e3a8a;
   text-decoration: none;
   font-weight: bold;
-  border-radius: 20px;
-  transition: 0.3s;
+  text-decoration: none;
+  transition: 0.2s;
 }
-/* Hover (efeito de subir) */
-.hero-actions a:hover {
-  background: #e0f2fe;
-  transform: translateY(-3px);
+
+/* Botão principal: branco para contrastar com o fundo roxo escuro */
+.hero-actions a:first-child {
+  background-color: #ffffff;
+  color: #4c1d95;
+}
+
+.hero-actions a:first-child:hover {
+  background-color: #ede9fe;
+}
+
+/* Botão secundário: contorno lilás */
+.hero-actions a:last-child {
+  background-color: transparent;
+  color: #c4b5fd;
+  border: 2px solid #c4b5fd;
+}
+
+.hero-actions a:last-child:hover {
+  background-color: rgba(196, 181, 253, 0.15);
+}
+
+/* ===== FEATURES ===== */
+/* Fundo levemente lilás para separar visualmente do hero branco */
+.features {
+  padding: 70px 20px;
+  background-color: #f5f3ff;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 1.9rem;
+  color: #1e1b4b;
+  margin-bottom: 40px;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Cards brancos para destacar do fundo lilás */
+.feature-item {
+  background-color: #ffffff;
+  padding: 28px 22px;
+  border-radius: 14px;
+  border: 1px solid #ddd6fe;
+  transition: 0.2s;
+  text-align: left;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
+}
+
+.feature-item h3 {
+  color: #7c3aed;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.feature-item p {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ===== EMPRESAS ===== */
+/* Branco para "respirar" depois da seção lilás */
+.empresas {
+  padding: 60px 20px;
+  background-color: #ffffff;
+  text-align: center;
+  border-top: 3px solid #ede9fe;
+}
+
+.empresas h2 {
+  font-size: 1.6rem;
+  color: #1e1b4b;
+  margin-bottom: 12px;
+}
+
+.empresas p {
+  color: #555;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== CHATBOT ===== */
+.chatbot-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 58px;
+  height: 58px;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.chatbot-button:hover {
+  background-color: #6d28d9;
+  transform: scale(1.08);
+}
+
+.chatbot-window {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 320px;
+  border-radius: 12px;
+  background-color: white;
+  border: 1px solid #ddd6fe;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.chatbot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #1e1b4b;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.chatbot-close {
+  background: none;
+  border: none;
+  color: #c4b5fd;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.chatbot-close:hover {
+  color: white;
+}
+
+.chatbot-messages {
+  min-height: 180px;
+  padding: 14px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.chatbot-form {
+  display: flex;
+  border-top: 1px solid #ede9fe;
+}
+
+.chatbot-form input {
+  flex: 1;
+  border: none;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  outline: none;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #1e1b4b;
+}
+
+footer {
+  background-color: #1e1b4b;
+  color: #a5b4fc;
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    gap: 0.8rem;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-actions a {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
 }

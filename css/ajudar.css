@@ -1,0 +1,114 @@
+/* =============================================
+   FAVELA TECH — Página Como Ajudar
+   ============================================= */
+
+/* ===== INTRO ===== */
+.ajudar-intro {
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.ajudar-intro h1 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.ajudar-intro p {
+  color: #ddd6fe;
+  font-size: 1.05rem;
+}
+
+/* ===== SEÇÕES GERAIS ===== */
+.ajudar-passos,
+.ajudar-ongs,
+.ajudar-compartilhar {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 50px 24px;
+}
+
+.ajudar-ongs,
+.ajudar-compartilhar {
+  border-top: 2px solid #ede9fe;
+}
+
+/* ===== TÍTULOS ===== */
+.ajudar-passos h2,
+.ajudar-ongs h2,
+.ajudar-compartilhar h2 {
+  font-size: 1.5rem;
+  color: #1e1b4b;
+  margin-bottom: 20px;
+}
+
+/* ===== LISTA DE PASSOS ===== */
+.ajudar-passos ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ajudar-passos ul li {
+  background-color: #f5f3ff;
+  border-left: 4px solid #7c3aed;
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  color: #1e1b4b;
+  font-size: 0.97rem;
+  line-height: 1.6;
+}
+
+/* ===== LISTA DE ONGS ===== */
+.ajudar-ongs ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ajudar-ongs ul li {
+  background-color: #f5f3ff;
+  border-radius: 8px;
+  border: 1px solid #ddd6fe;
+  padding: 12px 18px;
+  transition: 0.2s;
+}
+
+.ajudar-ongs ul li:hover {
+  border-color: #7c3aed;
+}
+
+.ajudar-ongs ul li a {
+  color: #7c3aed;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.97rem;
+}
+
+.ajudar-ongs ul li a:hover {
+  text-decoration: underline;
+}
+
+/* ===== COMPARTILHAR ===== */
+.ajudar-compartilhar {
+  background-color: #f5f3ff;
+  max-width: 100%;
+  text-align: center;
+  padding: 50px 24px;
+}
+
+.ajudar-compartilhar h2 {
+  max-width: 720px;
+  margin: 0 auto 12px;
+}
+
+.ajudar-compartilhar p {
+  color: #555;
+  font-size: 1rem;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
