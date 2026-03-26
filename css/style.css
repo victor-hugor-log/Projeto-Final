@@ -74,7 +74,8 @@ nav a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-}
+    transition: 0.3s;
+  }
 
 .hero {
 background: linear-gradient(135deg, #0ea5e9, #1e3a8a);
@@ -136,13 +137,13 @@ background: linear-gradient(135deg, #0ea5e9, #1e3a8a);
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-top: wrap;
+  margin-top: 16px ;
 }
 
 .hero-actions a {
   display: inline-block;
   padding: 10px 30px;
-   background: white;
+  background: white;
   color: #1e3a8a;
   text-decoration: none;
   font-weight: bold;
