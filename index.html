@@ -16,12 +16,11 @@
 
         <div>
         <nav>
-            
                 <a href="index.html">Início</a>
                 <a href="sobre.html">Sobre Nós</a>
                 <a href="ajudar.html">Como Ajudar</a>
                 <a href="contato.html">Contato</a>
-                <a class="login" href="login.html"><button class="login ">Login | Cadastro</button></a>
+                <a class="login" href="login.html"><button class="login">Login | Cadastro</button></a>
         </nav>
         </div>
     </header>
@@ -70,27 +69,76 @@
     </section>
     
     </main>
-    <button class="chatbot-button">
-        🤖
-    </button>
-    <div class="chatbot-window" style="display: none;">
 
-    <div class="chatbot-header">
+    <button class="chatbot-button">🤖</button>
+
+    <div class="chatbot-window" style="display: none;">
+        <div class="chatbot-header">
             <span>Assistente Favela Tech</span>
             <button class="chatbot-close">X</button>
-    </div>
-        <div class="chatbot-messages">
-            <!--aqui é as mensagens via JS-->
         </div>
+        <div class="chatbot-messages"></div>
         <form class="chatbot-form">
             <input type="text" placeholder="Digite aqui sua dúvida..." required>
         </form>
     </div>
+
     <footer>
-        <p>Author:Victor Hugor de Souza Lopes</p>
+        <p>Author: Victor Hugor de Souza Lopes</p>
     </footer>
 
-    <!-- <script src="js/main.js"></script>
-    <script src="js/chatbot.js"></script> -->
+   <div class="modal" id="loginModal">
+  <div class="modal-content">
+
+    <span class="close">&times;</span>
+
+    <div class="modal-box">
+
+      <!-- LOGIN -->
+      <div class="login-left active" id="loginBox">
+        <h2>Entrar</h2>
+
+        <input type="email" placeholder="Email">
+        <span class="erro emailErro"></span>
+
+        <input type="password" placeholder="Senha">
+        <span class="erro senhaErro"></span>
+
+        <button id="btnLogin">Entrar</button>
+
+        <p class="switch-text">
+          Ainda não tem uma conta? 
+          <span id="irCadastro">Cadastre-se aqui!</span>
+        </p>
+      </div>
+
+      <!-- CADASTRO -->
+      <div class="login-right" id="cadastroBox">
+        <h2>Criar Conta</h2>
+
+        <input type="text" placeholder="Nome">
+        <span class="erro nomeErro"></span>
+
+        <input type="email" placeholder="Email">
+        <span class="erro emailCadastroErro"></span>
+
+        <input type="password" placeholder="Senha">
+        <span class="erro senhaCadastroErro"></span>
+
+        <button id="btnCadastro">Cadastrar</button>
+
+        <p class="switch-text">
+          Já tem uma conta? 
+          <span id="irLogin">Fazer login</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <!-- JS -->
+    <script src="js/main.js"></script>
+
 </body>
 </html>

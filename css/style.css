@@ -321,3 +321,164 @@ footer {
     text-align: center;
   }
 }
+
+/* ===== MODAL LOGIN ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.6);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 0.3s ease;
+  z-index: 999;
+}
+.modal.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Caixa do modal */
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  position: relative;
+
+  transform: translateY(80px) scale(0.95);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Botão fechar */
+.close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+
+.close:hover {
+  color: black;
+}
+
+/* Layout interno */
+.modal-box {
+  display: flex;
+  gap: 20px;
+  position: relative;
+  height: 140px;
+  transition: height 0.4s ease;
+}
+#loginBox {
+  height: 120px;
+}
+
+#cadastroBox {
+  height: 350px;
+}
+/* ===== ANIMAÇÃO LOGIN / CADASTRO ===== */
+.login-left,
+.login-right {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateY(40px);
+  pointer-events: none;
+  transition: all 0.4s ease;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.login-left.active,
+.login-right.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* Inputs */
+.modal-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  font-size: 14px;
+}
+
+/* Botões */
+.modal-box button {
+  padding: 10px;
+  border: none;
+  background-color: #7c3aed;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.modal-box button:hover {
+  background-color: #6d28d9;
+}
+
+/* Texto trocar login/cadastro */
+.switch-text {
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.switch-text span {
+  color: #7c3aed;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.switch-text span:hover {
+  text-decoration: underline;
+}
+
+/* Mensagens de erro */
+.erro {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .modal-box {
+    flex-direction: column;
+    height: auto;
+  }
+}
+#loginBox {
+  min-height: 120px;
+}
+
+#cadastroBox {
+  min-height: 280px;
+}
