@@ -234,3 +234,78 @@ iniciarChatbot();
 iniciarVagas();
 iniciarContato();
 iniciarCompartilhamento();
+
+function iniciarDOMGlobal() {
+  const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
+  const linksMenu = document.querySelectorAll("nav a");
+  const usuario = getUsuarioLogado();
+
+  linksMenu.forEach((link) => {
+    const destino = link.getAttribute("href");
+
+    if (destino === paginaAtual) {
+      link.classList.add("nav-ativo");
+    }
+
+    if (link.classList.contains("login") && usuario) {
+      link.textContent = `Ola, ${usuario.nome.split(" ")[0]}`;
+      link.setAttribute("title", "Usuario logado");
+    }
+  });
+
+  criarSaudacao(usuario);
+  animarSecoes();
+  iniciarContadorContato();
+}
+
+function criarSaudacao(usuario) {
+  const main = document.querySelector("main");
+  if (!main || !usuario) return;
+
+  const saudacao = document.createElement("div");
+  saudacao.className = "dom-saudacao";
+  saudacao.textContent = `Bem-vindo(a), ${usuario.nome}! Seu perfil esta ativo no Favela Tech.`;
+  main.prepend(saudacao);
+}
+
+function animarSecoes() {
+  const secoes = document.querySelectorAll("main section, .feature-item, .vaga-card");
+
+  secoes.forEach((secao) => {
+    secao.classList.add("dom-reveal");
+  });
+
+  if (!("IntersectionObserver" in window)) {
+    secoes.forEach((secao) => secao.classList.add("apareceu"));
+    return;
+  }
+
+  const observador = new IntersectionObserver((entradas) => {
+    entradas.forEach((entrada) => {
+      if (entrada.isIntersecting) {
+        entrada.target.classList.add("apareceu");
+      }
+    });
+  }, { threshold: 0.12 });
+
+  secoes.forEach((secao) => observador.observe(secao));
+}
+
+function iniciarContadorContato() {
+  const mensagem = document.getElementById("mensagem");
+  if (!mensagem) return;
+
+  const contador = document.createElement("small");
+  contador.className = "contador-mensagem";
+  mensagem.insertAdjacentElement("afterend", contador);
+
+  function atualizarContador() {
+    contador.textContent = `${mensagem.value.length}/300 caracteres`;
+    contador.classList.toggle("limite", mensagem.value.length > 300);
+  }
+
+  mensagem.addEventListener("input", atualizarContador);
+  atualizarContador();
+}
+
+iniciarDOMGlobal();

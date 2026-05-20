@@ -547,3 +547,41 @@ footer {
 #cadastroBox {
   min-height: 280px;
 }
+
+/* ===== CAMADA DOM GLOBAL ===== */
+.nav-ativo {
+  color: #ffffff;
+  border-bottom: 2px solid #c4b5fd;
+  padding-bottom: 4px;
+}
+
+.dom-saudacao {
+  background-color: #ede9fe;
+  color: #1e1b4b;
+  border-left: 4px solid #7c3aed;
+  padding: 12px 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dom-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.dom-reveal.apareceu {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.contador-mensagem {
+  color: #555;
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.contador-mensagem.limite {
+  color: #dc2626;
+  font-weight: 700;
+}
