@@ -34,10 +34,11 @@ main section {
 
 /* ===== SEÇÕES PADRÃO ===== */
 .sobre-missao,
-.sobre-valores {
+.sobre-valores,
+.sobre-dev {
   background-color: #f5f3ff;
   padding: 30px;
-  border-radius: 14px;
+  border-radius: 8px;
   border: 1px solid #ddd6fe;
   transition: 0.2s;
 }

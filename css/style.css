@@ -33,6 +33,8 @@ nav {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 nav a {
@@ -57,25 +59,6 @@ nav a:hover {
   text-decoration: none;
 }
 
-.chatbot-button {
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    background-color: #3836c7;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 30px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.3s;
-  }
-
 /* ===== HERO ===== */
 /* Roxo escuro + gradiente suave para o roxo médio */
 .hero {
@@ -83,6 +66,17 @@ nav a:hover {
   color: white;
   text-align: center;
   padding: 100px 20px;
+}
+
+.hero-tag {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  border: 1px solid #c4b5fd;
+  border-radius: 999px;
+  color: #ede9fe;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 .hero h1 {
@@ -114,6 +108,7 @@ nav a:hover {
   font-weight: bold;
   text-decoration: none;
   transition: 0.2s;
+  border-radius: 8px;
 }
 
 /* Botão principal: branco para contrastar com o fundo roxo escuro */
@@ -208,6 +203,34 @@ nav a:hover {
   line-height: 1.6;
 }
 
+.impacto {
+  background-color: #f5f3ff;
+  border-top: 2px solid #ede9fe;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 18px;
+  padding: 34px 20px;
+  text-align: center;
+}
+
+.impacto article {
+  background-color: #ffffff;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.impacto strong {
+  display: block;
+  color: #7c3aed;
+  font-size: 1.8rem;
+}
+
+.impacto span {
+  color: #555;
+  font-size: 0.95rem;
+}
+
 /* ===== CHATBOT ===== */
 .chatbot-button {
   position: fixed;
@@ -219,7 +242,8 @@ nav a:hover {
   border-radius: 50%;
   width: 58px;
   height: 58px;
-  font-size: 26px;
+  font-size: 16px;
+  font-weight: 800;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
   display: flex;
@@ -243,6 +267,8 @@ nav a:hover {
   border: 1px solid #ddd6fe;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
+  display: none;
+  z-index: 998;
 }
 
 .chatbot-header {
@@ -271,9 +297,30 @@ nav a:hover {
 
 .chatbot-messages {
   min-height: 180px;
+  max-height: 240px;
+  overflow-y: auto;
   padding: 14px;
   font-size: 0.9rem;
   color: #555;
+}
+
+.chatbot-msg {
+  max-width: 88%;
+  margin-bottom: 10px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+
+.chatbot-msg.bot {
+  background-color: #f5f3ff;
+  color: #1e1b4b;
+}
+
+.chatbot-msg.user {
+  background-color: #7c3aed;
+  color: #ffffff;
+  margin-left: auto;
 }
 
 .chatbot-form {
@@ -289,6 +336,15 @@ nav a:hover {
   outline: none;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   color: #1e1b4b;
+}
+
+.chatbot-form button {
+  border: none;
+  background-color: #7c3aed;
+  color: #ffffff;
+  padding: 0 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 footer {
@@ -319,6 +375,15 @@ footer {
     width: 100%;
     max-width: 280px;
     text-align: center;
+  }
+
+  .impacto {
+    grid-template-columns: 1fr;
+  }
+
+  .chatbot-window {
+    width: calc(100% - 32px);
+    right: 16px;
   }
 }
 

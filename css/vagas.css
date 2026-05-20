@@ -118,3 +118,40 @@
   margin-top: 10px;
   font-weight: 600;
 }
+
+.recomendacao {
+  max-width: 900px;
+  margin: 32px auto 0;
+  padding: 22px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background-color: #f5f3ff;
+}
+
+.recomendacao h2 {
+  color: #1e1b4b;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.recomendacao p,
+.sem-vagas {
+  color: #555;
+  line-height: 1.6;
+}
+
+.candidatar-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #7c3aed;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.candidatar-btn:hover {
+  background-color: #6d28d9;
+}

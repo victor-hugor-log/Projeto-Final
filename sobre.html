@@ -1,57 +1,76 @@
-<link rel="stylesheet" href="css/sobre.css">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre Nos | Favela Tech</title>
+  <link rel="shortcut icon" href="html/IMG/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/sobre.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>Favela Tech</span>
+    </div>
 
-<main>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="sobre.html">Sobre Nos</a>
+      <a href="vagas.html">Vagas</a>
+      <a href="ajudar.html">Como Ajudar</a>
+      <a href="contato.html">Contato</a>
+      <a class="login" href="login.html">Login | Cadastro</a>
+    </nav>
+  </header>
+
+  <main class="sobre-page">
     <section class="sobre-intro">
-        <h1>Sobre o Favela Tech</h1>
-        <p>
-            O Favela Tech é um portal criado com o propósito de transformar vidas através da tecnologia. 
-            A ideia nasceu da realidade de muitos jovens talentosos que vivem nas periferias e, mesmo tendo capacidade, 
-            não encontram acesso às oportunidades certas.
-        </p>
-        <p>
-            Aqui, acreditamos que o talento existe em todo lugar — o que muitas vezes falta é visibilidade, 
-            direcionamento e oportunidade. Por isso, o Favela Tech atua como uma ponte entre esses jovens 
-            e o mercado de trabalho, conectando potencial com empresas que valorizam diversidade e inovação.
-        </p>
-        <p>
-            Mais do que um site de vagas, o Favela Tech é um movimento. Um espaço onde sonhos ganham direção, 
-            onde histórias começam a mudar e onde a tecnologia se torna uma ferramenta real de ascensão social.
-        </p>
+      <h1>Sobre o Favela Tech</h1>
+      <p>O Favela Tech e um portal criado para transformar acesso em oportunidade. A proposta nasceu da realidade de jovens talentosos que se capacitam, mas ainda encontram barreiras para chegar ate empresas e processos seletivos.</p>
+      <p>A plataforma atua como ponte entre jovens da comunidade e empresas locais, conectando potencial, formacao e vagas reais.</p>
     </section>
 
     <section class="sobre-missao">
-        <h2>Missão</h2>
-        <p>
-            Gerar acesso, visibilidade e oportunidade para talentos que muitas vezes não chegam até as grandes empresas.
-            Queremos quebrar barreiras sociais através da tecnologia e mostrar que a favela também é um lugar de inovação, 
-            inteligência e futuro.
-        </p>
+      <h2>Missao</h2>
+      <p>Gerar acesso, visibilidade e oportunidade para talentos que muitas vezes nao chegam ate as grandes empresas. O objetivo e mostrar que a favela tambem e lugar de inovacao, inteligencia e futuro.</p>
     </section>
 
     <section class="sobre-valores">
-        <h2>Valores</h2>
-        <ul>
-            <li>Inclusão e diversidade</li>
-            <li>Respeito à realidade da favela</li>
-            <li>Transparência nas oportunidades</li>
-            <li>Transformação social através da tecnologia</li>
-            <li>Valorização do talento acima de tudo</li>
-        </ul>
+      <h2>Valores</h2>
+      <ul>
+        <li>Inclusao e diversidade</li>
+        <li>Respeito a realidade da comunidade</li>
+        <li>Transparencia nas oportunidades</li>
+        <li>Transformacao social atraves da tecnologia</li>
+        <li>Valorizacao do talento acima de tudo</li>
+      </ul>
     </section>
 
-    
-        <h2>Quem desenvolveu?</h2>
-        <p>
-            Este site foi desenvolvido por [SEU NOME], estudante de programação e apaixonado por tecnologia, 
-            como projeto final do curso. A iniciativa surgiu da vontade de usar o conhecimento adquirido para 
-            criar algo que realmente impactasse a vida das pessoas.
-        </p>
-        <p>
-            Mais do que um projeto, o Favela Tech representa um propósito: mostrar que, com oportunidade e acesso, 
-            qualquer pessoa pode mudar sua história.
-        </p>
-</main>
-//<div class="dev-footer">
-    <p>© 2026 Favela Tech — Todos os direitos reservados</p>
-    <p>Desenvolvido com 💜 e propósito</p>
-</div>
+    <section class="sobre-dev">
+      <h2>Quem desenvolveu?</h2>
+      <p>Este site foi desenvolvido por Victor Hugor de Souza Lopes como projeto final do curso, com foco na ODS 8: Trabalho decente e crescimento economico.</p>
+      <p>Mais do que um projeto, o Favela Tech representa um proposito: usar tecnologia para aproximar pessoas, empresas e oportunidades.</p>
+    </section>
+  </main>
+
+  <button class="chatbot-button" aria-label="Abrir assistente virtual">FT</button>
+  <div class="chatbot-window" aria-live="polite">
+    <div class="chatbot-header">
+      <span>Assistente Favela Tech</span>
+      <button class="chatbot-close" type="button">X</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <form class="chatbot-form">
+      <input type="text" placeholder="Digite sua duvida..." required>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+  </footer>
+
+  <script src="JS/main.js"></script>
+</body>
+</html>

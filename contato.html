@@ -1,35 +1,82 @@
-<link rel="stylesheet" href="css/contato.css">
-<main>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato | Favela Tech</title>
+  <link rel="shortcut icon" href="html/IMG/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/contato.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>Favela Tech</span>
+    </div>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="sobre.html">Sobre Nos</a>
+      <a href="vagas.html">Vagas</a>
+      <a href="ajudar.html">Como Ajudar</a>
+      <a href="contato.html">Contato</a>
+      <a class="login" href="login.html">Login | Cadastro</a>
+    </nav>
+  </header>
+
+  <main>
     <section class="contato-intro">
-        <h1>Fale com a gente</h1>
-        <p>Dúvidas, parcerias ou sugestões? Envie uma mensagem.</p>
+      <h1>Fale com a gente</h1>
+      <p>Duvidas, parcerias ou sugestoes? Envie uma mensagem.</p>
     </section>
 
     <section class="contato-form">
-        <form>
+      <form id="form-contato">
         <label for="nome">Nome</label>
         <input id="nome" name="nome" type="text" required>
 
         <label for="email">E-mail</label>
         <input id="email" name="email" type="email" required>
 
-        <label for="tipo">Você é:</label>
+        <label for="tipo">Voce e:</label>
         <select id="tipo" name="tipo">
-            <option value="jovem">Jovem em busca de oportunidade</option>
-            <option value="empresa">Empresa interessada em talentos</option>
-            <option value="outro">Outro</option>
+          <option value="jovem">Jovem em busca de oportunidade</option>
+          <option value="empresa">Empresa interessada em talentos</option>
+          <option value="outro">Outro</option>
         </select>
 
         <label for="mensagem">Mensagem</label>
         <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
 
         <button type="submit">Enviar</button>
-        </form>
+      </form>
     </section>
 
     <section class="contato-info">
-        <h2>Outros canais</h2>
-        <p>E-mail:Vichugor15@gmail.com</p>
-        <p>WhatsApp: (31) 97597-2234 </p>
+      <h2>Outros canais</h2>
+      <p>E-mail: Vichugor15@gmail.com</p>
+      <p>WhatsApp: (31) 97597-2234</p>
+      <p>Localizacao: Belo Horizonte - MG</p>
     </section>
-</main>
+  </main>
+
+  <button class="chatbot-button" aria-label="Abrir assistente virtual">FT</button>
+  <div class="chatbot-window" aria-live="polite">
+    <div class="chatbot-header">
+      <span>Assistente Favela Tech</span>
+      <button class="chatbot-close" type="button">X</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <form class="chatbot-form">
+      <input type="text" placeholder="Digite sua duvida..." required>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+  </footer>
+
+  <script src="JS/main.js"></script>
+</body>
+</html>

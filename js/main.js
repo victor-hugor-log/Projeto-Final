@@ -1,133 +1,236 @@
-/*MODAL*/
-
-const modal = document.getElementById("loginModal");
-const btn = document.querySelector(".login");
-const close = document.querySelector(".close");
-const loginBox = document.getElementById("loginBox");
-const cadastroBox = document.getElementById("cadastroBox");
-
-// abrir modal
-btn.addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const modalBox = document.querySelector(".modal-box");
-  
-  cadastroBox.classList.remove("active");
-  loginBox.classList.add("active");
-
-  modalBox.style.height = "200px";
-
-  modal.classList.add("show");
-});
-
-// fechar modal
-close.addEventListener("click", () => {
-  modal.classList.remove("show");
-});
-
-// fechar clicando fora
-window.addEventListener("click", (e) => {
-  if (e.target == modal) {
-    modal.classList.remove("show");
+const vagas = [
+  {
+    titulo: "Estagio em Suporte de TI",
+    empresa: "Exemplo Tech",
+    local: "Belo Horizonte - MG",
+    area: "Tecnologia",
+    tipo: "Estagio",
+    habilidades: ["tecnologia", "suporte", "html", "informatica"],
+    origem: "API simulada - LinkedIn Jobs"
+  },
+  {
+    titulo: "Jovem Aprendiz Administrativo",
+    empresa: "Comercio Local BH",
+    local: "Belo Horizonte - MG",
+    area: "Administracao",
+    tipo: "Jovem Aprendiz",
+    habilidades: ["excel", "organizacao", "administracao"],
+    origem: "API simulada - CIEE"
+  },
+  {
+    titulo: "Atendente de Loja",
+    empresa: "Rede Parceira",
+    local: "Contagem - MG",
+    area: "Atendimento",
+    tipo: "CLT",
+    habilidades: ["comunicacao", "atendimento", "vendas"],
+    origem: "API simulada - Indeed"
+  },
+  {
+    titulo: "Assistente de Marketing Digital",
+    empresa: "Agencia Criativa",
+    local: "Remoto",
+    area: "Marketing",
+    tipo: "Freelancer",
+    habilidades: ["redes sociais", "canva", "marketing", "criatividade"],
+    origem: "API simulada - LinkedIn Jobs"
   }
-});
+];
 
-// ===== LOGIN =====
-const loginBtn = document.querySelector(".login-left button");
+function getUsuarioLogado() {
+  return JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
+}
 
-loginBtn.addEventListener("click", (e) => {
-  e.preventDefault();
+function normalizar(texto) {
+  return (texto || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 
-  const email = document.querySelector(".login-left input[type='email']");
-  const senha = document.querySelector(".login-left input[type='password']");
+function iniciarChatbot() {
+  const botao = document.querySelector(".chatbot-button");
+  const janela = document.querySelector(".chatbot-window");
+  const fechar = document.querySelector(".chatbot-close");
+  const mensagens = document.querySelector(".chatbot-messages");
+  const form = document.querySelector(".chatbot-form");
+  const input = document.querySelector(".chatbot-form input");
 
-  const emailErro = document.querySelector(".login-left .email-erro");
-  const senhaErro = document.querySelector(".login-left .senha-erro");
+  if (!botao || !janela || !fechar || !mensagens || !form || !input) return;
 
-  // limpar erros
-  emailErro.textContent = "";
-  senhaErro.textContent = "";
+  janela.style.display = "none";
 
-  let erro = false;
-
-  if (email.value === "") {
-    emailErro.textContent = "Digite seu email";
-    erro = true;
-  } else if (!email.value.includes("@")) {
-    emailErro.textContent = "Email inválido";
-    erro = true;
-  }
-
-  if (senha.value === "") {
-    senhaErro.textContent = "Digite sua senha";
-    erro = true;
-  }
-
-  if (!erro) {
-    alert("Login enviado!");
-  }
-});
-
-
-// ===== CADASTRO =====
-const cadastroBtn = document.querySelector(".login-right button");
-
-cadastroBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const nome = document.querySelector(".login-right input[type='text']");
-  const email = document.querySelector(".login-right input[type='email']");
-  const senha = document.querySelector(".login-right input[type='password']");
-
-const nomeErro = document.querySelector(".login-right .nomeErro");
-const emailErro = document.querySelector(".login-right .emailCadastroErro");
-const senhaErro = document.querySelector(".login-right .senhaCadastroErro");
-
-  // limpar erros
-  nomeErro.textContent = "";
-  emailErro.textContent = "";
-  senhaErro.textContent = "";
-
-  let erro = false;
-
-  if (nome.value === "") {
-    nomeErro.textContent = "Digite seu nome";
-    erro = true;
+  function adicionarMensagem(texto, tipo) {
+    const msg = document.createElement("p");
+    msg.className = `chatbot-msg ${tipo}`;
+    msg.textContent = texto;
+    mensagens.appendChild(msg);
+    mensagens.scrollTop = mensagens.scrollHeight;
   }
 
-  if (email.value === "") {
-    emailErro.textContent = "Digite seu email";
-    erro = true;
-  } else if (!email.value.includes("@")) {
-    emailErro.textContent = "Email inválido";
-    erro = true;
+  function responder(pergunta) {
+    const texto = normalizar(pergunta);
+
+    if (texto.includes("cadastro") || texto.includes("login") || texto.includes("conta")) {
+      return "Para criar sua conta, acesse Login | Cadastro e preencha seus dados. O cadastro fica salvo no navegador como banco de dados simulado.";
+    }
+
+    if (texto.includes("vaga") || texto.includes("emprego") || texto.includes("oportunidade")) {
+      return "Na pagina Vagas voce pode filtrar oportunidades por area, tipo de contrato e palavra-chave.";
+    }
+
+    if (texto.includes("empresa")) {
+      return "Empresas podem cadastrar interesse, divulgar vagas e encontrar jovens com habilidades compativeis.";
+    }
+
+    if (texto.includes("ods") || texto.includes("8")) {
+      return "A ODS 8 busca promover trabalho decente, crescimento economico e inclusao produtiva.";
+    }
+
+    if (texto.includes("contato")) {
+      return "Voce pode falar pelo formulario da pagina Contato, e-mail ou WhatsApp informado no site.";
+    }
+
+    return "Posso ajudar com cadastro, vagas, empresas, ODS 8 e contato. Me diga o que voce quer saber.";
   }
 
-  if (senha.value === "") {
-    senhaErro.textContent = "Digite sua senha";
-    erro = true;
+  botao.addEventListener("click", () => {
+    const aberto = janela.style.display === "block";
+    janela.style.display = aberto ? "none" : "block";
+
+    if (!aberto && mensagens.children.length === 0) {
+      adicionarMensagem("Ola! Sou o assistente do Favela Tech. Como posso ajudar?", "bot");
+    }
+  });
+
+  fechar.addEventListener("click", () => {
+    janela.style.display = "none";
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const pergunta = input.value.trim();
+    if (!pergunta) return;
+
+    adicionarMensagem(pergunta, "user");
+    adicionarMensagem(responder(pergunta), "bot");
+    input.value = "";
+  });
+}
+
+function renderizarVagas(lista) {
+  const container = document.getElementById("vagas-lista");
+  if (!container) return;
+
+  if (lista.length === 0) {
+    container.innerHTML = '<p class="sem-vagas">Nenhuma vaga encontrada com esses filtros.</p>';
+    return;
   }
 
-  if (!erro) {
-    alert("Cadastro realizado!");
+  container.innerHTML = lista.map((vaga) => `
+    <article class="vaga-card">
+      <h2>${vaga.titulo}</h2>
+      <p><strong>Empresa:</strong> ${vaga.empresa}</p>
+      <p><strong>Local:</strong> ${vaga.local}</p>
+      <p><strong>Area:</strong> ${vaga.area}</p>
+      <p><strong>Tipo:</strong> ${vaga.tipo}</p>
+      <p><strong>Origem:</strong> ${vaga.origem}</p>
+      <button type="button" class="candidatar-btn">Candidatar-se</button>
+    </article>
+  `).join("");
+
+  document.querySelectorAll(".candidatar-btn").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      const usuario = getUsuarioLogado();
+      if (!usuario) {
+        alert("Cadastre-se ou faca login para se candidatar.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      alert("Candidatura simulada enviada com sucesso!");
+    });
+  });
+}
+
+function iniciarVagas() {
+  const form = document.getElementById("form-vagas");
+  const textoRecomendacao = document.getElementById("texto-recomendacao");
+  const usuario = getUsuarioLogado();
+
+  if (!form) return;
+
+  renderizarVagas(vagas);
+
+  if (textoRecomendacao && usuario?.habilidades) {
+    const habilidadesUsuario = normalizar(usuario.habilidades);
+    const recomendadas = vagas.filter((vaga) =>
+      vaga.habilidades.some((habilidade) => habilidadesUsuario.includes(normalizar(habilidade)))
+    );
+
+    textoRecomendacao.textContent = recomendadas.length
+      ? `Encontramos ${recomendadas.length} vaga(s) com boa combinacao para suas habilidades: ${usuario.habilidades}.`
+      : "Ainda nao encontramos uma combinacao exata, mas voce pode explorar todas as vagas disponiveis.";
   }
-});
 
-/* separando as caixas */
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const busca = normalizar(document.getElementById("busca-vaga").value);
+    const area = document.getElementById("area-vaga").value;
+    const tipo = document.getElementById("tipo-vaga").value;
 
-const irCadastro = document.getElementById("irCadastro");
-const irLogin = document.getElementById("irLogin");
+    const filtradas = vagas.filter((vaga) => {
+      const correspondeBusca = !busca || normalizar(`${vaga.titulo} ${vaga.empresa} ${vaga.area} ${vaga.tipo}`).includes(busca);
+      const correspondeArea = !area || vaga.area === area;
+      const correspondeTipo = !tipo || vaga.tipo === tipo;
+      return correspondeBusca && correspondeArea && correspondeTipo;
+    });
 
-irCadastro.addEventListener("click", () => {
-  loginBox.classList.remove("active");
-  cadastroBox.classList.add("active");
+    renderizarVagas(filtradas);
+  });
+}
 
-  document.querySelector(".modal-box").style.height = "260px";
-});
+function iniciarContato() {
+  const form = document.getElementById("form-contato");
+  if (!form) return;
 
-irLogin.addEventListener("click", () => {
-  cadastroBox.classList.remove("active");
-  loginBox.classList.add("active");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const mensagens = JSON.parse(localStorage.getItem("favelaTechMensagens") || "[]");
+    const novaMensagem = {
+      nome: document.getElementById("nome").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      tipo: document.getElementById("tipo").value,
+      mensagem: document.getElementById("mensagem").value.trim(),
+      data: new Date().toLocaleString("pt-BR")
+    };
 
-  document.querySelector(".modal-box").style.height = "200px";
-});
+    mensagens.push(novaMensagem);
+    localStorage.setItem("favelaTechMensagens", JSON.stringify(mensagens));
+    alert("Mensagem enviada e salva no banco de dados simulado.");
+    form.reset();
+  });
+}
+
+function iniciarCompartilhamento() {
+  const botao = document.getElementById("compartilhar-site");
+  if (!botao) return;
+
+  botao.addEventListener("click", async () => {
+    const dados = {
+      title: "Favela Tech",
+      text: "Conheca o Portal de Oportunidades Favela Tech.",
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      await navigator.share(dados);
+      return;
+    }
+
+    await navigator.clipboard.writeText(window.location.href);
+    alert("Link copiado para compartilhar.");
+  });
+}
+
+iniciarChatbot();
+iniciarVagas();
+iniciarContato();
+iniciarCompartilhamento();

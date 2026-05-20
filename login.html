@@ -1,42 +1,141 @@
-<link rel="stylesheet" href="css/login.css">
-<main>
-    <section class="login-cadastro">
-        <div class="login-box">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login e Cadastro | Favela Tech</title>
+  <link rel="shortcut icon" href="html/IMG/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>Favela Tech</span>
+    </div>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="sobre.html">Sobre Nos</a>
+      <a href="vagas.html">Vagas</a>
+      <a href="ajudar.html">Como Ajudar</a>
+      <a href="contato.html">Contato</a>
+      <a class="login" href="login.html">Login | Cadastro</a>
+    </nav>
+  </header>
+
+  <main class="auth-page">
+    <section class="auth-overlay">
+      <div class="auth-card active" id="login-card">
+        <p class="auth-kicker">Acesso Favela Tech</p>
         <h1>Entrar</h1>
-        <form>
+        <p class="auth-subtitle">Acesse sua conta para acompanhar vagas, recomendacoes e candidaturas.</p>
+
+        <form id="form-login" novalidate>
+          <div class="input-group">
             <label for="email-login">E-mail</label>
-            <input id="email-login" type="email" required>
+            <input id="email-login" type="email" autocomplete="email">
+            <span class="erro" id="erro-email-login"></span>
+          </div>
 
+          <div class="input-group">
             <label for="senha-login">Senha</label>
-            <input id="senha-login" type="password" required>
+            <input id="senha-login" type="password" autocomplete="current-password">
+            <span class="erro" id="erro-senha-login"></span>
+          </div>
 
-            <a href="#">Esqueci minha senha</a>
-
-            <button type="submit">Login</button>
+          <a href="#" id="recuperar-senha" class="forgot-link">Esqueci minha senha</a>
+          <button type="submit">Entrar</button>
         </form>
-        </div>
 
-        <div class="cadastro-box">
-        <h2>Criar conta</h2>
-        <form>
+        <p class="switch-text">
+          Nao tem uma conta?
+          <button type="button" id="abrir-cadastro">Cadastre-se aqui!</button>
+        </p>
+      </div>
+
+      <div class="auth-card" id="cadastro-card" aria-hidden="true">
+        <p class="auth-kicker">Novo talento ou empresa</p>
+        <h1>Criar conta</h1>
+        <p class="auth-subtitle">Cadastre seu perfil para conectar habilidades, curriculo e oportunidades.</p>
+
+        <form id="form-cadastro" novalidate>
+          <div class="input-group">
             <label for="nome-cad">Nome completo</label>
-            <input id="nome-cad" type="text" required>
+            <input id="nome-cad" type="text" autocomplete="name">
+            <span class="erro" id="erro-nome-cad"></span>
+          </div>
 
+          <div class="input-group">
             <label for="email-cad">E-mail</label>
-            <input id="email-cad" type="email" required>
+            <input id="email-cad" type="email" autocomplete="email">
+            <span class="erro" id="erro-email-cad"></span>
+          </div>
 
+          <div class="input-group">
             <label for="senha-cad">Senha</label>
-            <input id="senha-cad" type="password" required>
+            <input id="senha-cad" type="password" autocomplete="new-password">
+            <span class="erro" id="erro-senha-cad"></span>
+          </div>
 
-            <label>
-            <input type="checkbox" required>
-            Aceito os termos de uso e a política de privacidade (LGPD).
-            </label>
+          <div class="input-group">
+            <label for="tipo-cad">Perfil</label>
+            <select id="tipo-cad">
+              <option value="">Escolha uma opcao</option>
+              <option value="jovem">Jovem em busca de oportunidade</option>
+              <option value="empresa">Empresa que deseja contratar</option>
+            </select>
+            <span class="erro" id="erro-tipo-cad"></span>
+          </div>
 
-            <button type="submit">Cadastrar</button>
+          <div class="input-group">
+            <label for="habilidades-cad">Habilidades ou area de interesse</label>
+            <input id="habilidades-cad" type="text" placeholder="Ex: HTML, atendimento, Excel">
+            <span class="erro" id="erro-habilidades-cad"></span>
+          </div>
+
+          <label class="termos">
+            <input id="lgpd-cad" type="checkbox">
+            <span>Aceito os termos de uso e a politica de privacidade (LGPD).</span>
+          </label>
+          <span class="erro" id="erro-lgpd-cad"></span>
+
+          <button type="submit">Cadastrar</button>
         </form>
-        </div>
-    </section>
-</main>
 
-<script src="JS/login.js">  </script>
+        <p class="switch-text">
+          Ja tem uma conta?
+          <button type="button" id="abrir-login">Entrar agora</button>
+        </p>
+      </div>
+    </section>
+
+    <section class="perfil-restrito" id="perfil-restrito" hidden>
+      <h2>Area restrita</h2>
+      <p>Perfil basico do usuario autenticado.</p>
+      <div id="perfil-dados"></div>
+      <button id="sair-conta" type="button">Sair da conta</button>
+    </section>
+  </main>
+
+  <button class="chatbot-button" aria-label="Abrir assistente virtual">FT</button>
+  <div class="chatbot-window" aria-live="polite">
+    <div class="chatbot-header">
+      <span>Assistente Favela Tech</span>
+      <button class="chatbot-close" type="button">X</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <form class="chatbot-form">
+      <input type="text" placeholder="Digite sua duvida..." required>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+  </footer>
+
+  <script src="JS/login.js"></script>
+  <script src="JS/main.js"></script>
+</body>
+</html>

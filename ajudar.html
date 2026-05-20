@@ -1,31 +1,78 @@
-<link rel="stylesheet" href="css/ajudar.css">
-<main>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como Ajudar | Favela Tech</title>
+  <link rel="shortcut icon" href="html/IMG/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/ajudar.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>Favela Tech</span>
+    </div>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="sobre.html">Sobre Nos</a>
+      <a href="vagas.html">Vagas</a>
+      <a href="ajudar.html">Como Ajudar</a>
+      <a href="contato.html">Contato</a>
+      <a class="login" href="login.html">Login | Cadastro</a>
+    </nav>
+  </header>
+
+  <main>
     <section class="ajudar-intro">
-        <h1>Como ajudar a causa</h1>
-        <p>Pequenas ações podem gerar grandes mudanças na vida de jovens da favela.</p>
+      <h1>Como ajudar a causa</h1>
+      <p>Pequenas acoes podem gerar grandes mudancas na vida de jovens da comunidade.</p>
     </section>
 
     <section class="ajudar-passos">
-        <h2>O que você pode fazer no dia a dia</h2>
-        <ul>
+      <h2>O que voce pode fazer no dia a dia</h2>
+      <ul>
         <li>Compartilhar vagas e iniciativas de tecnologia com jovens da sua comunidade.</li>
-        <li>Doar livros, computadores usados ou equipamentos para espaços comunitários.</li>
-        <li>Ser voluntário em projetos de formação e mentoria.</li>
+        <li>Doar livros, computadores usados ou equipamentos para espacos comunitarios.</li>
+        <li>Ser voluntario em projetos de formacao, curriculo, entrevista e mentoria.</li>
         <li>Indicar o Favela Tech para empresas que procuram novos talentos.</li>
-        </ul>
+      </ul>
     </section>
 
     <section class="ajudar-ongs">
-        <h2>ONGs e organizações parceiras</h2>
-        <ul>
-        <li><a href="#" target="_blank">ONG 1 (exemplo)</a></li>
-        <li><a href="#" target="_blank">ONG 2 (exemplo)</a></li>
-        <li><a href="#" target="_blank">Projeto social 3 (exemplo)</a></li>
-        </ul>
+      <h2>ONGs e organizacoes relacionadas</h2>
+      <ul>
+        <li><a href="https://www.ciee.org.br/" target="_blank" rel="noopener">CIEE - oportunidades de estagio e aprendizagem</a></li>
+        <li><a href="https://www.gerandofalcoes.com/" target="_blank" rel="noopener">Gerando Falcoes - desenvolvimento social</a></li>
+        <li><a href="https://www.recode.org.br/" target="_blank" rel="noopener">Recode - tecnologia e inclusao digital</a></li>
+      </ul>
     </section>
 
     <section class="ajudar-compartilhar">
-        <h2>Compartilhe o portal</h2>
-        <p>Incentive o compartilhamento nas redes sociais, grupos de WhatsApp e comunidades locais.</p>
+      <h2>Compartilhe o portal</h2>
+      <p>Divulgue o Favela Tech em redes sociais, grupos de WhatsApp, escolas, coletivos e empresas locais.</p>
+      <button id="compartilhar-site" type="button">Compartilhar</button>
     </section>
-</main>
+  </main>
+
+  <button class="chatbot-button" aria-label="Abrir assistente virtual">FT</button>
+  <div class="chatbot-window" aria-live="polite">
+    <div class="chatbot-header">
+      <span>Assistente Favela Tech</span>
+      <button class="chatbot-close" type="button">X</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <form class="chatbot-form">
+      <input type="text" placeholder="Digite sua duvida..." required>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+  </footer>
+
+  <script src="JS/main.js"></script>
+</body>
+</html>

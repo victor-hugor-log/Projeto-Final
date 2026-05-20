@@ -1,155 +1,245 @@
 /* =============================================
-   FAVELA TECH — Página de Login / Cadastro
+   FAVELA TECH - Login em balao com fundo escuro
    ============================================= */
 
-/* ===== SEÇÃO GERAL ===== */
-.login-cadastro {
-  min-height: calc(100vh - 120px);
-  background-color: #f5f3ff;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 32px;
-  padding: 60px 20px;
-  flex-wrap: wrap;
+.auth-page {
+  min-height: calc(100vh - 121px);
+  background:
+    linear-gradient(rgba(12, 10, 35, 0.78), rgba(12, 10, 35, 0.86)),
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.55), transparent 34%),
+    linear-gradient(135deg, #1e1b4b, #312e81);
 }
 
-/* ===== BOXES ===== */
-.login-box,
-.cadastro-box {
+.auth-overlay {
+  min-height: calc(100vh - 121px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 18px;
+  position: relative;
+}
+
+.auth-card {
+  width: min(440px, 100%);
   background-color: #ffffff;
   border: 1px solid #ddd6fe;
-  border-radius: 14px;
-  padding: 36px 32px;
-  width: 100%;
-  max-width: 400px;
+  border-radius: 8px;
+  padding: 34px 30px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+  display: none;
+  transform: translateY(42px) scale(0.96);
+  opacity: 0;
 }
 
-/* Linha roxa no topo do box de login */
-.login-box {
-  border-top: 4px solid #7c3aed;
+.auth-card.active {
+  display: block;
+  animation: subirBalao 0.45s ease forwards;
 }
 
-/* Linha lilás no topo do box de cadastro */
-.cadastro-box {
-  border-top: 4px solid #a78bfa;
+@keyframes subirBalao {
+  from {
+    transform: translateY(46px) scale(0.96);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
-/* ===== TÍTULOS ===== */
-.login-box h1,
-.cadastro-box h2 {
-  font-size: 1.5rem;
+.auth-kicker {
+  color: #7c3aed;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.auth-card h1 {
   color: #1e1b4b;
-  margin-bottom: 24px;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
 }
 
-/* ===== FORMULÁRIOS ===== */
-.login-box form,
-.cadastro-box form {
+.auth-subtitle {
+  color: #555;
+  line-height: 1.55;
+  margin-bottom: 22px;
+}
+
+.auth-card form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
 }
 
-.login-box label,
-.cadastro-box label {
-  font-size: 0.9rem;
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
   color: #1e1b4b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  padding: 11px 13px;
+  color: #1e1b4b;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.14);
+}
+
+.input-group.invalid input,
+.input-group.invalid select {
+  border-color: #dc2626;
+  background-color: #fff7f7;
+}
+
+.input-group.valid input,
+.input-group.valid select {
+  border-color: #16a34a;
+}
+
+.erro {
+  min-height: 15px;
+  color: #dc2626;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
-.login-box input[type="email"],
-.login-box input[type="password"],
-.cadastro-box input[type="text"],
-.cadastro-box input[type="email"],
-.cadastro-box input[type="password"] {
-  padding: 10px 14px;
-  border: 1px solid #ddd6fe;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  color: #1e1b4b;
-  outline: none;
-  transition: 0.2s;
-}
-
-.login-box input:focus,
-.cadastro-box input:focus {
-  border-color: #7c3aed;
-}
-
-/* ===== LINK ESQUECI SENHA ===== */
-.login-box a {
-  font-size: 0.85rem;
+.forgot-link {
+  align-self: flex-end;
   color: #7c3aed;
+  font-size: 0.86rem;
+  font-weight: 700;
   text-decoration: none;
-  text-align: right;
 }
 
-.login-box a:hover {
+.forgot-link:hover {
   text-decoration: underline;
 }
 
-/* ===== CHECKBOX LGPD ===== */
-.cadastro-box label:has(input[type="checkbox"]) {
+.auth-card button[type="submit"] {
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #7c3aed;
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.auth-card button[type="submit"]:hover {
+  background-color: #6d28d9;
+  transform: translateY(-1px);
+}
+
+.switch-text {
+  margin-top: 18px;
+  color: #555;
+  font-size: 0.94rem;
+  text-align: center;
+}
+
+.switch-text button {
+  border: none;
+  background: none;
+  color: #7c3aed;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
+}
+
+.switch-text button:hover {
+  text-decoration: underline;
+}
+
+.termos {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  font-weight: 400;
+  gap: 9px;
   color: #555;
   font-size: 0.88rem;
-  line-height: 1.5;
+  line-height: 1.45;
   cursor: pointer;
 }
 
-.cadastro-box input[type="checkbox"] {
+.termos input {
+  width: 16px;
+  height: 16px;
   margin-top: 2px;
   accent-color: #7c3aed;
-  width: 15px;
-  height: 15px;
   flex-shrink: 0;
 }
 
-/* ===== BOTÕES ===== */
-.login-box button,
-.cadastro-box button {
-  margin-top: 6px;
-  padding: 11px;
+.perfil-restrito {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border: 1px solid #ddd6fe;
+  border-top: 4px solid #7c3aed;
+  border-radius: 8px;
+  transform: translateY(-22px);
+}
+
+.perfil-restrito h2 {
+  color: #1e1b4b;
+  margin-bottom: 8px;
+}
+
+.perfil-restrito p {
+  color: #555;
+  line-height: 1.7;
+}
+
+#perfil-dados {
+  margin: 18px 0;
+}
+
+#sair-conta {
+  padding: 10px 18px;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.login-box button {
-  background-color: #7c3aed;
-  color: white;
-}
-
-.login-box button:hover {
-  background-color: #6d28d9;
-}
-
-.cadastro-box button {
   background-color: #1e1b4b;
-  color: white;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
 }
 
-.cadastro-box button:hover {
-  background-color: #2e2a6e;
-}
-
-/* ===== RESPONSIVO ===== */
 @media (max-width: 600px) {
-  .login-cadastro {
-    padding: 30px 16px;
+  .auth-overlay {
+    padding: 30px 14px;
   }
 
-  .login-box,
-  .cadastro-box {
+  .auth-card {
     padding: 28px 20px;
+  }
+
+  .auth-card h1 {
+    font-size: 1.55rem;
   }
 }

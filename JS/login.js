@@ -1,64 +1,247 @@
-const formLogin = document.querySelector(".login-box form");
-const formCadastro = document.querySelector(".cadastro-box form");
+const loginCard = document.getElementById("login-card");
+const cadastroCard = document.getElementById("cadastro-card");
+const abrirCadastro = document.getElementById("abrir-cadastro");
+const abrirLogin = document.getElementById("abrir-login");
+const formLogin = document.getElementById("form-login");
+const formCadastro = document.getElementById("form-cadastro");
+const perfilRestrito = document.getElementById("perfil-restrito");
+const perfilDados = document.getElementById("perfil-dados");
+const sairConta = document.getElementById("sair-conta");
+const recuperarSenha = document.getElementById("recuperar-senha");
 
+function trocarBalao(tipo) {
+  const mostrarCadastro = tipo === "cadastro";
+  loginCard.classList.toggle("active", !mostrarCadastro);
+  cadastroCard.classList.toggle("active", mostrarCadastro);
+  loginCard.setAttribute("aria-hidden", String(mostrarCadastro));
+  cadastroCard.setAttribute("aria-hidden", String(!mostrarCadastro));
+}
 
-// LOGIN BOLADO
-formLogin.addEventListener("submit", function(event) {
+function carregarUsuarios() {
+  return JSON.parse(localStorage.getItem("favelaTechUsuarios") || "[]");
+}
 
-    event.preventDefault();
+function salvarUsuarios(usuarios) {
+  localStorage.setItem("favelaTechUsuarios", JSON.stringify(usuarios));
+}
 
-    const email = document.getElementById("email-login").value.trim();
-    const senha = document.getElementById("senha-login").value.trim();
+function salvarUsuarioLogado(usuario) {
+  localStorage.setItem("favelaTechUsuarioLogado", JSON.stringify(usuario));
+  mostrarPerfil();
+}
 
-    if (email === "" || senha === "") {
-        alert("Preencha todos os campos.");
-        return;
-    }
+function emailValido(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
-    if (!email.includes("@") || !email.includes(".")) {
-        alert("Digite um e-mail válido.");
-        return;
-    }
+function campo(id) {
+  return document.getElementById(id);
+}
 
-    if (senha.length < 6) {
-        alert("A senha precisa ter pelo menos 6 caracteres.");
-        return;
-    }
+function limparErro(input) {
+  const grupo = input.closest(".input-group");
+  const erro = grupo?.querySelector(".erro");
 
-    alert("Login realizado com sucesso!");
+  grupo?.classList.remove("invalid");
+  grupo?.classList.remove("valid");
+  if (erro) erro.textContent = "";
+}
 
+function mostrarErro(input, mensagem) {
+  const grupo = input.closest(".input-group");
+  const erro = grupo?.querySelector(".erro");
+
+  grupo?.classList.add("invalid");
+  grupo?.classList.remove("valid");
+  if (erro) erro.textContent = mensagem;
+}
+
+function mostrarValido(input) {
+  const grupo = input.closest(".input-group");
+  grupo?.classList.add("valid");
+  grupo?.classList.remove("invalid");
+}
+
+function validarObrigatorio(input, nomeCampo) {
+  if (!input.value.trim()) {
+    mostrarErro(input, `${nomeCampo}: campo vazio.`);
+    return false;
+  }
+
+  mostrarValido(input);
+  return true;
+}
+
+function validarEmail(input) {
+  if (!input.value.trim()) {
+    mostrarErro(input, "E-mail: campo vazio.");
+    return false;
+  }
+
+  if (!emailValido(input.value.trim())) {
+    mostrarErro(input, "E-mail invalido.");
+    return false;
+  }
+
+  mostrarValido(input);
+  return true;
+}
+
+function validarSenha(input) {
+  if (!input.value.trim()) {
+    mostrarErro(input, "Senha: campo vazio.");
+    return false;
+  }
+
+  if (input.value.trim().length < 6) {
+    mostrarErro(input, "A senha precisa ter pelo menos 6 caracteres.");
+    return false;
+  }
+
+  mostrarValido(input);
+  return true;
+}
+
+function mostrarPerfil() {
+  const usuario = JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
+
+  if (!perfilRestrito || !perfilDados) return;
+
+  if (!usuario) {
+    perfilRestrito.hidden = true;
+    return;
+  }
+
+  perfilRestrito.hidden = false;
+  perfilDados.innerHTML = `
+    <p><strong>Nome:</strong> ${usuario.nome}</p>
+    <p><strong>E-mail:</strong> ${usuario.email}</p>
+    <p><strong>Perfil:</strong> ${usuario.tipo === "empresa" ? "Empresa" : "Jovem"}</p>
+    <p><strong>Habilidades/interesses:</strong> ${usuario.habilidades || "Nao informado"}</p>
+    <p><strong>Status:</strong> E-mail confirmado na simulacao do projeto.</p>
+  `;
+}
+
+function validarLogin() {
+  const email = campo("email-login");
+  const senha = campo("senha-login");
+  let valido = true;
+
+  valido = validarEmail(email) && valido;
+  valido = validarSenha(senha) && valido;
+
+  return valido;
+}
+
+function validarCadastro() {
+  const nome = campo("nome-cad");
+  const email = campo("email-cad");
+  const senha = campo("senha-cad");
+  const tipo = campo("tipo-cad");
+  const habilidades = campo("habilidades-cad");
+  const lgpd = campo("lgpd-cad");
+  const erroLgpd = campo("erro-lgpd-cad");
+  let valido = true;
+
+  valido = validarObrigatorio(nome, "Nome") && valido;
+  valido = validarEmail(email) && valido;
+  valido = validarSenha(senha) && valido;
+  valido = validarObrigatorio(tipo, "Perfil") && valido;
+  valido = validarObrigatorio(habilidades, "Habilidades") && valido;
+
+  if (!lgpd.checked) {
+    erroLgpd.textContent = "Voce precisa aceitar os termos/LGPD.";
+    valido = false;
+  } else {
+    erroLgpd.textContent = "";
+  }
+
+  return valido;
+}
+
+abrirCadastro?.addEventListener("click", () => {
+  trocarBalao("cadastro");
 });
 
+abrirLogin?.addEventListener("click", () => {
+  trocarBalao("login");
+});
 
+document.querySelectorAll(".input-group input, .input-group select").forEach((input) => {
+  input.addEventListener("input", () => limparErro(input));
+  input.addEventListener("change", () => limparErro(input));
+});
 
-// CADASTRO BOLADO
-formCadastro.addEventListener("submit", function(event) {
+formLogin?.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-    event.preventDefault();
+  if (!validarLogin()) return;
 
-    const nome = document.getElementById("nome-cad").value.trim();
-    const email = document.getElementById("email-cad").value.trim();
-    const senha = document.getElementById("senha-cad").value.trim();
+  const email = campo("email-login").value.trim().toLowerCase();
+  const senha = campo("senha-login").value.trim();
+  const usuarios = carregarUsuarios();
+  const usuario = usuarios.find((item) => item.email === email && item.senha === senha);
 
-    if (nome === "" || email === "" || senha === "") {
-        alert("Preencha todos os campos.");
-        return;
-    }
+  if (!usuario) {
+    mostrarErro(campo("email-login"), "Conta nao encontrada ou senha incorreta.");
+    mostrarErro(campo("senha-login"), "Confira sua senha.");
+    return;
+  }
 
-    if (nome.length < 3) {
-        alert("Digite um nome válido.");
-        return;
-    }
+  salvarUsuarioLogado(usuario);
+  alert("Login realizado com sucesso!");
+  formLogin.reset();
+  document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
+});
 
-    if (!email.includes("@") || !email.includes(".")) {
-        alert("Digite um e-mail válido.");
-        return;
-    }
+formCadastro?.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-    if (senha.length < 6) {
-        alert("A senha precisa ter pelo menos 6 caracteres.");
-        return;
-    }
+  if (!validarCadastro()) return;
 
-    alert("Cadastro realizado com sucesso!");
-    });
+  const nome = campo("nome-cad").value.trim();
+  const email = campo("email-cad").value.trim().toLowerCase();
+  const senha = campo("senha-cad").value.trim();
+  const tipo = campo("tipo-cad").value;
+  const habilidades = campo("habilidades-cad").value.trim();
+  const usuarios = carregarUsuarios();
+
+  if (usuarios.some((usuario) => usuario.email === email)) {
+    mostrarErro(campo("email-cad"), "Este e-mail ja esta cadastrado.");
+    return;
+  }
+
+  const novoUsuario = {
+    nome,
+    email,
+    senha,
+    tipo,
+    habilidades,
+    criadoEm: new Date().toLocaleString("pt-BR")
+  };
+
+  usuarios.push(novoUsuario);
+  salvarUsuarios(usuarios);
+  salvarUsuarioLogado(novoUsuario);
+  alert("Cadastro realizado com sucesso!");
+  formCadastro.reset();
+  document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
+  trocarBalao("login");
+});
+
+sairConta?.addEventListener("click", () => {
+  localStorage.removeItem("favelaTechUsuarioLogado");
+  mostrarPerfil();
+  alert("Voce saiu da conta.");
+});
+
+recuperarSenha?.addEventListener("click", (event) => {
+  event.preventDefault();
+  const email = campo("email-login");
+
+  if (!validarEmail(email)) return;
+
+  alert("Recuperacao simulada: um e-mail seria enviado para redefinir sua senha.");
+});
+
+mostrarPerfil();

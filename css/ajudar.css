@@ -112,3 +112,18 @@
   margin: 0 auto;
   line-height: 1.7;
 }
+
+.ajudar-compartilhar button {
+  margin-top: 18px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  background-color: #7c3aed;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ajudar-compartilhar button:hover {
+  background-color: #6d28d9;
+}
