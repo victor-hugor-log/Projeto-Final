@@ -29,6 +29,10 @@ header {
   color: #ffffff;
 }
 
+.logo {
+  text-decoration: none;
+}
+
 nav {
   display: flex;
   align-items: center;
