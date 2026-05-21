@@ -62,10 +62,16 @@ nav a:hover {
 /* ===== HERO ===== */
 /* Roxo escuro + gradiente suave para o roxo médio */
 .hero {
-  background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+  background:
+    linear-gradient(90deg, rgba(30, 27, 75, 0.98) 0%, rgba(30, 27, 75, 0.88) 38%, rgba(76, 29, 149, 0.44) 62%, rgba(76, 29, 149, 0.08) 100%),
+    url("../assets/Hero\ Favela\ Tech.png") center right / cover no-repeat;
   color: white;
-  text-align: center;
-  padding: 100px 20px;
+  text-align: left;
+  padding: 110px 8%;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .hero-tag {
@@ -89,12 +95,12 @@ nav a:hover {
   font-size: 1.1rem;
   color: #ddd6fe;
   max-width: 520px;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .hero-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 20px;
   margin-top: 16px ;
 }
@@ -362,8 +368,22 @@ footer {
     text-align: center;
   }
 
+  .hero {
+    background:
+      linear-gradient(180deg, rgba(30, 27, 75, 0.98) 0%, rgba(30, 27, 75, 0.88) 48%, rgba(76, 29, 149, 0.58) 100%),
+      url("../assets/img/hero-favela-tech.png") center / cover no-repeat;
+    min-height: 620px;
+    padding: 90px 20px;
+    text-align: center;
+    justify-content: flex-start;
+  }
+
   .hero h1 {
     font-size: 1.8rem;
+  }
+
+  .hero p {
+    margin: 0 auto;
   }
 
   .hero-actions {
