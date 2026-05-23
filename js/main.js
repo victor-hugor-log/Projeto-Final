@@ -6,7 +6,7 @@ const vagas = [
     area: "Tecnologia",
     tipo: "Estagio",
     habilidades: ["tecnologia", "suporte", "html", "informatica"],
-    origem: "API simulada - LinkedIn Jobs"
+    origem: "API  LinkedIn Jobs"
   },
   {
     titulo: "Jovem Aprendiz Administrativo",
@@ -15,7 +15,7 @@ const vagas = [
     area: "Administracao",
     tipo: "Jovem Aprendiz",
     habilidades: ["excel", "organizacao", "administracao"],
-    origem: "API simulada - CIEE"
+    origem: "API - CIEE"
   },
   {
     titulo: "Atendente de Loja",
@@ -24,7 +24,7 @@ const vagas = [
     area: "Atendimento",
     tipo: "CLT",
     habilidades: ["comunicacao", "atendimento", "vendas"],
-    origem: "API simulada - Indeed"
+    origem: "API - Indeed"
   },
   {
     titulo: "Assistente de Marketing Digital",
@@ -33,7 +33,7 @@ const vagas = [
     area: "Marketing",
     tipo: "Freelancer",
     habilidades: ["redes sociais", "canva", "marketing", "criatividade"],
-    origem: "API simulada - LinkedIn Jobs"
+    origem: "API - LinkedIn Jobs"
   }
 ];
 
@@ -145,7 +145,7 @@ function renderizarVagas(lista) {
         return;
       }
 
-      alert("Candidatura simulada enviada com sucesso!");
+      alert("Candidatura enviada com sucesso!");
     });
   });
 }
@@ -309,3 +309,30 @@ function iniciarContadorContato() {
 }
 
 iniciarDOMGlobal();
+
+// ===== CARREGAR VAGAS DA API =====
+const listaVagas = document.getElementById("vagas-lista");
+
+if (listaVagas) {
+  fetch("http://localhost:3000/api/vagas")
+    .then((res) => res.json())
+    .then((vagas) => {
+      listaVagas.innerHTML = "";
+
+      vagas.forEach((vaga) => {
+        listaVagas.innerHTML += `
+          <article class="vaga-card">
+            <span class="vaga-origem">${vaga.origem}</span>
+            <h3>${vaga.titulo}</h3>
+            <p><strong>Empresa:</strong> ${vaga.empresa}</p>
+            <p><strong>Local:</strong> ${vaga.local}</p>
+            <p><strong>Tipo:</strong> ${vaga.tipo}</p>
+          </article>
+        `;
+      });
+    })
+    .catch((erro) => {
+      console.error("Erro ao buscar vagas:", erro);
+      listaVagas.innerHTML = "<p>Não foi possível carregar as vagas no momento.</p>";
+    });
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "origem": "LinkedIn",
+    "titulo": "Desenvolvedor Front-End",
+    "empresa": "Tech Solutions",
+    "local": "Belo Horizonte",
+    "tipo": "Estágio"
+  },
+  {
+    "origem": "Indeed",
+    "titulo": "Suporte Técnico",
+    "empresa": "HelpDesk Brasil",
+    "local": "Remoto",
+    "tipo": "CLT"
+  },
+  {
+    "origem": "CIEE",
+    "titulo": "Jovem Aprendiz em TI",
+    "empresa": "Empresa Parceira",
+    "local": "Belo Horizonte",
+    "tipo": "Aprendiz"
+  }
+]
