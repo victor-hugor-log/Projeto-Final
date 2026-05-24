@@ -192,8 +192,8 @@ function iniciarContato() {
   if (!form) return;
 
   form.addEventListener("submit", (event) => {
-    event.preventDefault();
     const mensagens = JSON.parse(localStorage.getItem("favelaTechMensagens") || "[]");
+
     const novaMensagem = {
       nome: document.getElementById("nome").value.trim(),
       email: document.getElementById("email").value.trim(),
@@ -204,8 +204,12 @@ function iniciarContato() {
 
     mensagens.push(novaMensagem);
     localStorage.setItem("favelaTechMensagens", JSON.stringify(mensagens));
-    alert("Mensagem enviada e salva no banco de dados simulado.");
-    form.reset();
+
+    if (!form.action.includes("formspree.io")) {
+      event.preventDefault();
+      alert("Mensagem enviada e salva no banco de dados simulado.");
+      form.reset();
+    }
   });
 }
 
