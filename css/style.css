@@ -66,9 +66,9 @@ nav a:hover {
 /* ===== HERO ===== */
 /* Roxo escuro + gradiente suave para o roxo médio */
 .hero {
-  background:
-    linear-gradient(90deg, rgba(30, 27, 75, 0.98) 0%, rgba(30, 27, 75, 0.88) 38%, rgba(76, 29, 149, 0.44) 62%, rgba(76, 29, 149, 0.08) 100%),
-    url("../assets/img/hero-favela-tech.png") center right / cover no-repeat;
+  position: relative;
+  overflow: hidden;
+  background-color: #1e1b4b;
   color: white;
   text-align: left;
   padding: 110px 8%;
@@ -76,6 +76,56 @@ nav a:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(30, 27, 75, 0.98) 0%, rgba(30, 27, 75, 0.88) 38%, rgba(76, 29, 149, 0.44) 62%, rgba(76, 29, 149, 0.08) 100%);
+  pointer-events: none;
+}
+
+.hero-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  width: 400%;
+  height: 100%;
+  animation: heroSlide 18s infinite ease-in-out;
+}
+
+.hero-slider img {
+  width: 25%;
+  height: 100%;
+  flex: 0 0 25%;
+  object-fit: cover;
+  object-position: center right;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes heroSlide {
+  0%, 22% {
+    transform: translateX(0);
+  }
+
+  33%, 55% {
+    transform: translateX(-25%);
+  }
+
+  66%, 88% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(-75%);
+  }
 }
 
 .hero-tag {
@@ -380,13 +430,18 @@ footer {
   }
 
   .hero {
-    background:
-      linear-gradient(180deg, rgba(30, 27, 75, 0.98) 0%, rgba(30, 27, 75, 0.88) 48%, rgba(76, 29, 149, 0.58) 100%),
-      url("../assets/img/hero-favela-tech.png") center / cover no-repeat;
     min-height: 620px;
     padding: 90px 20px;
     text-align: center;
     justify-content: flex-start;
+  }
+
+  .hero::after {
+    background: linear-gradient(180deg, rgba(30, 27, 75, 0.98) 0%, rgba(30, 27, 75, 0.88) 48%, rgba(76, 29, 149, 0.58) 100%);
+  }
+
+  .hero-slider img {
+    object-position: center;
   }
 
   .hero h1 {
