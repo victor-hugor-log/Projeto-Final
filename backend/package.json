@@ -1,13 +1,18 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "API do Portal de Oportunidades Favela Tech",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "express",
+    "api",
+    "vagas",
+    "favela-tech"
+  ],
+  "author": "Victor Hugor de Souza Lopes",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
