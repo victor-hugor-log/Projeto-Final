@@ -152,6 +152,9 @@ function renderizarVagas(lista) {
 
 function iniciarVagas() {
   const form = document.getElementById("form-vagas");
+  const inputBusca = document.getElementById("busca-vaga");
+  const selectArea = document.getElementById("area-vaga");
+  const selectTipo = document.getElementById("tipo-vaga");
   const textoRecomendacao = document.getElementById("texto-recomendacao");
   const usuario = getUsuarioLogado();
 
@@ -170,11 +173,10 @@ function iniciarVagas() {
       : "Ainda nao encontramos uma combinacao exata, mas voce pode explorar todas as vagas disponiveis.";
   }
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const busca = normalizar(document.getElementById("busca-vaga").value);
-    const area = document.getElementById("area-vaga").value;
-    const tipo = document.getElementById("tipo-vaga").value;
+  function filtrarVagas() {
+    const busca = normalizar(inputBusca.value);
+    const area = selectArea.value;
+    const tipo = selectTipo.value;
 
     const filtradas = vagas.filter((vaga) => {
       const correspondeBusca = !busca || normalizar(`${vaga.titulo} ${vaga.empresa} ${vaga.area} ${vaga.tipo}`).includes(busca);
@@ -184,6 +186,13 @@ function iniciarVagas() {
     });
 
     renderizarVagas(filtradas);
+  }
+
+  inputBusca.addEventListener("input", filtrarVagas);
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    filtrarVagas();
   });
 }
 
