@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+<<<<<<< HEAD
 const path = require("path");
 
 const { testarConexao } = require("./config/database");
@@ -16,11 +17,21 @@ app.use(express.static(frontendPath));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/vagas", vagasRoutes);
+=======
+const vagas = require("./vagas.json");
+
+const app = express();
+const PORT = 3000;
+
+app.use(cors());
+app.use(express.json());
+>>>>>>> 6b6ab4cf3cf09d876a835cc6f34d832492c1f351
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
+<<<<<<< HEAD
 async function iniciarServidor() {
   try {
     await testarConexao();
@@ -36,3 +47,12 @@ async function iniciarServidor() {
 }
 
 iniciarServidor();
+=======
+app.get("/api/vagas", (req, res) => {
+  res.json(vagas);
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
+>>>>>>> 6b6ab4cf3cf09d876a835cc6f34d832492c1f351
