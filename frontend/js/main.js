@@ -152,6 +152,9 @@ function renderizarVagas(lista) {
 
 function iniciarVagas() {
   const form = document.getElementById("form-vagas");
+  const inputBusca = document.getElementById("busca-vaga");
+  const selectArea = document.getElementById("area-vaga");
+  const selectTipo = document.getElementById("tipo-vaga");
   const textoRecomendacao = document.getElementById("texto-recomendacao");
   const usuario = getUsuarioLogado();
 
@@ -170,11 +173,10 @@ function iniciarVagas() {
       : "Ainda nao encontramos uma combinacao exata, mas voce pode explorar todas as vagas disponiveis.";
   }
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const busca = normalizar(document.getElementById("busca-vaga").value);
-    const area = document.getElementById("area-vaga").value;
-    const tipo = document.getElementById("tipo-vaga").value;
+  function filtrarVagas() {
+    const busca = normalizar(inputBusca.value);
+    const area = selectArea.value;
+    const tipo = selectTipo.value;
 
     const filtradas = vagas.filter((vaga) => {
       const correspondeBusca = !busca || normalizar(`${vaga.titulo} ${vaga.empresa} ${vaga.area} ${vaga.tipo}`).includes(busca);
@@ -184,6 +186,13 @@ function iniciarVagas() {
     });
 
     renderizarVagas(filtradas);
+  }
+
+  inputBusca.addEventListener("input", filtrarVagas);
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    filtrarVagas();
   });
 }
 
@@ -252,24 +261,41 @@ function iniciarDOMGlobal() {
     }
 
     if (link.classList.contains("login") && usuario) {
-      link.textContent = `Ola, ${usuario.nome.split(" ")[0]}`;
+      link.textContent = `Olá, ${usuario.nome.trim().split(/\s+/)[0]}`;
       link.setAttribute("title", "Usuario logado");
     }
   });
 
-  criarSaudacao(usuario);
+  iniciarBoasVindas(usuario, paginaAtual);
   animarSecoes();
   iniciarContadorContato();
 }
 
-function criarSaudacao(usuario) {
-  const main = document.querySelector("main");
-  if (!main || !usuario) return;
+function iniciarBoasVindas(usuario, paginaAtual) {
+  const deveExibir = sessionStorage.getItem("favelaTechExibirBoasVindas") === "true";
+  if (!usuario || paginaAtual !== "index.html" || !deveExibir) return;
 
-  const saudacao = document.createElement("div");
-  saudacao.className = "dom-saudacao";
-  saudacao.textContent = `Bem-vindo(a), ${usuario.nome}! Seu perfil esta ativo no Favela Tech.`;
-  main.prepend(saudacao);
+  sessionStorage.removeItem("favelaTechExibirBoasVindas");
+
+  const primeiroNome = usuario.nome.trim().split(/\s+/)[0];
+  const balao = document.createElement("aside");
+  balao.className = "boas-vindas-balao";
+  balao.setAttribute("role", "status");
+  balao.setAttribute("aria-live", "polite");
+  balao.innerHTML = `
+    <div class="boas-vindas-conteudo">
+      <strong>Olá, ${primeiroNome}!</strong>
+      <p>Seja bem-vindo ao Favela Tech. Explore as vagas e encontre oportunidades que combinam com você.</p>
+    </div>
+    <button class="boas-vindas-fechar" type="button" aria-label="Fechar mensagem de boas-vindas">X</button>
+  `;
+
+  balao.querySelector(".boas-vindas-fechar").addEventListener("click", () => {
+    balao.classList.add("fechando");
+    balao.addEventListener("animationend", () => balao.remove(), { once: true });
+  });
+
+  document.body.appendChild(balao);
 }
 
 function animarSecoes() {
@@ -313,30 +339,3 @@ function iniciarContadorContato() {
 }
 
 iniciarDOMGlobal();
-
-// ===== CARREGAR VAGAS DA API =====
-const listaVagas = document.getElementById("vagas-lista");
-
-if (listaVagas) {
-  fetch("http://localhost:3000/api/vagas")
-    .then((res) => res.json())
-    .then((vagas) => {
-      listaVagas.innerHTML = "";
-
-      vagas.forEach((vaga) => {
-        listaVagas.innerHTML += `
-          <article class="vaga-card">
-            <span class="vaga-origem">${vaga.origem}</span>
-            <h3>${vaga.titulo}</h3>
-            <p><strong>Empresa:</strong> ${vaga.empresa}</p>
-            <p><strong>Local:</strong> ${vaga.local}</p>
-            <p><strong>Tipo:</strong> ${vaga.tipo}</p>
-          </article>
-        `;
-      });
-    })
-    .catch((erro) => {
-      console.error("Erro ao buscar vagas:", erro);
-      listaVagas.innerHTML = "<p>Não foi possível carregar as vagas no momento.</p>";
-    });
-}

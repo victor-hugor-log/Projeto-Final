@@ -15,40 +15,128 @@ O objetivo do projeto e conectar jovens capacitados da comunidade a empresas loc
 - Pagina de Login/Cadastro com aceite de termos/LGPD.
 - Area restrita com perfil basico do usuario autenticado.
 - Pagina Como Ajudar com acoes praticas, links para organizacoes e compartilhamento.
+- Cadastro e login conectados ao MySQL com senhas criptografadas.
 - Pagina de Contato com formulario salvo em banco de dados simulado.
 - Chatbot disponivel em todas as paginas.
-- Banco de dados simulado com `localStorage`.
 
 ## Tecnologias utilizadas
 
 - HTML5
 - CSS3
 - JavaScript
-- LocalStorage
+- Node.js
+- Express
+- MySQL
+- MySQL2
+- Bcrypt
+- LocalStorage apenas para manter os dados publicos do usuario logado
 - API simulada de vagas
 - Chatbot com regras em JavaScript
 
 ## Como executar o projeto
 
-1. Baixe ou clone este repositorio.
-2. Abra a pasta do projeto.
-3. Abra o arquivo `index.html` no navegador.
+### Banco de dados
 
-Tambem e possivel executar com uma extensao como **Live Server** no VS Code.
+1. Inicie o servidor MySQL.
+2. Abra o terminal na pasta `backend`.
+3. Crie as tabelas:
+
+```bash
+mysql -u root -p < database/schema.sql
+```
+
+4. Em bancos criados antes da integracao, execute tambem:
+
+```bash
+mysql -u root -p < database/migration.sql
+```
+
+5. As vagas de exemplo podem ser inseridas com:
+
+```bash
+mysql -u root -p < database/seed.sql
+```
+
+### Configuracao
+
+O arquivo `backend/.env` guarda a configuracao local. Preencha `DB_PASSWORD` com a senha do seu MySQL. Esse arquivo esta protegido pelo `.gitignore` e nao deve ser enviado ao GitHub.
+
+```env
+PORT=3000
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=sua_senha
+DB_NAME=favela_tech
+```
+
+### Executando o projeto
+
+1. Abra a pasta `backend` no terminal.
+2. Instale as dependencias:
+
+```bash
+npm install
+```
+
+3. Inicie o servidor:
+
+```bash
+npm start
+```
+
+4. Acesse o site pelo servidor:
+
+```text
+http://localhost:3000
+```
+
+Nao abra o HTML diretamente, pois cadastro e login dependem da API. O backend disponibiliza as rotas:
+
+```text
+http://localhost:3000/api/vagas
+POST http://localhost:3000/api/auth/cadastro
+POST http://localhost:3000/api/auth/login
+```
+
+### Consultando as contas
+
+No MySQL, execute:
+
+```sql
+USE favela_tech;
+SELECT id, nome, email, tipo, habilidades, criado_em FROM usuarios;
+```
+
+A coluna `senha` guarda somente o hash gerado pelo Bcrypt, nunca a senha original.
 
 ## Estrutura principal
 
 ```text
-Projeto-Final-main/
-├── index.html
-├── sobre.html
-├── vagas.html
-├── login.html
-├── ajudar.html
-├── contato.html
-├── css/
-├── JS/
-└── pitch/
+Projeto-Final/
+├── frontend/
+│   ├── index.html
+│   ├── sobre.html
+│   ├── vagas.html
+│   ├── login.html
+│   ├── ajudar.html
+│   ├── contato.html
+│   ├── assets/
+│   ├── css/
+│   ├── html/
+│   └── js/
+├── backend/
+│   ├── server.js
+│   ├── config/
+│   ├── controllers/
+│   ├── database/
+│   ├── routes/
+│   ├── package.json
+│   └── package-lock.json
+├── docs/
+│   └── pitch/
+├── README.md
+└── .gitignore
 ```
 
 ## Integracoes planejadas

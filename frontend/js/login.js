@@ -17,17 +17,38 @@ function trocarBalao(tipo) {
   cadastroCard.setAttribute("aria-hidden", String(!mostrarCadastro));
 }
 
-function carregarUsuarios() {
-  return JSON.parse(localStorage.getItem("favelaTechUsuarios") || "[]");
-}
-
-function salvarUsuarios(usuarios) {
-  localStorage.setItem("favelaTechUsuarios", JSON.stringify(usuarios));
-}
-
 function salvarUsuarioLogado(usuario) {
   localStorage.setItem("favelaTechUsuarioLogado", JSON.stringify(usuario));
   mostrarPerfil();
+}
+
+async function enviarAutenticacao(endpoint, dados) {
+  let resposta;
+
+  try {
+    resposta = await fetch(`/api/auth/${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(dados)
+    });
+  } catch {
+    throw new Error("Servidor indisponivel. Inicie o backend e o MySQL.");
+  }
+
+  const resultado = await resposta.json().catch(() => ({}));
+
+  if (!resposta.ok) {
+    throw new Error(resultado.mensagem || "Nao foi possivel acessar o servidor.");
+  }
+
+  return resultado;
+}
+
+function definirFormularioCarregando(formulario, carregando) {
+  const botao = formulario.querySelector('button[type="submit"]');
+  botao.disabled = carregando;
 }
 
 function emailValido(email) {
@@ -172,29 +193,29 @@ document.querySelectorAll(".input-group input, .input-group select").forEach((in
   input.addEventListener("change", () => limparErro(input));
 });
 
-formLogin?.addEventListener("submit", (event) => {
+formLogin?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (!validarLogin()) return;
 
   const email = campo("email-login").value.trim().toLowerCase();
   const senha = campo("senha-login").value.trim();
-  const usuarios = carregarUsuarios();
-  const usuario = usuarios.find((item) => item.email === email && item.senha === senha);
+  definirFormularioCarregando(formLogin, true);
 
-  if (!usuario) {
-    mostrarErro(campo("email-login"), "Conta nao encontrada ou senha incorreta.");
+  try {
+    const { usuario } = await enviarAutenticacao("login", { email, senha });
+    salvarUsuarioLogado(usuario);
+    sessionStorage.setItem("favelaTechExibirBoasVindas", "true");
+    window.location.replace("index.html");
+  } catch (erro) {
+    mostrarErro(campo("email-login"), erro.message);
     mostrarErro(campo("senha-login"), "Confira sua senha.");
-    return;
+  } finally {
+    definirFormularioCarregando(formLogin, false);
   }
-
-  salvarUsuarioLogado(usuario);
-  alert("Login realizado com sucesso!");
-  formLogin.reset();
-  document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
 });
 
-formCadastro?.addEventListener("submit", (event) => {
+formCadastro?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (!validarCadastro()) return;
@@ -204,29 +225,27 @@ formCadastro?.addEventListener("submit", (event) => {
   const senha = campo("senha-cad").value.trim();
   const tipo = campo("tipo-cad").value;
   const habilidades = campo("habilidades-cad").value.trim();
-  const usuarios = carregarUsuarios();
+  definirFormularioCarregando(formCadastro, true);
 
-  if (usuarios.some((usuario) => usuario.email === email)) {
-    mostrarErro(campo("email-cad"), "Este e-mail ja esta cadastrado.");
-    return;
+  try {
+    const { usuario } = await enviarAutenticacao("cadastro", {
+      nome,
+      email,
+      senha,
+      tipo,
+      habilidades
+    });
+
+    salvarUsuarioLogado(usuario);
+    alert("Cadastro realizado com sucesso!");
+    formCadastro.reset();
+    document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
+    trocarBalao("login");
+  } catch (erro) {
+    mostrarErro(campo("email-cad"), erro.message);
+  } finally {
+    definirFormularioCarregando(formCadastro, false);
   }
-
-  const novoUsuario = {
-    nome,
-    email,
-    senha,
-    tipo,
-    habilidades,
-    criadoEm: new Date().toLocaleString("pt-BR")
-  };
-
-  usuarios.push(novoUsuario);
-  salvarUsuarios(usuarios);
-  salvarUsuarioLogado(novoUsuario);
-  alert("Cadastro realizado com sucesso!");
-  formCadastro.reset();
-  document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
-  trocarBalao("login");
 });
 
 sairConta?.addEventListener("click", () => {

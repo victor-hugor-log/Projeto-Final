@@ -641,13 +641,78 @@ footer {
   padding-bottom: 4px;
 }
 
-.dom-saudacao {
+.boas-vindas-balao {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 997;
+  width: min(380px, calc(100% - 32px));
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px;
+  background-color: #ffffff;
+  border: 1px solid #ddd6fe;
+  border-left: 5px solid #7c3aed;
+  border-radius: 8px;
+  box-shadow: 0 14px 36px rgba(30, 27, 75, 0.2);
+  animation: mostrarBoasVindas 0.35s ease both;
+}
+
+.boas-vindas-conteudo {
+  flex: 1;
+}
+
+.boas-vindas-conteudo strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #4c1d95;
+  font-size: 1rem;
+}
+
+.boas-vindas-conteudo p {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.boas-vindas-fechar {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f5f3ff;
+  color: #4c1d95;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.boas-vindas-fechar:hover {
   background-color: #ede9fe;
-  color: #1e1b4b;
-  border-left: 4px solid #7c3aed;
-  padding: 12px 18px;
-  font-weight: 700;
-  text-align: center;
+}
+
+.boas-vindas-balao.fechando {
+  animation: fecharBoasVindas 0.2s ease forwards;
+}
+
+@keyframes mostrarBoasVindas {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fecharBoasVindas {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 }
 
 .dom-reveal {
@@ -670,4 +735,12 @@ footer {
 .contador-mensagem.limite {
   color: #dc2626;
   font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .boas-vindas-balao {
+    top: auto;
+    right: 16px;
+    bottom: 88px;
+  }
 }
