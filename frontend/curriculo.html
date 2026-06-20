@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Currículo | Favela Tech</title>
+  <link rel="shortcut icon" href="html/IMG/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/img/favicon-64.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/curriculo.css">
+</head>
+<body>
+  <header>
+    <a class="logo" href="index.html">
+      <span>Favela Tech</span>
+    </a>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="sobre.html">Sobre Nos</a>
+      <a href="vagas.html">Vagas</a>
+      <a href="ajudar.html">Como Ajudar</a>
+      <a href="contato.html">Contato</a>
+      <a class="login" href="login.html">Login | Cadastro</a>
+    </nav>
+  </header>
+
+  <main class="curriculo-page">
+    <section class="curriculo-topo">
+      <div class="curriculo-topo-conteudo">
+        <p class="curriculo-kicker">Perfil profissional</p>
+        <h1>Meu currículo</h1>
+        <p>Organize sua trajetória, seus conhecimentos e o tipo de oportunidade que procura.</p>
+      </div>
+    </section>
+
+    <section class="curriculo-area">
+      <div class="curriculo-layout">
+        <aside class="curriculo-progresso" aria-label="Progresso do currículo">
+          <p class="progresso-label">Preenchimento</p>
+          <strong id="progresso-valor">0%</strong>
+          <div class="progresso-trilho" aria-hidden="true">
+            <span id="progresso-barra"></span>
+          </div>
+          <p id="progresso-status">Comece pelos seus dados pessoais.</p>
+
+          <div class="curriculo-etapas">
+            <span>Dados pessoais</span>
+            <span>Objetivo profissional</span>
+            <span>Formação</span>
+            <span>Experiência</span>
+            <span>Competências</span>
+          </div>
+        </aside>
+
+        <form class="curriculo-formulario" id="form-curriculo">
+          <section class="form-secao" aria-labelledby="titulo-dados">
+            <div class="form-secao-cabecalho">
+              <span>01</span>
+              <div>
+                <h2 id="titulo-dados">Dados pessoais</h2>
+                <p>Informações para empresas entrarem em contato.</p>
+              </div>
+            </div>
+
+            <div class="form-grade">
+              <label class="campo campo-largo">
+                <span>Nome completo</span>
+                <input id="curriculo-nome" name="nome" type="text" autocomplete="name" required>
+              </label>
+
+              <label class="campo">
+                <span>E-mail</span>
+                <input id="curriculo-email" name="email" type="email" autocomplete="email" required>
+              </label>
+
+              <label class="campo">
+                <span>Telefone</span>
+                <input name="telefone" type="tel" autocomplete="tel" placeholder="(31) 99999-9999" required>
+              </label>
+
+              <label class="campo campo-largo">
+                <span>Cidade e estado</span>
+                <input name="cidade" type="text" autocomplete="address-level2" placeholder="Belo Horizonte - MG" required>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-secao" aria-labelledby="titulo-objetivo">
+            <div class="form-secao-cabecalho">
+              <span>02</span>
+              <div>
+                <h2 id="titulo-objetivo">Objetivo profissional</h2>
+                <p>Conte onde você deseja chegar.</p>
+              </div>
+            </div>
+
+            <div class="form-grade">
+              <label class="campo">
+                <span>Cargo desejado</span>
+                <input name="cargo" type="text" placeholder="Ex: Suporte de TI" required>
+              </label>
+
+              <label class="campo">
+                <span>Área de interesse</span>
+                <select name="area" required>
+                  <option value="">Selecione uma área</option>
+                  <option>Tecnologia</option>
+                  <option>Administração</option>
+                  <option>Atendimento</option>
+                  <option>Marketing</option>
+                  <option>Logística</option>
+                  <option>Outra</option>
+                </select>
+              </label>
+
+              <label class="campo campo-largo">
+                <span>Resumo profissional</span>
+                <textarea id="resumo-profissional" name="resumo" rows="5" maxlength="400" placeholder="Fale brevemente sobre você, seus pontos fortes e objetivos." required></textarea>
+                <small id="contador-resumo">0/400 caracteres</small>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-secao" aria-labelledby="titulo-formacao">
+            <div class="form-secao-cabecalho">
+              <span>03</span>
+              <div>
+                <h2 id="titulo-formacao">Formação</h2>
+                <p>Adicione sua escolaridade ou curso mais relevante.</p>
+              </div>
+            </div>
+
+            <div class="form-grade">
+              <label class="campo">
+                <span>Escolaridade</span>
+                <select name="escolaridade" required>
+                  <option value="">Selecione</option>
+                  <option>Ensino fundamental</option>
+                  <option>Ensino médio cursando</option>
+                  <option>Ensino médio completo</option>
+                  <option>Curso técnico</option>
+                  <option>Ensino superior cursando</option>
+                  <option>Ensino superior completo</option>
+                </select>
+              </label>
+
+              <label class="campo">
+                <span>Curso</span>
+                <input name="curso" type="text" placeholder="Ex: Técnico em Informática">
+              </label>
+
+              <label class="campo campo-largo">
+                <span>Instituição</span>
+                <input name="instituicao" type="text" placeholder="Nome da escola ou instituição">
+              </label>
+            </div>
+          </section>
+
+          <section class="form-secao" aria-labelledby="titulo-experiencia">
+            <div class="form-secao-cabecalho">
+              <span>04</span>
+              <div>
+                <h2 id="titulo-experiencia">Experiência</h2>
+                <p>Vale trabalho formal, projeto, voluntariado ou atividade autônoma.</p>
+              </div>
+            </div>
+
+            <div class="form-grade">
+              <label class="campo">
+                <span>Empresa ou projeto</span>
+                <input name="empresa" type="text" placeholder="Ex: Comércio Local BH">
+              </label>
+
+              <label class="campo">
+                <span>Função</span>
+                <input name="funcao" type="text" placeholder="Ex: Atendente">
+              </label>
+
+              <label class="campo campo-largo">
+                <span>Principais atividades</span>
+                <textarea name="atividades" rows="4" placeholder="Descreva suas responsabilidades e resultados."></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-secao" aria-labelledby="titulo-competencias">
+            <div class="form-secao-cabecalho">
+              <span>05</span>
+              <div>
+                <h2 id="titulo-competencias">Competências e links</h2>
+                <p>Destaque conhecimentos que ajudam no dia a dia profissional.</p>
+              </div>
+            </div>
+
+            <div class="form-grade">
+              <label class="campo campo-largo">
+                <span>Habilidades</span>
+                <input name="habilidades" type="text" placeholder="Ex: Excel, HTML, atendimento, organização" required>
+              </label>
+
+              <label class="campo">
+                <span>LinkedIn</span>
+                <input name="linkedin" type="url" placeholder="https://linkedin.com/in/seu-perfil">
+              </label>
+
+              <label class="campo">
+                <span>Portfólio</span>
+                <input name="portfolio" type="url" placeholder="https://seusite.com">
+              </label>
+            </div>
+          </section>
+
+          <div class="form-acoes">
+            <button class="botao-secundario" id="limpar-curriculo" type="button">Limpar</button>
+            <button class="botao-principal" type="submit">Salvar currículo</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="curriculo-preview" id="curriculo-preview" hidden aria-labelledby="preview-titulo">
+      <div class="preview-cabecalho">
+        <p>Pré-visualização</p>
+        <h2 id="preview-titulo">Currículo profissional</h2>
+      </div>
+
+      <article class="preview-documento">
+        <header class="preview-identidade">
+          <div>
+            <h3 id="preview-nome">Nome completo</h3>
+            <p id="preview-cargo">Cargo desejado</p>
+          </div>
+          <div class="preview-contato">
+            <span id="preview-email">email@exemplo.com</span>
+            <span id="preview-telefone">Telefone</span>
+            <span id="preview-cidade">Cidade</span>
+          </div>
+        </header>
+
+        <div class="preview-conteudo">
+          <section>
+            <h4>Perfil</h4>
+            <p id="preview-resumo">Resumo profissional.</p>
+          </section>
+          <section>
+            <h4>Formação</h4>
+            <p id="preview-formacao">Escolaridade e instituição.</p>
+          </section>
+          <section>
+            <h4>Experiência</h4>
+            <p id="preview-experiencia">Experiência profissional.</p>
+          </section>
+          <section>
+            <h4>Competências</h4>
+            <p id="preview-habilidades">Habilidades profissionais.</p>
+          </section>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <button class="chatbot-button" aria-label="Abrir assistente virtual">
+    <img class="chatbot-icon" src="assets/img/chatbot-robo.png" alt="" aria-hidden="true">
+  </button>
+  <div class="chatbot-window" aria-live="polite">
+    <div class="chatbot-header">
+      <span>Assistente Favela Tech</span>
+      <button class="chatbot-close" type="button">X</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <form class="chatbot-form">
+      <input type="text" placeholder="Digite sua duvida..." required>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/curriculo.js"></script>
+</body>
+</html>

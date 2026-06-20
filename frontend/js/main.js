@@ -1,41 +1,4 @@
-const vagas = [
-  {
-    titulo: "Estagio em Suporte de TI",
-    empresa: "Exemplo Tech",
-    local: "Belo Horizonte - MG",
-    area: "Tecnologia",
-    tipo: "Estagio",
-    habilidades: ["tecnologia", "suporte", "html", "informatica"],
-    origem: "API  LinkedIn Jobs"
-  },
-  {
-    titulo: "Jovem Aprendiz Administrativo",
-    empresa: "Comercio Local BH",
-    local: "Belo Horizonte - MG",
-    area: "Administracao",
-    tipo: "Jovem Aprendiz",
-    habilidades: ["excel", "organizacao", "administracao"],
-    origem: "API - CIEE"
-  },
-  {
-    titulo: "Atendente de Loja",
-    empresa: "Rede Parceira",
-    local: "Contagem - MG",
-    area: "Atendimento",
-    tipo: "CLT",
-    habilidades: ["comunicacao", "atendimento", "vendas"],
-    origem: "API - Indeed"
-  },
-  {
-    titulo: "Assistente de Marketing Digital",
-    empresa: "Agencia Criativa",
-    local: "Remoto",
-    area: "Marketing",
-    tipo: "Freelancer",
-    habilidades: ["redes sociais", "canva", "marketing", "criatividade"],
-    origem: "API - LinkedIn Jobs"
-  }
-];
+let vagas = [];
 
 function getUsuarioLogado() {
   return JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
@@ -43,6 +6,84 @@ function getUsuarioLogado() {
 
 function normalizar(texto) {
   return (texto || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function mostrarNotificacao(mensagem, opcoes = {}) {
+  const {
+    titulo = "Favela Tech",
+    tipo = "info",
+    duracao = 4000
+  } = opcoes;
+  let container = document.getElementById("notificacoes-site");
+
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "notificacoes-site";
+    container.className = "notificacoes-site";
+    container.setAttribute("aria-live", "polite");
+    document.body.appendChild(container);
+  }
+
+  const notificacao = document.createElement("aside");
+  notificacao.className = `notificacao-site notificacao-${tipo}`;
+  notificacao.setAttribute("role", tipo === "erro" ? "alert" : "status");
+
+  const conteudo = document.createElement("div");
+  conteudo.className = "notificacao-conteudo";
+
+  const tituloElemento = document.createElement("strong");
+  tituloElemento.textContent = titulo;
+
+  const mensagemElemento = document.createElement("p");
+  mensagemElemento.textContent = mensagem;
+
+  const fechar = document.createElement("button");
+  fechar.className = "notificacao-fechar";
+  fechar.type = "button";
+  fechar.setAttribute("aria-label", "Fechar notificacao");
+  fechar.textContent = "X";
+
+  conteudo.append(tituloElemento, mensagemElemento);
+  notificacao.append(conteudo, fechar);
+  container.appendChild(notificacao);
+
+  let temporizador;
+
+  function remover() {
+    if (notificacao.classList.contains("saindo")) return;
+
+    clearTimeout(temporizador);
+    notificacao.classList.add("saindo");
+    notificacao.addEventListener("animationend", () => {
+      notificacao.remove();
+
+      if (container.children.length === 0) {
+        container.remove();
+      }
+    }, { once: true });
+  }
+
+  fechar.addEventListener("click", remover);
+
+  if (duracao > 0) {
+    temporizador = setTimeout(remover, duracao);
+  }
+}
+
+window.mostrarNotificacao = mostrarNotificacao;
+
+function mostrarNotificacaoPendente() {
+  const dadosSalvos = sessionStorage.getItem("favelaTechNotificacaoPendente");
+  if (!dadosSalvos) return;
+
+  sessionStorage.removeItem("favelaTechNotificacaoPendente");
+
+  try {
+    const { mensagem, titulo, tipo } = JSON.parse(dadosSalvos);
+    mostrarNotificacao(mensagem, { titulo, tipo });
+  } catch {
+    mostrarNotificacao("A operacao foi concluida.");
+  }
 }
 
 function iniciarChatbot() {
@@ -57,6 +98,32 @@ function iniciarChatbot() {
 
   janela.style.display = "none";
 
+  function fecharConvite() {
+    const convite = document.querySelector(".chatbot-convite");
+    if (!convite || convite.classList.contains("saindo")) return;
+
+    convite.classList.add("saindo");
+    convite.addEventListener("animationend", () => convite.remove(), { once: true });
+  }
+
+  function criarConvite() {
+    const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
+    if (paginaAtual !== "index.html") return;
+
+    const convite = document.createElement("aside");
+    convite.className = "chatbot-convite";
+    convite.setAttribute("role", "status");
+    convite.setAttribute("aria-live", "polite");
+    convite.innerHTML = `
+      <p>Olá, precisa de ajuda? Estou à disposição!</p>
+      <button type="button" class="chatbot-convite-fechar" aria-label="Fechar convite do assistente">X</button>
+    `;
+
+    convite.querySelector(".chatbot-convite-fechar").addEventListener("click", fecharConvite);
+    document.body.appendChild(convite);
+    setTimeout(fecharConvite, 8000);
+  }
+
   function adicionarMensagem(texto, tipo) {
     const msg = document.createElement("p");
     msg.className = `chatbot-msg ${tipo}`;
@@ -69,7 +136,7 @@ function iniciarChatbot() {
     const texto = normalizar(pergunta);
 
     if (texto.includes("cadastro") || texto.includes("login") || texto.includes("conta")) {
-      return "Para criar sua conta, acesse Login | Cadastro e preencha seus dados. O cadastro fica salvo no navegador como banco de dados simulado.";
+      return "Para criar sua conta, acesse Login | Cadastro e preencha seus dados. O cadastro fica salvo com seguranca no banco de dados.";
     }
 
     if (texto.includes("vaga") || texto.includes("emprego") || texto.includes("oportunidade")) {
@@ -94,6 +161,7 @@ function iniciarChatbot() {
   botao.addEventListener("click", () => {
     const aberto = janela.style.display === "block";
     janela.style.display = aberto ? "none" : "block";
+    fecharConvite();
 
     if (!aberto && mensagens.children.length === 0) {
       adicionarMensagem("Ola! Sou o assistente do Favela Tech. Como posso ajudar?", "bot");
@@ -113,6 +181,8 @@ function iniciarChatbot() {
     adicionarMensagem(responder(pergunta), "bot");
     input.value = "";
   });
+
+  criarConvite();
 }
 
 function renderizarVagas(lista) {
@@ -120,58 +190,77 @@ function renderizarVagas(lista) {
   if (!container) return;
 
   if (lista.length === 0) {
-    container.innerHTML = '<p class="sem-vagas">Nenhuma vaga encontrada com esses filtros.</p>';
+    const mensagem = document.createElement("p");
+    mensagem.className = "sem-vagas";
+    mensagem.textContent = "Nenhuma vaga encontrada com esses filtros.";
+    container.replaceChildren(mensagem);
     return;
   }
 
-  container.innerHTML = lista.map((vaga) => `
-    <article class="vaga-card">
-      <h2>${vaga.titulo}</h2>
-      <p><strong>Empresa:</strong> ${vaga.empresa}</p>
-      <p><strong>Local:</strong> ${vaga.local}</p>
-      <p><strong>Area:</strong> ${vaga.area}</p>
-      <p><strong>Tipo:</strong> ${vaga.tipo}</p>
-      <p><strong>Origem:</strong> ${vaga.origem}</p>
-      <button type="button" class="candidatar-btn">Candidatar-se</button>
-    </article>
-  `).join("");
+  const fragmento = document.createDocumentFragment();
 
-  document.querySelectorAll(".candidatar-btn").forEach((botao) => {
+  lista.forEach((vaga) => {
+    const card = document.createElement("article");
+    card.className = "vaga-card";
+
+    const titulo = document.createElement("h2");
+    titulo.textContent = vaga.titulo;
+    card.appendChild(titulo);
+
+    [
+      ["Empresa", vaga.empresa],
+      ["Local", vaga.localizacao],
+      ["Area", vaga.area],
+      ["Tipo", vaga.tipo],
+      ["Origem", vaga.origem]
+    ].forEach(([rotulo, valor]) => {
+      const linha = document.createElement("p");
+      const destaque = document.createElement("strong");
+      destaque.textContent = `${rotulo}: `;
+      linha.append(destaque, document.createTextNode(valor || "Nao informado"));
+      card.appendChild(linha);
+    });
+
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "candidatar-btn";
+    botao.textContent = "Candidatar-se";
     botao.addEventListener("click", () => {
       const usuario = getUsuarioLogado();
       if (!usuario) {
-        alert("Cadastre-se ou faca login para se candidatar.");
-        window.location.href = "login.html";
+        mostrarNotificacao("Cadastre-se ou faca login para se candidatar.", {
+          titulo: "Acesso necessario",
+          tipo: "aviso"
+        });
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 900);
         return;
       }
 
-      alert("Candidatura enviada com sucesso!");
+      mostrarNotificacao("Sua candidatura foi enviada com sucesso.", {
+        titulo: "Candidatura enviada",
+        tipo: "sucesso"
+      });
     });
+
+    card.appendChild(botao);
+    fragmento.appendChild(card);
   });
+
+  container.replaceChildren(fragmento);
 }
 
-function iniciarVagas() {
+async function iniciarVagas() {
   const form = document.getElementById("form-vagas");
   const inputBusca = document.getElementById("busca-vaga");
   const selectArea = document.getElementById("area-vaga");
   const selectTipo = document.getElementById("tipo-vaga");
   const textoRecomendacao = document.getElementById("texto-recomendacao");
+  const container = document.getElementById("vagas-lista");
   const usuario = getUsuarioLogado();
 
   if (!form) return;
-
-  renderizarVagas(vagas);
-
-  if (textoRecomendacao && usuario?.habilidades) {
-    const habilidadesUsuario = normalizar(usuario.habilidades);
-    const recomendadas = vagas.filter((vaga) =>
-      vaga.habilidades.some((habilidade) => habilidadesUsuario.includes(normalizar(habilidade)))
-    );
-
-    textoRecomendacao.textContent = recomendadas.length
-      ? `Encontramos ${recomendadas.length} vaga(s) com boa combinacao para suas habilidades: ${usuario.habilidades}.`
-      : "Ainda nao encontramos uma combinacao exata, mas voce pode explorar todas as vagas disponiveis.";
-  }
 
   function filtrarVagas() {
     const busca = normalizar(inputBusca.value);
@@ -188,12 +277,55 @@ function iniciarVagas() {
     renderizarVagas(filtradas);
   }
 
+  function atualizarRecomendacoes() {
+    if (!textoRecomendacao || !usuario?.habilidades) return;
+
+    const habilidadesUsuario = normalizar(usuario.habilidades)
+      .split(/[\s,;]+/)
+      .filter((habilidade) => habilidade.length >= 3);
+    const recomendadas = vagas.filter((vaga) => {
+      const habilidadesVaga = normalizar(vaga.habilidades);
+      return habilidadesUsuario.some((habilidade) => habilidadesVaga.includes(habilidade));
+    });
+
+    textoRecomendacao.textContent = recomendadas.length
+      ? `Encontramos ${recomendadas.length} vaga(s) com boa combinacao para suas habilidades: ${usuario.habilidades}.`
+      : "Ainda nao encontramos uma combinacao exata, mas voce pode explorar todas as vagas disponiveis.";
+  }
+
   inputBusca.addEventListener("input", filtrarVagas);
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     filtrarVagas();
   });
+
+  const carregando = document.createElement("p");
+  carregando.className = "sem-vagas";
+  carregando.textContent = "Carregando vagas...";
+  container.replaceChildren(carregando);
+
+  try {
+    const resposta = await fetch("/api/vagas");
+    const resultado = await resposta.json().catch(() => []);
+
+    if (!resposta.ok || !Array.isArray(resultado)) {
+      throw new Error("Nao foi possivel carregar as vagas.");
+    }
+
+    vagas = resultado;
+    renderizarVagas(vagas);
+    atualizarRecomendacoes();
+  } catch (erro) {
+    const mensagem = document.createElement("p");
+    mensagem.className = "sem-vagas";
+    mensagem.textContent = "Nao foi possivel carregar as vagas agora.";
+    container.replaceChildren(mensagem);
+    mostrarNotificacao(erro.message, {
+      titulo: "Erro ao carregar vagas",
+      tipo: "erro"
+    });
+  }
 }
 
 function iniciarContato() {
@@ -216,7 +348,10 @@ function iniciarContato() {
 
     if (!form.action.includes("formspree.io")) {
       event.preventDefault();
-      alert("Mensagem enviada e salva no banco de dados simulado.");
+      mostrarNotificacao("Sua mensagem foi enviada e salva.", {
+        titulo: "Mensagem enviada",
+        tipo: "sucesso"
+      });
       form.reset();
     }
   });
@@ -239,10 +374,14 @@ function iniciarCompartilhamento() {
     }
 
     await navigator.clipboard.writeText(window.location.href);
-    alert("Link copiado para compartilhar.");
+    mostrarNotificacao("O link do site foi copiado.", {
+      titulo: "Link copiado",
+      tipo: "sucesso"
+    });
   });
 }
 
+mostrarNotificacaoPendente();
 iniciarChatbot();
 iniciarVagas();
 iniciarContato();
@@ -252,6 +391,11 @@ function iniciarDOMGlobal() {
   const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
   const linksMenu = document.querySelectorAll("nav a");
   const usuario = getUsuarioLogado();
+  const curriculoCta = document.getElementById("curriculo-cta");
+
+  if (curriculoCta) {
+    curriculoCta.href = usuario ? "curriculo.html" : "login.html";
+  }
 
   linksMenu.forEach((link) => {
     const destino = link.getAttribute("href");
@@ -261,8 +405,12 @@ function iniciarDOMGlobal() {
     }
 
     if (link.classList.contains("login") && usuario) {
-      link.textContent = `Olá, ${usuario.nome.trim().split(/\s+/)[0]}`;
-      link.setAttribute("title", "Usuario logado");
+      const primeiroNome = usuario.nome.trim().split(/\s+/)[0];
+      link.textContent = paginaAtual === "perfil.html"
+        ? `Bem-vindo, ${primeiroNome}`
+        : "Minha conta";
+      link.href = "perfil.html";
+      link.setAttribute("title", "Abrir minha conta");
     }
   });
 

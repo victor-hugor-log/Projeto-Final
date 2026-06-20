@@ -9,6 +9,7 @@ function normalizarUsuario(usuario) {
     id: usuario.id,
     nome: usuario.nome,
     email: usuario.email,
+    telefone: usuario.telefone || "",
     tipo: usuario.tipo,
     habilidades: usuario.habilidades,
     criadoEm: usuario.criado_em
@@ -61,7 +62,7 @@ async function cadastrar(req, res) {
     );
 
     const [usuarios] = await pool.execute(
-      `SELECT id, nome, email, tipo, habilidades, criado_em
+      `SELECT id, nome, email, telefone, tipo, habilidades, criado_em
        FROM usuarios
        WHERE id = ?`,
       [resultado.insertId]
@@ -88,7 +89,7 @@ async function login(req, res) {
 
   try {
     const [usuarios] = await pool.execute(
-      `SELECT id, nome, email, senha, tipo, habilidades, criado_em
+      `SELECT id, nome, email, telefone, senha, tipo, habilidades, criado_em
        FROM usuarios
        WHERE email = ?
        LIMIT 1`,
@@ -113,7 +114,88 @@ async function login(req, res) {
   }
 }
 
+async function atualizarPerfil(req, res) {
+  const id = Number(req.body.id);
+  const nome = String(req.body.nome || "").trim();
+  const telefone = String(req.body.telefone || "").trim();
+  const email = String(req.body.email || "").trim().toLowerCase();
+  const senhaAtual = String(req.body.senhaAtual || "");
+  const novaSenha = String(req.body.novaSenha || "");
+
+  if (!Number.isInteger(id) || id <= 0 || !nome || !email || !senhaAtual) {
+    return res.status(400).json({ mensagem: "Preencha os campos obrigatorios." });
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ mensagem: "Informe um e-mail valido." });
+  }
+
+  if (novaSenha && novaSenha.length < 6) {
+    return res.status(400).json({ mensagem: "A nova senha precisa ter pelo menos 6 caracteres." });
+  }
+
+  try {
+    const [usuarios] = await pool.execute(
+      `SELECT id, nome, email, telefone, senha, tipo, habilidades, criado_em
+       FROM usuarios
+       WHERE id = ?
+       LIMIT 1`,
+      [id]
+    );
+
+    if (usuarios.length === 0) {
+      return res.status(404).json({ mensagem: "Usuario nao encontrado." });
+    }
+
+    const usuario = usuarios[0];
+    const senhaCorreta = await bcrypt.compare(senhaAtual, usuario.senha);
+
+    if (!senhaCorreta) {
+      return res.status(401).json({ mensagem: "A senha atual esta incorreta." });
+    }
+
+    if (email !== usuario.email) {
+      const [emailEmUso] = await pool.execute(
+        "SELECT id FROM usuarios WHERE email = ? AND id <> ? LIMIT 1",
+        [email, id]
+      );
+
+      if (emailEmUso.length > 0) {
+        return res.status(409).json({ mensagem: "Este e-mail ja pertence a outra conta." });
+      }
+    }
+
+    const senhaCriptografada = novaSenha
+      ? await bcrypt.hash(novaSenha, 12)
+      : usuario.senha;
+
+    await pool.execute(
+      `UPDATE usuarios
+       SET nome = ?, telefone = ?, email = ?, senha = ?
+       WHERE id = ?`,
+      [nome, telefone || null, email, senhaCriptografada, id]
+    );
+
+    const [usuariosAtualizados] = await pool.execute(
+      `SELECT id, nome, email, telefone, tipo, habilidades, criado_em
+       FROM usuarios
+       WHERE id = ?`,
+      [id]
+    );
+
+    return res.json({ usuario: normalizarUsuario(usuariosAtualizados[0]) });
+  } catch (erro) {
+    if (erro.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({ mensagem: "Este e-mail ja pertence a outra conta." });
+    }
+
+    console.error("Erro ao atualizar perfil:", erro.message);
+    return res.status(500).json({ mensagem: "Nao foi possivel atualizar o perfil." });
+  }
+}
+
 module.exports = {
   cadastrar,
-  login
+  login,
+  atualizarPerfil
 };

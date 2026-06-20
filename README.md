@@ -12,6 +12,7 @@ O objetivo do projeto e conectar jovens capacitados da comunidade a empresas loc
 - Pagina Sobre Nos com missao, valores e informacoes do desenvolvedor.
 - Pagina de Vagas com filtros por area, tipo de vaga e busca por palavra-chave.
 - Recomendacao automatica de vagas com base nas habilidades cadastradas.
+- Cadastro de curriculo salvo e carregado pelo MySQL.
 - Pagina de Login/Cadastro com aceite de termos/LGPD.
 - Area restrita com perfil basico do usuario autenticado.
 - Pagina Como Ajudar com acoes praticas, links para organizacoes e compartilhamento.
@@ -57,6 +58,8 @@ mysql -u root -p < database/migration.sql
 mysql -u root -p < database/seed.sql
 ```
 
+Ao iniciar, o backend tambem garante automaticamente a tabela de curriculos. A migration manual esta disponivel em `database/curriculos_migration.sql`.
+
 ### Configuracao
 
 O arquivo `backend/.env` guarda a configuracao local. Preencha `DB_PASSWORD` com a senha do seu MySQL. Esse arquivo esta protegido pelo `.gitignore` e nao deve ser enviado ao GitHub.
@@ -97,6 +100,8 @@ Nao abra o HTML diretamente, pois cadastro e login dependem da API. O backend di
 http://localhost:3000/api/vagas
 POST http://localhost:3000/api/auth/cadastro
 POST http://localhost:3000/api/auth/login
+GET http://localhost:3000/api/curriculos/:usuarioId
+PUT http://localhost:3000/api/curriculos/:usuarioId
 ```
 
 ### Consultando as contas

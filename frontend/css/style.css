@@ -296,6 +296,7 @@ nav a:hover {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  z-index: 999;
   background: radial-gradient(circle at 35% 25%, #5b21b6, #1e1b4b 72%);
   color: white;
   border: 2px solid rgba(255, 255, 255, 0.22);
@@ -310,6 +311,83 @@ nav a:hover {
   justify-content: center;
   overflow: hidden;
   transition: 0.2s;
+}
+
+.chatbot-convite {
+  position: fixed;
+  right: 20px;
+  bottom: 98px;
+  z-index: 1000;
+  width: min(280px, calc(100% - 40px));
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 14px 16px;
+  background-color: #ffffff;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(30, 27, 75, 0.2);
+  animation: mostrarConviteChatbot 0.35s ease both;
+}
+
+.chatbot-convite::after {
+  content: "";
+  position: absolute;
+  right: 24px;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  background-color: #ffffff;
+  border-right: 1px solid #ddd6fe;
+  border-bottom: 1px solid #ddd6fe;
+  transform: rotate(45deg);
+}
+
+.chatbot-convite p {
+  flex: 1;
+  color: #312e81;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.chatbot-convite-fechar {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f5f3ff;
+  color: #4c1d95;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chatbot-convite-fechar:hover {
+  background-color: #ede9fe;
+}
+
+.chatbot-convite.saindo {
+  animation: fecharConviteChatbot 0.2s ease forwards;
+}
+
+@keyframes mostrarConviteChatbot {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fecharConviteChatbot {
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
 }
 
 .chatbot-button:hover {
@@ -470,6 +548,12 @@ footer {
   .chatbot-window {
     width: calc(100% - 32px);
     right: 16px;
+  }
+
+  .chatbot-convite {
+    right: 16px;
+    bottom: 96px;
+    width: min(280px, calc(100% - 32px));
   }
 }
 
@@ -696,6 +780,81 @@ footer {
   animation: fecharBoasVindas 0.2s ease forwards;
 }
 
+.notificacoes-site {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 1002;
+  width: min(380px, calc(100% - 32px));
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.notificacao-site {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 17px 16px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-left: 5px solid #7c3aed;
+  border-radius: 8px;
+  box-shadow: 0 14px 36px rgba(30, 27, 75, 0.2);
+  pointer-events: auto;
+  animation: mostrarNotificacao 0.3s ease both;
+}
+
+.notificacao-sucesso {
+  border-left-color: #16a34a;
+}
+
+.notificacao-aviso {
+  border-left-color: #d97706;
+}
+
+.notificacao-erro {
+  border-left-color: #dc2626;
+}
+
+.notificacao-conteudo {
+  flex: 1;
+  min-width: 0;
+}
+
+.notificacao-conteudo strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #312e81;
+  font-size: 0.98rem;
+}
+
+.notificacao-conteudo p {
+  color: #4b5563;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.notificacao-fechar {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  color: #4c1d95;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notificacao-fechar:hover {
+  background-color: #e5e7eb;
+}
+
+.notificacao-site.saindo {
+  animation: fecharNotificacao 0.2s ease forwards;
+}
+
 @keyframes mostrarBoasVindas {
   from {
     opacity: 0;
@@ -712,6 +871,25 @@ footer {
   to {
     opacity: 0;
     transform: translateY(-8px);
+  }
+}
+
+@keyframes mostrarNotificacao {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fecharNotificacao {
+  to {
+    opacity: 0;
+    transform: translateX(18px);
   }
 }
 
@@ -739,6 +917,12 @@ footer {
 
 @media (max-width: 600px) {
   .boas-vindas-balao {
+    top: auto;
+    right: 16px;
+    bottom: 88px;
+  }
+
+  .notificacoes-site {
     top: auto;
     right: 16px;
     bottom: 88px;

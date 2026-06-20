@@ -237,7 +237,10 @@ formCadastro?.addEventListener("submit", async (event) => {
     });
 
     salvarUsuarioLogado(usuario);
-    alert("Cadastro realizado com sucesso!");
+    window.mostrarNotificacao("Sua conta foi criada e ja esta conectada.", {
+      titulo: "Cadastro concluido",
+      tipo: "sucesso"
+    });
     formCadastro.reset();
     document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
     trocarBalao("login");
@@ -250,8 +253,12 @@ formCadastro?.addEventListener("submit", async (event) => {
 
 sairConta?.addEventListener("click", () => {
   localStorage.removeItem("favelaTechUsuarioLogado");
-  mostrarPerfil();
-  alert("Voce saiu da conta.");
+  sessionStorage.setItem("favelaTechNotificacaoPendente", JSON.stringify({
+    mensagem: "Voce saiu da sua conta com seguranca.",
+    titulo: "Sessao encerrada",
+    tipo: "info"
+  }));
+  window.location.reload();
 });
 
 recuperarSenha?.addEventListener("click", (event) => {
@@ -260,7 +267,10 @@ recuperarSenha?.addEventListener("click", (event) => {
 
   if (!validarEmail(email)) return;
 
-  alert("Recuperacao simulada: um e-mail seria enviado para redefinir sua senha.");
+  window.mostrarNotificacao("Um e-mail seria enviado para redefinir sua senha.", {
+    titulo: "Recuperacao de senha",
+    tipo: "info"
+  });
 });
 
 mostrarPerfil();

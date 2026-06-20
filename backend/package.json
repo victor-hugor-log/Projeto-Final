@@ -1,26 +1,14 @@
 {
   "name": "favela-tech-backend",
   "version": "1.0.0",
-<<<<<<< HEAD
   "description": "Backend do Portal de Oportunidades Favela Tech",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
-=======
-  "description": "API do Portal de Oportunidades Favela Tech",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
->>>>>>> 6b6ab4cf3cf09d876a835cc6f34d832492c1f351
   },
-  "keywords": [
-    "express",
-    "api",
-    "vagas",
-    "favela-tech"
-  ],
-  "author": "Victor Hugor de Souza Lopes",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

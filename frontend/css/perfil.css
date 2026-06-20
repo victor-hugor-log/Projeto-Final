@@ -1,0 +1,308 @@
+.perfil-page {
+  min-height: calc(100vh - 121px);
+  background-color: #f7f7fb;
+}
+
+.perfil-topo {
+  padding: 46px 24px;
+  background:
+    linear-gradient(105deg, rgba(30, 27, 75, 0.98), rgba(76, 29, 149, 0.88)),
+    url("../assets/img/hero-favela-tech-3.png") center 46% / cover;
+  color: #ffffff;
+}
+
+.perfil-topo-conteudo {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+}
+
+.perfil-topo p {
+  margin-bottom: 6px;
+  color: #ddd6fe;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.perfil-topo h1 {
+  margin-bottom: 7px;
+  font-size: 2rem;
+}
+
+.perfil-topo span {
+  color: #ede9fe;
+}
+
+.perfil-area {
+  padding: 42px 24px 68px;
+}
+
+.perfil-layout {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.perfil-resumo,
+.perfil-formulario {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.perfil-resumo {
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.perfil-iniciais {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  background-color: #1e1b4b;
+  border: 4px solid #ddd6fe;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.perfil-resumo h2 {
+  color: #1e1b4b;
+  font-size: 1.25rem;
+}
+
+.perfil-resumo > p {
+  margin: 5px 0 12px;
+  overflow-wrap: anywhere;
+  color: #6b7280;
+  font-size: 0.86rem;
+}
+
+.perfil-tipo {
+  display: inline-flex;
+  padding: 5px 9px;
+  background-color: #ede9fe;
+  border-radius: 8px;
+  color: #5b21b6;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.perfil-detalhes {
+  display: grid;
+  gap: 16px;
+  margin: 26px 0;
+  padding-top: 22px;
+  border-top: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.perfil-detalhes dt {
+  margin-bottom: 3px;
+  color: #6b7280;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.perfil-detalhes dd {
+  overflow-wrap: anywhere;
+  color: #312e81;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.perfil-curriculo-link {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid #c4b5fd;
+  border-radius: 8px;
+  color: #5b21b6;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.perfil-curriculo-link:hover {
+  background-color: #f5f3ff;
+}
+
+.perfil-formulario {
+  padding: 30px;
+}
+
+.perfil-form-cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.perfil-form-cabecalho p {
+  margin-bottom: 4px;
+  color: #7c3aed;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.perfil-form-cabecalho h2 {
+  color: #1e1b4b;
+  font-size: 1.2rem;
+}
+
+.perfil-form-cabecalho > span {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.perfil-form-grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.perfil-campo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.perfil-campo-largo {
+  grid-column: 1 / -1;
+}
+
+.perfil-campo > span {
+  color: #312e81;
+  font-size: 0.87rem;
+  font-weight: 750;
+}
+
+.perfil-campo input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 11px 12px;
+  color: #1f2937;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 0.94rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.perfil-campo input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.13);
+}
+
+.perfil-campo small {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.perfil-separador {
+  height: 1px;
+  margin: 32px 0;
+  background-color: #e5e7eb;
+}
+
+.perfil-acoes {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.perfil-acoes button {
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.perfil-sair {
+  border: 1px solid #fecaca;
+  background-color: #ffffff;
+  color: #b91c1c;
+}
+
+.perfil-sair:hover {
+  background-color: #fef2f2;
+}
+
+.perfil-salvar {
+  border: 1px solid #7c3aed;
+  background-color: #7c3aed;
+  color: #ffffff;
+}
+
+.perfil-salvar:hover {
+  background-color: #6d28d9;
+}
+
+.perfil-salvar:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (max-width: 800px) {
+  .perfil-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-resumo {
+    text-align: left;
+  }
+
+  .perfil-iniciais {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .perfil-topo {
+    padding: 38px 18px;
+  }
+
+  .perfil-area {
+    padding: 28px 16px 52px;
+  }
+
+  .perfil-formulario {
+    padding: 24px 18px;
+  }
+
+  .perfil-form-grade {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-campo-largo {
+    grid-column: auto;
+  }
+
+  .perfil-form-cabecalho {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .perfil-acoes {
+    flex-direction: column-reverse;
+  }
+
+  .perfil-acoes button {
+    width: 100%;
+  }
+}

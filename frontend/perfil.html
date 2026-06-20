@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Conta | Favela Tech</title>
+  <link rel="shortcut icon" href="html/IMG/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/img/favicon-64.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/perfil.css">
+</head>
+<body>
+  <header>
+    <a class="logo" href="index.html">
+      <span>Favela Tech</span>
+    </a>
+
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="sobre.html">Sobre Nos</a>
+      <a href="vagas.html">Vagas</a>
+      <a href="ajudar.html">Como Ajudar</a>
+      <a href="contato.html">Contato</a>
+      <a class="login" href="login.html">Login | Cadastro</a>
+    </nav>
+  </header>
+
+  <main class="perfil-page">
+    <section class="perfil-topo">
+      <div class="perfil-topo-conteudo">
+        <p>Conta Favela Tech</p>
+        <h1>Minha conta</h1>
+        <span>Gerencie seus dados pessoais e suas credenciais de acesso.</span>
+      </div>
+    </section>
+
+    <section class="perfil-area">
+      <div class="perfil-layout">
+        <aside class="perfil-resumo">
+          <div class="perfil-iniciais" id="perfil-iniciais" aria-hidden="true">VH</div>
+          <h2 id="perfil-nome-resumo">Victor</h2>
+          <p id="perfil-email-resumo">email@exemplo.com</p>
+          <span class="perfil-tipo" id="perfil-tipo-resumo">Jovem</span>
+
+          <dl class="perfil-detalhes">
+            <div>
+              <dt>Telefone</dt>
+              <dd id="perfil-telefone-resumo">Não informado</dd>
+            </div>
+            <div>
+              <dt>Habilidades</dt>
+              <dd id="perfil-habilidades-resumo">Não informado</dd>
+            </div>
+          </dl>
+
+          <a class="perfil-curriculo-link" href="curriculo.html">Abrir meu currículo</a>
+        </aside>
+
+        <form class="perfil-formulario" id="form-perfil">
+          <div class="perfil-form-cabecalho">
+            <div>
+              <p>Dados da conta</p>
+              <h2>Informações pessoais</h2>
+            </div>
+            <span>Campos com * são obrigatórios</span>
+          </div>
+
+          <div class="perfil-form-grade">
+            <label class="perfil-campo perfil-campo-largo">
+              <span>Nome completo *</span>
+              <input id="perfil-nome" name="nome" type="text" autocomplete="name" required>
+            </label>
+
+            <label class="perfil-campo">
+              <span>Telefone</span>
+              <input id="perfil-telefone" name="telefone" type="tel" autocomplete="tel" placeholder="(31) 99999-9999" maxlength="20">
+            </label>
+
+            <label class="perfil-campo">
+              <span>E-mail *</span>
+              <input id="perfil-email" name="email" type="email" autocomplete="email" required>
+            </label>
+          </div>
+
+          <div class="perfil-separador"></div>
+
+          <div class="perfil-form-cabecalho">
+            <div>
+              <p>Segurança</p>
+              <h2>Alterar senha</h2>
+            </div>
+          </div>
+
+          <div class="perfil-form-grade">
+            <label class="perfil-campo perfil-campo-largo">
+              <span>Senha atual *</span>
+              <input id="perfil-senha-atual" name="senhaAtual" type="password" autocomplete="current-password" required>
+              <small>Confirme sua senha atual para salvar qualquer alteração.</small>
+            </label>
+
+            <label class="perfil-campo">
+              <span>Nova senha</span>
+              <input id="perfil-nova-senha" name="novaSenha" type="password" autocomplete="new-password" minlength="6">
+            </label>
+
+            <label class="perfil-campo">
+              <span>Confirmar nova senha</span>
+              <input id="perfil-confirmar-senha" type="password" autocomplete="new-password" minlength="6">
+            </label>
+          </div>
+
+          <div class="perfil-acoes">
+            <button class="perfil-sair" id="perfil-sair" type="button">Sair da conta</button>
+            <button class="perfil-salvar" type="submit">Salvar alterações</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <button class="chatbot-button" aria-label="Abrir assistente virtual">
+    <img class="chatbot-icon" src="assets/img/chatbot-robo.png" alt="" aria-hidden="true">
+  </button>
+  <div class="chatbot-window" aria-live="polite">
+    <div class="chatbot-header">
+      <span>Assistente Favela Tech</span>
+      <button class="chatbot-close" type="button">X</button>
+    </div>
+    <div class="chatbot-messages"></div>
+    <form class="chatbot-form">
+      <input type="text" placeholder="Digite sua duvida..." required>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/perfil.js"></script>
+</body>
+</html>
