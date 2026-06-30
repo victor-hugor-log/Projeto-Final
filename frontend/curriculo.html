@@ -81,6 +81,27 @@
                 <input name="telefone" type="tel" autocomplete="tel" placeholder="(31) 99999-9999" required>
               </label>
 
+              <label class="campo">
+                <span>Data de nascimento</span>
+                <input name="data_nascimento" type="date" autocomplete="bday">
+              </label>
+
+              <label class="campo">
+                <span>Nacionalidade</span>
+                <input name="nacionalidade" type="text" placeholder="Ex: Brasileira">
+              </label>
+
+              <label class="campo">
+                <span>Estado civil</span>
+                <select name="estado_civil">
+                  <option value="">Selecione</option>
+                  <option>Solteiro(a)</option>
+                  <option>Casado(a)</option>
+                  <option>União estável</option>
+                  <option>Prefiro não informar</option>
+                </select>
+              </label>
+
               <label class="campo campo-largo">
                 <span>Cidade e estado</span>
                 <input name="cidade" type="text" autocomplete="address-level2" placeholder="Belo Horizonte - MG" required>
@@ -113,6 +134,19 @@
                   <option>Marketing</option>
                   <option>Logística</option>
                   <option>Outra</option>
+                </select>
+              </label>
+
+              <label class="campo">
+                <span>Disponibilidade</span>
+                <select name="disponibilidade">
+                  <option value="">Selecione</option>
+                  <option>Manhã</option>
+                  <option>Tarde</option>
+                  <option>Noite</option>
+                  <option>Integral</option>
+                  <option>Finais de semana</option>
+                  <option>Remoto ou híbrido</option>
                 </select>
               </label>
 
@@ -215,6 +249,7 @@
 
           <div class="form-acoes">
             <button class="botao-secundario" id="limpar-curriculo" type="button">Limpar</button>
+            <button class="botao-secundario" id="ver-modelo-curriculo" type="button">Ver modelo</button>
             <button class="botao-principal" type="submit">Salvar currículo</button>
           </div>
         </form>
@@ -223,11 +258,19 @@
 
     <section class="curriculo-preview" id="curriculo-preview" hidden aria-labelledby="preview-titulo">
       <div class="preview-cabecalho">
-        <p>Pré-visualização</p>
-        <h2 id="preview-titulo">Currículo profissional</h2>
+        <div>
+          <p>Modelo para impressão</p>
+          <h2 id="preview-titulo">Currículo profissional</h2>
+        </div>
+        <button class="botao-imprimir" id="imprimir-curriculo" type="button">Imprimir currículo</button>
       </div>
 
       <article class="preview-documento">
+        <div class="preview-marca">
+          <strong>Favela Tech</strong>
+          <span>Currículo profissional</span>
+        </div>
+
         <header class="preview-identidade">
           <div>
             <h3 id="preview-nome">Nome completo</h3>
@@ -246,6 +289,10 @@
             <p id="preview-resumo">Resumo profissional.</p>
           </section>
           <section>
+            <h4>Dados pessoais</h4>
+            <p id="preview-dados-pessoais">Dados pessoais não informados.</p>
+          </section>
+          <section>
             <h4>Formação</h4>
             <p id="preview-formacao">Escolaridade e instituição.</p>
           </section>
@@ -256,6 +303,10 @@
           <section>
             <h4>Competências</h4>
             <p id="preview-habilidades">Habilidades profissionais.</p>
+          </section>
+          <section>
+            <h4>Links</h4>
+            <p id="preview-links">Links profissionais não informados.</p>
           </section>
         </div>
       </article>
@@ -278,7 +329,7 @@
   </div>
 
   <footer>
-    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+    <p>Favela Tech - Conectando talentos da comunidade a oportunidades reais.</p>
   </footer>
 
   <script src="js/main.js"></script>

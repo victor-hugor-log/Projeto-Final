@@ -1,6 +1,17 @@
 const formPerfil = document.getElementById("form-perfil");
 const sairPerfil = document.getElementById("perfil-sair");
-const usuarioPerfil = JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
+const listaCandidaturas = document.getElementById("perfil-candidaturas-lista");
+const inputFoto = document.getElementById("perfil-foto");
+const removerFoto = document.getElementById("perfil-foto-remover");
+const fotoPreview = document.getElementById("perfil-foto-preview");
+const cepInput = document.getElementById("perfil-cep");
+const cepStatus = document.getElementById("perfil-cep-status");
+const formEmail = document.getElementById("form-email");
+const formTelefone = document.getElementById("form-telefone");
+const formSenha = document.getElementById("form-senha");
+let usuarioPerfil = JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
+let fotoPerfilAtual = usuarioPerfil?.fotoPerfil || "";
+let temporizadorCep;
 
 function redirecionarParaLogin() {
   sessionStorage.setItem("favelaTechNotificacaoPendente", JSON.stringify({
@@ -21,16 +32,134 @@ function obterIniciais(nome) {
     .toUpperCase();
 }
 
+function mascararEmail(email) {
+  if (!email || !email.includes("@")) return "Não informado";
+
+  const [nome, dominio] = email.split("@");
+  const nomeVisivel = nome.length <= 2 ? nome[0] || "*" : nome.slice(0, 2);
+  const dominioVisivel = dominio.length <= 6
+    ? dominio[0] || "*"
+    : `${dominio.slice(0, 2)}...${dominio.slice(-4)}`;
+
+  return `${nomeVisivel}***@${dominioVisivel}`;
+}
+
+function mascararTelefone(telefone) {
+  const digitos = String(telefone || "").replace(/\D/g, "");
+  if (!digitos) return "Não informado";
+  if (digitos.length <= 4) return "****";
+
+  return `(**) *****-${digitos.slice(-4)}`;
+}
+
+function montarEnderecoResumo(usuario) {
+  const partes = [
+    usuario.endereco,
+    usuario.numero,
+    usuario.bairro,
+    usuario.cidade,
+    usuario.estado
+  ].filter(Boolean);
+
+  return partes.length ? partes.join(", ") : "Não informado";
+}
+
+function preencherCampo(id, valor) {
+  const elemento = document.getElementById(id);
+  if (elemento) elemento.value = valor || "";
+}
+
+function preencherTexto(id, valor) {
+  const elemento = document.getElementById(id);
+  if (elemento) elemento.textContent = valor || "";
+}
+
 function preencherPerfil(usuario) {
-  document.getElementById("perfil-iniciais").textContent = obterIniciais(usuario.nome);
-  document.getElementById("perfil-nome-resumo").textContent = usuario.nome;
-  document.getElementById("perfil-email-resumo").textContent = usuario.email;
-  document.getElementById("perfil-tipo-resumo").textContent = usuario.tipo === "empresa" ? "Empresa" : "Jovem";
-  document.getElementById("perfil-telefone-resumo").textContent = usuario.telefone || "Não informado";
-  document.getElementById("perfil-habilidades-resumo").textContent = usuario.habilidades || "Não informado";
-  document.getElementById("perfil-nome").value = usuario.nome;
-  document.getElementById("perfil-telefone").value = usuario.telefone || "";
-  document.getElementById("perfil-email").value = usuario.email;
+  const iniciais = document.getElementById("perfil-iniciais");
+
+  fotoPerfilAtual = usuario.fotoPerfil || "";
+  iniciais.textContent = obterIniciais(usuario.nome);
+  iniciais.hidden = Boolean(fotoPerfilAtual);
+  fotoPreview.hidden = !fotoPerfilAtual;
+  removerFoto.hidden = !fotoPerfilAtual;
+
+  if (fotoPerfilAtual) {
+    fotoPreview.src = fotoPerfilAtual;
+  } else {
+    fotoPreview.removeAttribute("src");
+  }
+
+  preencherTexto("perfil-nome-resumo", usuario.nome);
+  preencherTexto("perfil-email-resumo", mascararEmail(usuario.email));
+  preencherTexto("perfil-tipo-resumo", usuario.tipo === "empresa" ? "Empresa" : "Jovem");
+  preencherTexto("perfil-telefone-resumo", mascararTelefone(usuario.telefone));
+  preencherTexto("perfil-endereco-resumo", montarEnderecoResumo(usuario));
+  preencherTexto("perfil-habilidades-resumo", usuario.habilidades || "Não informado");
+  preencherTexto("perfil-email-mascarado", mascararEmail(usuario.email));
+  preencherTexto("perfil-telefone-mascarado", mascararTelefone(usuario.telefone));
+
+  preencherCampo("perfil-nome", usuario.nome);
+  preencherCampo("perfil-cep", usuario.cep);
+  preencherCampo("perfil-endereco", usuario.endereco);
+  preencherCampo("perfil-numero", usuario.numero);
+  preencherCampo("perfil-complemento", usuario.complemento);
+  preencherCampo("perfil-bairro", usuario.bairro);
+  preencherCampo("perfil-cidade", usuario.cidade);
+  preencherCampo("perfil-estado", usuario.estado);
+  preencherCampo("email-novo", usuario.email);
+  preencherCampo("telefone-novo", usuario.telefone);
+}
+
+function dadosPerfilBase() {
+  return {
+    id: usuarioPerfil.id,
+    nome: document.getElementById("perfil-nome").value.trim(),
+    email: usuarioPerfil.email,
+    telefone: usuarioPerfil.telefone || "",
+    cep: document.getElementById("perfil-cep").value.trim(),
+    endereco: document.getElementById("perfil-endereco").value.trim(),
+    numero: document.getElementById("perfil-numero").value.trim(),
+    complemento: document.getElementById("perfil-complemento").value.trim(),
+    bairro: document.getElementById("perfil-bairro").value.trim(),
+    cidade: document.getElementById("perfil-cidade").value.trim(),
+    estado: document.getElementById("perfil-estado").value.trim().toUpperCase(),
+    fotoPerfil: fotoPerfilAtual
+  };
+}
+
+function validarPerfil() {
+  const nome = document.getElementById("perfil-nome");
+  const cep = document.getElementById("perfil-cep").value.replace(/\D/g, "");
+  const estado = document.getElementById("perfil-estado").value.trim();
+
+  if (!nome.value.trim()) {
+    nome.focus();
+    window.mostrarNotificacao("Informe seu nome completo para salvar o perfil.", {
+      titulo: "Confira os dados",
+      tipo: "aviso"
+    });
+    return false;
+  }
+
+  if (cep && cep.length !== 8) {
+    cepInput.focus();
+    window.mostrarNotificacao("Confira o CEP. Ele precisa ter 8 números.", {
+      titulo: "CEP incompleto",
+      tipo: "aviso"
+    });
+    return false;
+  }
+
+  if (estado && estado.length !== 2) {
+    document.getElementById("perfil-estado").focus();
+    window.mostrarNotificacao("Use a sigla do estado com 2 letras, por exemplo MG.", {
+      titulo: "Estado",
+      tipo: "aviso"
+    });
+    return false;
+  }
+
+  return true;
 }
 
 async function enviarAtualizacao(dados) {
@@ -45,7 +174,7 @@ async function enviarAtualizacao(dados) {
       body: JSON.stringify(dados)
     });
   } catch {
-    throw new Error("Servidor indisponivel. Inicie o backend e o MySQL.");
+    throw new Error("Serviço temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const resultado = await resposta.json().catch(() => ({}));
@@ -57,19 +186,320 @@ async function enviarAtualizacao(dados) {
   return resultado.usuario;
 }
 
+function salvarUsuarioAtualizado(usuario, mensagem) {
+  usuarioPerfil = usuario;
+  localStorage.setItem("favelaTechUsuarioLogado", JSON.stringify(usuario));
+  preencherPerfil(usuario);
+  window.mostrarNotificacao(mensagem, {
+    titulo: "Perfil atualizado",
+    tipo: "sucesso"
+  });
+}
+
+function definirEstadoCandidaturas(mensagem) {
+  if (!listaCandidaturas) return;
+
+  const estado = document.createElement("p");
+  estado.className = "perfil-candidaturas-estado";
+  estado.textContent = mensagem;
+  listaCandidaturas.replaceChildren(estado);
+}
+
+function formatarData(data) {
+  const dataCandidatura = new Date(data);
+
+  if (Number.isNaN(dataCandidatura.getTime())) {
+    return "Data não informada";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }).format(dataCandidatura);
+}
+
+function criarMeta(texto) {
+  const meta = document.createElement("span");
+  meta.textContent = texto;
+  return meta;
+}
+
+function renderizarCandidaturas(candidaturas) {
+  if (!listaCandidaturas) return;
+
+  if (!candidaturas.length) {
+    definirEstadoCandidaturas("Você ainda não se candidatou a nenhuma vaga. Abra a aba de vagas e escolha uma oportunidade.");
+    return;
+  }
+
+  const fragmento = document.createDocumentFragment();
+
+  candidaturas.forEach((candidatura) => {
+    const vaga = candidatura.vaga || {};
+    const card = document.createElement("article");
+    card.className = "perfil-candidatura-card";
+
+    const conteudo = document.createElement("div");
+    const titulo = document.createElement("h3");
+    titulo.textContent = vaga.titulo || "Vaga não informada";
+
+    const empresa = document.createElement("p");
+    const empresaRotulo = document.createElement("strong");
+    empresaRotulo.textContent = "Empresa: ";
+    empresa.append(empresaRotulo, document.createTextNode(vaga.empresa || "Não informada"));
+
+    const meta = document.createElement("div");
+    meta.className = "perfil-candidatura-meta";
+    meta.append(
+      criarMeta(`Data: ${formatarData(candidatura.criadoEm)}`),
+      criarMeta(`Tipo: ${vaga.tipo || "Não informado"}`)
+    );
+
+    if (vaga.localizacao) {
+      meta.appendChild(criarMeta(vaga.localizacao));
+    }
+
+    const status = document.createElement("span");
+    status.className = "perfil-candidatura-status";
+    status.textContent = candidatura.status || "Enviada";
+
+    conteudo.append(titulo, empresa, meta);
+    card.append(conteudo, status);
+    fragmento.appendChild(card);
+  });
+
+  listaCandidaturas.replaceChildren(fragmento);
+}
+
+async function carregarCandidaturas(usuarioId) {
+  definirEstadoCandidaturas("Carregando candidaturas...");
+
+  let resposta;
+
+  try {
+    resposta = await fetch(`/api/candidaturas/usuario/${usuarioId}`);
+  } catch {
+    definirEstadoCandidaturas("Não foi possível carregar suas candidaturas no momento.");
+    return;
+  }
+
+  const resultado = await resposta.json().catch(() => ({}));
+
+  if (!resposta.ok) {
+    definirEstadoCandidaturas(resultado.mensagem || "Não foi possível carregar suas candidaturas.");
+    return;
+  }
+
+  renderizarCandidaturas(resultado.candidaturas || []);
+}
+
+function abrirModal(nome) {
+  const modal = document.getElementById(`modal-${nome}`);
+  if (!modal) return;
+
+  modal.hidden = false;
+  modal.querySelector("input")?.focus();
+}
+
+function fecharModal(modal) {
+  modal.hidden = true;
+  modal.querySelector("form")?.reset();
+  preencherCampo("email-novo", usuarioPerfil.email);
+  preencherCampo("telefone-novo", usuarioPerfil.telefone);
+}
+
+document.querySelectorAll("[data-abrir-modal]").forEach((botao) => {
+  botao.addEventListener("click", () => abrirModal(botao.dataset.abrirModal));
+});
+
+document.querySelectorAll("[data-fechar-modal]").forEach((botao) => {
+  botao.addEventListener("click", () => fecharModal(botao.closest(".perfil-modal")));
+});
+
+document.querySelectorAll(".perfil-modal").forEach((modal) => {
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) fecharModal(modal);
+  });
+});
+
+inputFoto?.addEventListener("change", () => {
+  const arquivo = inputFoto.files?.[0];
+  if (!arquivo) return;
+
+  if (!arquivo.type.startsWith("image/")) {
+    window.mostrarNotificacao("Escolha uma imagem PNG, JPG ou WEBP.", {
+      titulo: "Foto invalida",
+      tipo: "erro"
+    });
+    inputFoto.value = "";
+    return;
+  }
+
+  if (arquivo.size > 900000) {
+    window.mostrarNotificacao("Escolha uma imagem de ate 900 KB.", {
+      titulo: "Foto muito grande",
+      tipo: "erro"
+    });
+    inputFoto.value = "";
+    return;
+  }
+
+  const leitor = new FileReader();
+  leitor.addEventListener("load", () => {
+    fotoPerfilAtual = String(leitor.result || "");
+    fotoPreview.src = fotoPerfilAtual;
+    fotoPreview.hidden = false;
+    document.getElementById("perfil-iniciais").hidden = true;
+    removerFoto.hidden = false;
+  });
+  leitor.readAsDataURL(arquivo);
+});
+
+removerFoto?.addEventListener("click", async () => {
+  if (!fotoPerfilAtual) return;
+
+  const fotoAnterior = fotoPerfilAtual;
+  fotoPerfilAtual = "";
+  inputFoto.value = "";
+  fotoPreview.hidden = true;
+  fotoPreview.removeAttribute("src");
+  document.getElementById("perfil-iniciais").hidden = false;
+  removerFoto.disabled = true;
+
+  try {
+    const usuarioAtualizado = await enviarAtualizacao(dadosPerfilBase());
+    salvarUsuarioAtualizado(usuarioAtualizado, "Sua foto foi removida.");
+  } catch (erro) {
+    fotoPerfilAtual = fotoAnterior;
+    fotoPreview.src = fotoPerfilAtual;
+    fotoPreview.hidden = false;
+    document.getElementById("perfil-iniciais").hidden = true;
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Nao foi possivel remover",
+      tipo: "erro"
+    });
+  } finally {
+    removerFoto.disabled = false;
+  }
+});
+
+function formatarCep(valor) {
+  const digitos = String(valor || "").replace(/\D/g, "").slice(0, 8);
+  return digitos.length > 5 ? `${digitos.slice(0, 5)}-${digitos.slice(5)}` : digitos;
+}
+
+async function buscarCep() {
+  const cep = cepInput.value.replace(/\D/g, "");
+  if (cep.length !== 8) return;
+
+  cepStatus.textContent = "Buscando CEP...";
+
+  try {
+    const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const endereco = await resposta.json();
+
+    if (!resposta.ok || endereco.erro) {
+      throw new Error("CEP não encontrado.");
+    }
+
+    preencherCampo("perfil-endereco", endereco.logradouro);
+    preencherCampo("perfil-bairro", endereco.bairro);
+    preencherCampo("perfil-cidade", endereco.localidade);
+    preencherCampo("perfil-estado", endereco.uf);
+    cepStatus.textContent = "CEP preenchido automaticamente.";
+  } catch (erro) {
+    cepStatus.textContent = "";
+    window.mostrarNotificacao(erro.message || "Não foi possível buscar o CEP.", {
+      titulo: "CEP",
+      tipo: "aviso"
+    });
+  }
+}
+
+cepInput?.addEventListener("input", () => {
+  cepInput.value = formatarCep(cepInput.value);
+  cepStatus.textContent = "";
+  clearTimeout(temporizadorCep);
+
+  if (cepInput.value.replace(/\D/g, "").length === 8) {
+    temporizadorCep = setTimeout(buscarCep, 450);
+  }
+});
+
 if (!usuarioPerfil?.id) {
   redirecionarParaLogin();
 } else {
   preencherPerfil(usuarioPerfil);
+  carregarCandidaturas(usuarioPerfil.id);
 }
 
 formPerfil?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (!formPerfil.reportValidity()) return;
+  if (!validarPerfil()) return;
 
-  const novaSenha = document.getElementById("perfil-nova-senha").value;
-  const confirmarSenha = document.getElementById("perfil-confirmar-senha").value;
+  const botaoSalvar = formPerfil.querySelector('button[type="submit"]');
+  botaoSalvar.disabled = true;
+
+  try {
+    const usuarioAtualizado = await enviarAtualizacao(dadosPerfilBase());
+    salvarUsuarioAtualizado(usuarioAtualizado, "Seus dados foram atualizados com sucesso.");
+  } catch (erro) {
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Nao foi possivel salvar",
+      tipo: "erro"
+    });
+  } finally {
+    botaoSalvar.disabled = false;
+  }
+});
+
+formEmail?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const modal = formEmail.closest(".perfil-modal");
+
+  try {
+    const usuarioAtualizado = await enviarAtualizacao({
+      ...dadosPerfilBase(),
+      email: document.getElementById("email-novo").value.trim().toLowerCase(),
+      senhaAtual: document.getElementById("email-senha-atual").value
+    });
+    salvarUsuarioAtualizado(usuarioAtualizado, "Seu e-mail foi atualizado.");
+    fecharModal(modal);
+  } catch (erro) {
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Nao foi possivel alterar",
+      tipo: "erro"
+    });
+  }
+});
+
+formTelefone?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const modal = formTelefone.closest(".perfil-modal");
+
+  try {
+    const usuarioAtualizado = await enviarAtualizacao({
+      ...dadosPerfilBase(),
+      telefone: document.getElementById("telefone-novo").value.trim(),
+      senhaAtual: document.getElementById("telefone-senha-atual").value
+    });
+    salvarUsuarioAtualizado(usuarioAtualizado, "Seu telefone foi atualizado.");
+    fecharModal(modal);
+  } catch (erro) {
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Nao foi possivel alterar",
+      tipo: "erro"
+    });
+  }
+});
+
+formSenha?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const novaSenha = document.getElementById("senha-nova-modal").value;
+  const confirmarSenha = document.getElementById("senha-confirmar-modal").value;
+  const modal = formSenha.closest(".perfil-modal");
 
   if (novaSenha !== confirmarSenha) {
     window.mostrarNotificacao("A confirmacao precisa ser igual a nova senha.", {
@@ -79,32 +509,19 @@ formPerfil?.addEventListener("submit", async (event) => {
     return;
   }
 
-  const botaoSalvar = formPerfil.querySelector('button[type="submit"]');
-  botaoSalvar.disabled = true;
-
   try {
     const usuarioAtualizado = await enviarAtualizacao({
-      id: usuarioPerfil.id,
-      nome: document.getElementById("perfil-nome").value.trim(),
-      telefone: document.getElementById("perfil-telefone").value.trim(),
-      email: document.getElementById("perfil-email").value.trim().toLowerCase(),
-      senhaAtual: document.getElementById("perfil-senha-atual").value,
+      ...dadosPerfilBase(),
+      senhaAtual: document.getElementById("senha-atual-modal").value,
       novaSenha
     });
-
-    localStorage.setItem("favelaTechUsuarioLogado", JSON.stringify(usuarioAtualizado));
-    sessionStorage.setItem("favelaTechNotificacaoPendente", JSON.stringify({
-      mensagem: "Seus dados foram atualizados com sucesso.",
-      titulo: "Perfil atualizado",
-      tipo: "sucesso"
-    }));
-    window.location.reload();
+    salvarUsuarioAtualizado(usuarioAtualizado, "Sua senha foi atualizada.");
+    fecharModal(modal);
   } catch (erro) {
     window.mostrarNotificacao(erro.message, {
-      titulo: "Nao foi possivel salvar",
+      titulo: "Nao foi possivel alterar",
       tipo: "erro"
     });
-    botaoSalvar.disabled = false;
   }
 });
 

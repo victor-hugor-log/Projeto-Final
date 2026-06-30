@@ -4,9 +4,13 @@ const CAMPOS = [
   "nome",
   "email",
   "telefone",
+  "data_nascimento",
+  "nacionalidade",
+  "estado_civil",
   "cidade",
   "cargo",
   "area",
+  "disponibilidade",
   "resumo",
   "escolaridade",
   "curso",
@@ -45,9 +49,21 @@ function normalizarDados(dados) {
   }, {});
 }
 
+function formatarDataInput(valor) {
+  if (!valor) return "";
+  if (typeof valor === "string") return valor.slice(0, 10);
+
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return "";
+
+  return data.toISOString().slice(0, 10);
+}
+
 function normalizarCurriculo(curriculo) {
   const resultado = CAMPOS.reduce((dados, campo) => {
-    dados[campo] = curriculo[campo] || "";
+    dados[campo] = campo === "data_nascimento"
+      ? formatarDataInput(curriculo[campo])
+      : curriculo[campo] || "";
     return dados;
   }, {});
 
@@ -67,6 +83,14 @@ function urlValida(valor) {
   } catch {
     return false;
   }
+}
+
+function dataValida(valor) {
+  if (!valor) return true;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) return false;
+
+  const data = new Date(`${valor}T00:00:00`);
+  return !Number.isNaN(data.getTime());
 }
 
 async function obterCurriculo(req, res) {
@@ -107,6 +131,10 @@ async function salvarCurriculo(req, res) {
     return res.status(400).json({ mensagem: "Informe um e-mail valido." });
   }
 
+  if (!dataValida(dados.data_nascimento)) {
+    return res.status(400).json({ mensagem: "Informe uma data de nascimento valida." });
+  }
+
   if (!urlValida(dados.linkedin) || !urlValida(dados.portfolio)) {
     return res.status(400).json({ mensagem: "Informe links validos, com http ou https." });
   }
@@ -123,17 +151,22 @@ async function salvarCurriculo(req, res) {
 
     await pool.execute(
       `INSERT INTO curriculos (
-        usuario_id, nome, email, telefone, cidade, cargo, area, resumo,
+        usuario_id, nome, email, telefone, data_nascimento, nacionalidade,
+        estado_civil, cidade, cargo, area, disponibilidade, resumo,
         escolaridade, curso, instituicao, empresa, funcao, atividades,
         habilidades, linkedin, portfolio
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         nome = VALUES(nome),
         email = VALUES(email),
         telefone = VALUES(telefone),
+        data_nascimento = VALUES(data_nascimento),
+        nacionalidade = VALUES(nacionalidade),
+        estado_civil = VALUES(estado_civil),
         cidade = VALUES(cidade),
         cargo = VALUES(cargo),
         area = VALUES(area),
+        disponibilidade = VALUES(disponibilidade),
         resumo = VALUES(resumo),
         escolaridade = VALUES(escolaridade),
         curso = VALUES(curso),
@@ -149,9 +182,13 @@ async function salvarCurriculo(req, res) {
         dados.nome,
         dados.email,
         dados.telefone,
+        dados.data_nascimento || null,
+        dados.nacionalidade || null,
+        dados.estado_civil || null,
         dados.cidade,
         dados.cargo,
         dados.area,
+        dados.disponibilidade || null,
         dados.resumo,
         dados.escolaridade,
         dados.curso || null,

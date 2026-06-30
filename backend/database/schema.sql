@@ -12,6 +12,14 @@ CREATE TABLE IF NOT EXISTS usuarios (
   senha VARCHAR(255) NOT NULL,
   tipo VARCHAR(30) NOT NULL DEFAULT "jovem",
   habilidades TEXT,
+  cep VARCHAR(9),
+  endereco VARCHAR(150),
+  numero VARCHAR(20),
+  complemento VARCHAR(100),
+  bairro VARCHAR(100),
+  cidade VARCHAR(100),
+  estado VARCHAR(2),
+  foto_perfil LONGTEXT,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -33,9 +41,13 @@ CREATE TABLE IF NOT EXISTS curriculos (
   nome VARCHAR(100) NOT NULL,
   email VARCHAR(120) NOT NULL,
   telefone VARCHAR(20) NOT NULL,
+  data_nascimento DATE,
+  nacionalidade VARCHAR(60),
+  estado_civil VARCHAR(40),
   cidade VARCHAR(100) NOT NULL,
   cargo VARCHAR(100) NOT NULL,
   area VARCHAR(80) NOT NULL,
+  disponibilidade VARCHAR(80),
   resumo TEXT NOT NULL,
   escolaridade VARCHAR(80) NOT NULL,
   curso VARCHAR(120),
@@ -55,9 +67,11 @@ CREATE TABLE IF NOT EXISTS candidaturas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   usuario_id INT NOT NULL,
   vaga_id INT NOT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT "Enviada",
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-  FOREIGN KEY (vaga_id) REFERENCES vagas(id)
+  UNIQUE KEY candidatura_unica (usuario_id, vaga_id),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  FOREIGN KEY (vaga_id) REFERENCES vagas(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS mensagens_contato (

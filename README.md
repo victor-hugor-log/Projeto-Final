@@ -13,11 +13,14 @@ O objetivo do projeto e conectar jovens capacitados da comunidade a empresas loc
 - Pagina de Vagas com filtros por area, tipo de vaga e busca por palavra-chave.
 - Recomendacao automatica de vagas com base nas habilidades cadastradas.
 - Cadastro de curriculo salvo e carregado pelo MySQL.
+- Candidatura em vagas salva no MySQL, com bloqueio de candidatura duplicada.
+- Area "Minhas candidaturas" no perfil, com vaga, empresa, data e status.
+- Perfil com foto, dados de contato mascarados e endereco com busca automatica por CEP.
 - Pagina de Login/Cadastro com aceite de termos/LGPD.
 - Area restrita com perfil basico do usuario autenticado.
 - Pagina Como Ajudar com acoes praticas, links para organizacoes e compartilhamento.
 - Cadastro e login conectados ao MySQL com senhas criptografadas.
-- Pagina de Contato com formulario salvo em banco de dados simulado.
+- Pagina de Contato com formulario e apoio de envio externo/simulado.
 - Chatbot disponivel em todas as paginas.
 
 ## Tecnologias utilizadas
@@ -30,6 +33,7 @@ O objetivo do projeto e conectar jovens capacitados da comunidade a empresas loc
 - MySQL
 - MySQL2
 - Bcrypt
+- API publica ViaCEP para preenchimento automatico de endereco
 - LocalStorage apenas para manter os dados publicos do usuario logado
 - API simulada de vagas
 - Chatbot com regras em JavaScript
@@ -58,7 +62,7 @@ mysql -u root -p < database/migration.sql
 mysql -u root -p < database/seed.sql
 ```
 
-Ao iniciar, o backend tambem garante automaticamente a tabela de curriculos. A migration manual esta disponivel em `database/curriculos_migration.sql`.
+Ao iniciar, o backend tambem garante automaticamente as tabelas de curriculos, candidaturas e os campos extras do perfil. As migrations manuais estao disponiveis em `database/curriculos_migration.sql`, `database/curriculo_extra_migration.sql`, `database/candidaturas_migration.sql` e `database/perfil_extra_migration.sql`.
 
 ### Configuracao
 
@@ -102,6 +106,8 @@ POST http://localhost:3000/api/auth/cadastro
 POST http://localhost:3000/api/auth/login
 GET http://localhost:3000/api/curriculos/:usuarioId
 PUT http://localhost:3000/api/curriculos/:usuarioId
+POST http://localhost:3000/api/candidaturas
+GET http://localhost:3000/api/candidaturas/usuario/:usuarioId
 ```
 
 ### Consultando as contas
@@ -138,6 +144,9 @@ Projeto-Final/
 │   ├── routes/
 │   ├── package.json
 │   └── package-lock.json
+├── pitch/
+│   ├── apresentacao.md
+│   └── favela-tech-apresentacao.pptx
 ├── docs/
 │   └── pitch/
 ├── README.md

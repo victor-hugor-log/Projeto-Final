@@ -93,10 +93,68 @@ function iniciarChatbot() {
   const mensagens = document.querySelector(".chatbot-messages");
   const form = document.querySelector(".chatbot-form");
   const input = document.querySelector(".chatbot-form input");
+  const botaoEnviar = document.querySelector(".chatbot-form button");
 
   if (!botao || !janela || !fechar || !mensagens || !form || !input) return;
 
   janela.style.display = "none";
+  let ultimaIntencao = "";
+  let temporizadorResposta;
+
+  const atalhosIniciais = [
+    { rotulo: "Buscar vagas", pergunta: "Quero buscar vagas" },
+    { rotulo: "Cadastrar currículo", pergunta: "Como cadastrar meu currículo?" },
+    { rotulo: "Minha conta", pergunta: "Como vejo minha conta?" },
+    { rotulo: "Como ajudar", pergunta: "Como posso ajudar a causa?" }
+  ];
+
+  function temAlguma(texto, palavras) {
+    return palavras.some((palavra) => texto.includes(palavra));
+  }
+
+  function pontuarIntencao(texto, palavras) {
+    return palavras.reduce((total, palavra) => total + (texto.includes(palavra) ? 1 : 0), 0);
+  }
+
+  function escolherIntencaoProvavel(texto) {
+    const intencoes = [
+      {
+        nome: "vagas",
+        palavras: ["vaga", "emprego", "oportunidade", "estagio", "aprendiz", "clt", "freelancer", "remoto", "filtro", "buscar", "pesquisar", "area", "contrato"]
+      },
+      {
+        nome: "curriculo",
+        palavras: ["curriculo", "cv", "experiencia", "formacao", "habilidade", "portfolio", "linkedin", "curso", "objetivo", "competencia"]
+      },
+      {
+        nome: "conta",
+        palavras: ["cadastro", "login", "conta", "perfil", "telefone", "email", "e-mail", "senha", "endereco", "cep", "foto", "alterar", "trocar", "editar"]
+      },
+      {
+        nome: "candidatura",
+        palavras: ["candidatar", "candidatura", "candidatei", "status", "enviada", "duplicada", "minhas candidaturas", "aplicar", "inscricao"]
+      },
+      {
+        nome: "contato",
+        palavras: ["contato", "whatsapp", "zap", "mensagem", "falar", "empresa", "contratar", "divulgar vaga", "parceria", "talento", "recrutador"]
+      },
+      {
+        nome: "ajudar",
+        palavras: ["ajudar", "doar", "voluntario", "voluntariado", "ong", "compartilhar", "causa", "apoio", "comunidade"]
+      },
+      {
+        nome: "projeto",
+        palavras: ["ods", "trabalho decente", "crescimento economico", "projeto", "favela tech", "objetivo", "sobre", "missao", "valores"]
+      }
+    ];
+
+    return intencoes
+      .map((intencao) => ({
+        nome: intencao.nome,
+        pontos: pontuarIntencao(texto, intencao.palavras)
+      }))
+      .sort((a, b) => b.pontos - a.pontos)[0];
+  }
 
   function fecharConvite() {
     const convite = document.querySelector(".chatbot-convite");
@@ -132,30 +190,289 @@ function iniciarChatbot() {
     mensagens.scrollTop = mensagens.scrollHeight;
   }
 
+  function removerAtalhos() {
+    mensagens.querySelectorAll(".chatbot-atalhos").forEach((atalhos) => atalhos.remove());
+  }
+
+  function removerDigitando() {
+    mensagens.querySelectorAll(".chatbot-digitando").forEach((digitando) => digitando.remove());
+  }
+
+  function adicionarAtalhos(atalhos = atalhosIniciais) {
+    if (!atalhos.length) return;
+
+    const grupo = document.createElement("div");
+    grupo.className = "chatbot-atalhos";
+
+    atalhos.forEach((item) => {
+      const atalho = document.createElement("button");
+      atalho.type = "button";
+      atalho.className = "chatbot-atalho";
+      atalho.textContent = item.rotulo;
+      atalho.addEventListener("click", () => processarPergunta(item.pergunta, item.rotulo));
+      grupo.appendChild(atalho);
+    });
+
+    mensagens.appendChild(grupo);
+    mensagens.scrollTop = mensagens.scrollHeight;
+  }
+
+  function mostrarDigitando() {
+    const digitando = document.createElement("p");
+    digitando.className = "chatbot-msg bot chatbot-digitando";
+    digitando.setAttribute("aria-label", "Assistente digitando");
+    digitando.innerHTML = "<span></span><span></span><span></span>";
+    mensagens.appendChild(digitando);
+    mensagens.scrollTop = mensagens.scrollHeight;
+  }
+
+  function definirCarregando(carregando) {
+    input.disabled = carregando;
+
+    if (botaoEnviar) {
+      botaoEnviar.disabled = carregando;
+    }
+  }
+
+  function atalhosPorIntencao(intencao) {
+    const grupos = {
+      vagas: [
+        { rotulo: "Usar filtros", pergunta: "Como uso os filtros de vagas?" },
+        { rotulo: "Candidatar-se", pergunta: "Como faço para me candidatar?" },
+        { rotulo: "Currículo", pergunta: "Preciso de currículo para vagas?" }
+      ],
+      curriculo: [
+        { rotulo: "O que preencher", pergunta: "O que coloco no currículo?" },
+        { rotulo: "Salvar currículo", pergunta: "Como salvo meu currículo?" },
+        { rotulo: "Ver vagas", pergunta: "Quero ver vagas compatíveis" }
+      ],
+      conta: [
+        { rotulo: "Criar conta", pergunta: "Como criar uma conta?" },
+        { rotulo: "Perfil", pergunta: "O que tem no perfil?" },
+        { rotulo: "Trocar dados", pergunta: "Como altero telefone, email ou senha?" }
+      ],
+      candidatura: [
+        { rotulo: "Ver candidaturas", pergunta: "Onde vejo minhas candidaturas?" },
+        { rotulo: "Duplicada", pergunta: "Posso me candidatar duas vezes?" },
+        { rotulo: "Status", pergunta: "O que significa status da candidatura?" }
+      ],
+      contato: [
+        { rotulo: "Enviar mensagem", pergunta: "Como envio uma mensagem?" },
+        { rotulo: "Sou empresa", pergunta: "Sou empresa e quero falar com vocês" },
+        { rotulo: "WhatsApp", pergunta: "Qual o WhatsApp?" }
+      ]
+    };
+
+    return grupos[intencao] || atalhosIniciais;
+  }
+
+  function respostaContinuidade(usuario) {
+    const nome = usuario?.nome?.split(" ")[0] || "voce";
+
+    if (ultimaIntencao === "vagas") {
+      return {
+        texto: "Boa. Na aba Vagas, digite uma palavra-chave ou escolha área/tipo. O resultado muda na hora, e o botão de pesquisa continua ali para reforçar a busca.",
+        atalhos: atalhosPorIntencao("vagas")
+      };
+    }
+
+    if (ultimaIntencao === "curriculo") {
+      return {
+        texto: `Claro, ${nome}. No currículo, o ideal é preencher contato, objetivo, formação, experiências e habilidades. Quanto mais completo, melhor fica para combinar com as vagas.`,
+        atalhos: atalhosPorIntencao("curriculo")
+      };
+    }
+
+    if (ultimaIntencao === "candidatura") {
+      return {
+        texto: "Quando você se candidata, o site registra sua candidatura com segurança. Depois ela aparece em Minha conta, na área Minhas candidaturas.",
+        atalhos: atalhosPorIntencao("candidatura")
+      };
+    }
+
+    if (ultimaIntencao === "conta") {
+      return {
+        texto: "Na sua conta ficam seus dados, foto, telefone, e-mail, endereço, currículo e candidaturas. Dados sensíveis pedem confirmação de senha antes de alterar.",
+        atalhos: atalhosPorIntencao("conta")
+      };
+    }
+
+    return {
+      texto: "Fechou. Me fala se você quer ajuda com vagas, currículo, conta, candidatura, contato ou ODS 8.",
+      atalhos: atalhosIniciais
+    };
+  }
+
+  function responderPorIntencao(intencao, texto, usuario, nome) {
+    if (intencao === "curriculo") {
+      ultimaIntencao = "curriculo";
+
+      if (temAlguma(texto, ["o que", "coloco", "preencher", "informar"])) {
+        return {
+          texto: "No currículo, coloca o essencial: dados de contato, objetivo profissional, formação, experiências, cursos, habilidades e links como LinkedIn ou portfólio. Se ainda não tiver experiência, vale projeto, voluntariado e atividade autônoma também.",
+          atalhos: atalhosPorIntencao("curriculo")
+        };
+      }
+
+      return {
+        texto: "O currículo funciona como seu perfil profissional dentro do Favela Tech. Você preenche seus dados, objetivo, formação, experiências e habilidades, e o sistema salva tudo para reaproveitar depois.",
+        atalhos: atalhosPorIntencao("curriculo")
+      };
+    }
+
+    if (intencao === "conta") {
+      ultimaIntencao = "conta";
+
+      if (temAlguma(texto, ["senha", "telefone", "email", "e-mail", "alterar", "trocar", "editar"])) {
+        return {
+          texto: "Para alterar telefone, e-mail ou senha, entre em Minha conta e use o botão Editar/Alterar do campo. O site pede a senha atual antes de mexer nesses dados, o que deixa a conta mais protegida.",
+          atalhos: atalhosPorIntencao("conta")
+        };
+      }
+
+      return {
+        texto: usuario
+          ? `Você já está logado, ${nome || "mano"}. No topo do site, clique em Minha conta para ver seus dados, foto, endereço, currículo e candidaturas.`
+          : "Para criar sua conta, entre em Login | Cadastro, preencha seus dados e aceite os termos/LGPD. Depois do login, o site libera perfil, currículo e candidaturas.",
+        atalhos: atalhosPorIntencao("conta")
+      };
+    }
+
+    if (intencao === "vagas") {
+      ultimaIntencao = "vagas";
+
+      if (temAlguma(texto, ["filtro", "filtrar", "buscar", "pesquisar", "palavra"])) {
+        return {
+          texto: "Na busca de vagas, digite uma palavra-chave, escolha área e tipo se quiser, e os resultados aparecem enquanto você digita. O botão continua ali para quem prefere confirmar a pesquisa.",
+          atalhos: atalhosPorIntencao("vagas")
+        };
+      }
+
+      return {
+        texto: "Na aba Vagas você pode buscar por palavra-chave, área e tipo de contratação. Se estiver logado, o site também consegue recomendar oportunidades próximas das suas habilidades.",
+        atalhos: atalhosPorIntencao("vagas")
+      };
+    }
+
+    if (intencao === "candidatura") {
+      ultimaIntencao = "candidatura";
+
+      if (temAlguma(texto, ["duplicada", "duas vezes", "repetir"])) {
+        return {
+          texto: "Não dá para se candidatar duas vezes na mesma vaga. O banco bloqueia candidatura duplicada, então fica organizado e evita bagunça no perfil.",
+          atalhos: atalhosPorIntencao("candidatura")
+        };
+      }
+
+      return {
+        texto: "Para se candidatar, escolha uma vaga e clique em Candidatar-se. O site registra sua candidatura e depois mostra tudo em Minha conta, na área Minhas candidaturas.",
+        atalhos: atalhosPorIntencao("candidatura")
+      };
+    }
+
+    if (intencao === "contato") {
+      ultimaIntencao = "contato";
+
+      return {
+        texto: temAlguma(texto, ["empresa", "contratar", "divulgar vaga", "parceria", "recrutador"])
+          ? "Se você representa uma empresa, a melhor rota é usar a página Contato. Dá para mandar uma mensagem explicando a vaga, área, local e perfil que procura."
+          : "Você pode falar pela página Contato, pelo e-mail informado no site ou pelo WhatsApp. O formulário é bom para dúvidas, parcerias e sugestões.",
+        atalhos: atalhosPorIntencao("contato")
+      };
+    }
+
+    if (intencao === "ajudar") {
+      ultimaIntencao = "ajudar";
+
+      return {
+        texto: "Na página Como Ajudar tem ações práticas: divulgar vagas, apoiar jovens com currículo, compartilhar o portal e conhecer organizações ligadas à empregabilidade.",
+        atalhos: [
+          { rotulo: "Ver ONGs", pergunta: "Quais ONGs aparecem no site?" },
+          { rotulo: "Compartilhar", pergunta: "Como compartilho o portal?" },
+          { rotulo: "ODS 8", pergunta: "O que é ODS 8?" }
+        ]
+      };
+    }
+
+    if (intencao === "projeto") {
+      ultimaIntencao = "projeto";
+
+      return {
+        texto: "O Favela Tech é uma iniciativa inspirada na ODS 8. A ideia é aproximar jovens, currículo, vagas e empresas em um fluxo simples de oportunidade.",
+        atalhos: [
+          { rotulo: "Sobre o projeto", pergunta: "Me explica o projeto" },
+          { rotulo: "Vagas", pergunta: "Como as vagas funcionam?" },
+          { rotulo: "Como ajudar", pergunta: "Como ajudar a causa?" }
+        ]
+      };
+    }
+
+    return null;
+  }
+
   function responder(pergunta) {
     const texto = normalizar(pergunta);
+    const usuario = getUsuarioLogado();
+    const nome = usuario?.nome?.split(" ")[0] || "";
+    const perguntaCurta = texto.length <= 4;
 
-    if (texto.includes("cadastro") || texto.includes("login") || texto.includes("conta")) {
-      return "Para criar sua conta, acesse Login | Cadastro e preencha seus dados. O cadastro fica salvo com seguranca no banco de dados.";
+    if ((perguntaCurta || /^(sim|quero|pode|ok|beleza|claro|explica|como|ajuda|me ajuda)$/.test(texto)) && ultimaIntencao) {
+      return respostaContinuidade(usuario);
     }
 
-    if (texto.includes("vaga") || texto.includes("emprego") || texto.includes("oportunidade")) {
-      return "Na pagina Vagas voce pode filtrar oportunidades por area, tipo de contrato e palavra-chave.";
+    if (temAlguma(texto, ["oi", "ola", "opa", "bom dia", "boa tarde", "boa noite", "e ai", "salve"])) {
+      ultimaIntencao = "";
+      return {
+        texto: nome
+          ? `Oi, ${nome}! Posso te ajudar com vagas, currículo, candidatura, perfil ou contato.`
+          : "Oi! Posso te ajudar com vagas, currículo, cadastro, candidatura ou contato.",
+        atalhos: atalhosIniciais
+      };
     }
 
-    if (texto.includes("empresa")) {
-      return "Empresas podem cadastrar interesse, divulgar vagas e encontrar jovens com habilidades compativeis.";
+    const intencaoProvavel = escolherIntencaoProvavel(texto);
+    if (intencaoProvavel.pontos > 0) {
+      const resposta = responderPorIntencao(intencaoProvavel.nome, texto, usuario, nome);
+      if (resposta) return resposta;
     }
 
-    if (texto.includes("ods") || texto.includes("8")) {
-      return "A ODS 8 busca promover trabalho decente, crescimento economico e inclusao produtiva.";
+    if (temAlguma(texto, ["obrigado", "obrigada", "valeu", "vlw"])) {
+      ultimaIntencao = "";
+      return {
+        texto: "Tamo junto! Quando precisar, me chama por aqui.",
+        atalhos: atalhosIniciais
+      };
     }
 
-    if (texto.includes("contato")) {
-      return "Voce pode falar pelo formulario da pagina Contato, e-mail ou WhatsApp informado no site.";
-    }
+    ultimaIntencao = "";
+    return {
+      texto: "Entendi mais ou menos. Posso te guiar melhor se você escolher um caminho: vagas, currículo, login, perfil, candidaturas, contato ou ODS 8.",
+      atalhos: atalhosIniciais
+    };
+  }
 
-    return "Posso ajudar com cadastro, vagas, empresas, ODS 8 e contato. Me diga o que voce quer saber.";
+  function responderComPausa(resposta) {
+    clearTimeout(temporizadorResposta);
+    removerDigitando();
+    removerAtalhos();
+    definirCarregando(true);
+    mostrarDigitando();
+
+    temporizadorResposta = setTimeout(() => {
+      removerDigitando();
+      adicionarMensagem(resposta.texto, "bot");
+      adicionarAtalhos(resposta.atalhos);
+      definirCarregando(false);
+      input.focus();
+    }, 1000);
+  }
+
+  function processarPergunta(pergunta, textoExibido = pergunta) {
+    const texto = pergunta.trim();
+    if (!texto) return;
+
+    adicionarMensagem(textoExibido, "user");
+    responderComPausa(responder(texto));
   }
 
   botao.addEventListener("click", () => {
@@ -164,7 +481,15 @@ function iniciarChatbot() {
     fecharConvite();
 
     if (!aberto && mensagens.children.length === 0) {
-      adicionarMensagem("Ola! Sou o assistente do Favela Tech. Como posso ajudar?", "bot");
+      const usuario = getUsuarioLogado();
+      const nome = usuario?.nome?.split(" ")[0];
+      adicionarMensagem(
+        nome
+          ? `Olá, ${nome}! Sou o assistente do Favela Tech. Quer ajuda com vagas, currículo ou sua conta?`
+          : "Olá! Sou o assistente do Favela Tech. Quer ajuda com vagas, currículo ou cadastro?",
+        "bot"
+      );
+      adicionarAtalhos();
     }
   });
 
@@ -177,8 +502,7 @@ function iniciarChatbot() {
     const pergunta = input.value.trim();
     if (!pergunta) return;
 
-    adicionarMensagem(pergunta, "user");
-    adicionarMensagem(responder(pergunta), "bot");
+    processarPergunta(pergunta);
     input.value = "";
   });
 
@@ -205,27 +529,36 @@ function renderizarVagas(lista) {
 
     const titulo = document.createElement("h2");
     titulo.textContent = vaga.titulo;
-    card.appendChild(titulo);
+    const empresa = document.createElement("p");
+    empresa.className = "vaga-empresa";
+    empresa.textContent = vaga.empresa || "Empresa parceira";
 
+    const cabecalho = document.createElement("div");
+    cabecalho.className = "vaga-card-cabecalho";
+    cabecalho.append(titulo, empresa);
+    card.appendChild(cabecalho);
+
+    const detalhes = document.createElement("div");
+    detalhes.className = "vaga-detalhes";
     [
-      ["Empresa", vaga.empresa],
       ["Local", vaga.localizacao],
       ["Area", vaga.area],
       ["Tipo", vaga.tipo],
       ["Origem", vaga.origem]
     ].forEach(([rotulo, valor]) => {
-      const linha = document.createElement("p");
+      const linha = document.createElement("span");
       const destaque = document.createElement("strong");
       destaque.textContent = `${rotulo}: `;
       linha.append(destaque, document.createTextNode(valor || "Nao informado"));
-      card.appendChild(linha);
+      detalhes.appendChild(linha);
     });
+    card.appendChild(detalhes);
 
     const botao = document.createElement("button");
     botao.type = "button";
     botao.className = "candidatar-btn";
     botao.textContent = "Candidatar-se";
-    botao.addEventListener("click", () => {
+    botao.addEventListener("click", async () => {
       const usuario = getUsuarioLogado();
       if (!usuario) {
         mostrarNotificacao("Cadastre-se ou faca login para se candidatar.", {
@@ -238,10 +571,35 @@ function renderizarVagas(lista) {
         return;
       }
 
-      mostrarNotificacao("Sua candidatura foi enviada com sucesso.", {
-        titulo: "Candidatura enviada",
-        tipo: "sucesso"
-      });
+      botao.disabled = true;
+      botao.textContent = "Enviando...";
+
+      try {
+        await salvarCandidatura(usuario.id, vaga.id);
+        botao.textContent = "Candidatura enviada";
+        botao.classList.add("candidatar-btn-enviado");
+        mostrarNotificacao("Sua candidatura foi enviada com sucesso.", {
+          titulo: "Candidatura enviada",
+          tipo: "sucesso"
+        });
+      } catch (erro) {
+        if (erro.status === 409) {
+          botao.textContent = "Já candidatado";
+          botao.classList.add("candidatar-btn-enviado");
+          mostrarNotificacao("Você já se candidatou para essa vaga.", {
+            titulo: "Candidatura duplicada",
+            tipo: "aviso"
+          });
+          return;
+        }
+
+        botao.disabled = false;
+        botao.textContent = "Candidatar-se";
+        mostrarNotificacao(erro.message, {
+          titulo: "Erro na candidatura",
+          tipo: "erro"
+        });
+      }
     });
 
     card.appendChild(botao);
@@ -249,6 +607,33 @@ function renderizarVagas(lista) {
   });
 
   container.replaceChildren(fragmento);
+  requestAnimationFrame(animarSecoes);
+}
+
+async function salvarCandidatura(usuarioId, vagaId) {
+  let resposta;
+
+  try {
+    resposta = await fetch("/api/candidaturas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ usuarioId, vagaId })
+    });
+  } catch {
+    throw new Error("Serviço temporariamente indisponível. Tente novamente em instantes.");
+  }
+
+  const resultado = await resposta.json().catch(() => ({}));
+
+  if (!resposta.ok) {
+    const erro = new Error(resultado.mensagem || "Não foi possível enviar a candidatura.");
+    erro.status = resposta.status;
+    throw erro;
+  }
+
+  return resultado.candidatura;
 }
 
 async function iniciarVagas() {
@@ -348,7 +733,7 @@ function iniciarContato() {
 
     if (!form.action.includes("formspree.io")) {
       event.preventDefault();
-      mostrarNotificacao("Sua mensagem foi enviada e salva.", {
+      mostrarNotificacao("Sua mensagem foi enviada com sucesso.", {
         titulo: "Mensagem enviada",
         tipo: "sucesso"
       });
@@ -447,7 +832,20 @@ function iniciarBoasVindas(usuario, paginaAtual) {
 }
 
 function animarSecoes() {
-  const secoes = document.querySelectorAll("main section, .feature-item, .vaga-card");
+  const secoes = document.querySelectorAll(`
+    main section,
+    .feature-item,
+    .jornada-lista article,
+    .sobre-numeros article,
+    .sobre-fluxo-lista article,
+    .ajudar-impacto article,
+    .ajudar-passos li,
+    .ajudar-ongs li,
+    .contato-canais article,
+    .contato-info-lista p,
+    .vagas-painel article,
+    .vaga-card
+  `);
 
   secoes.forEach((secao) => {
     secao.classList.add("dom-reveal");

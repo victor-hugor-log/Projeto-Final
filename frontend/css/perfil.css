@@ -58,10 +58,32 @@
   text-align: center;
 }
 
-.perfil-iniciais {
+.perfil-avatar {
   width: 72px;
   height: 72px;
   margin: 0 auto 16px;
+  position: relative;
+}
+
+.perfil-avatar img,
+.perfil-iniciais {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+
+.perfil-avatar img {
+  display: block;
+  object-fit: cover;
+  border: 4px solid #ddd6fe;
+}
+
+.perfil-avatar img[hidden],
+.perfil-iniciais[hidden] {
+  display: none;
+}
+
+.perfil-iniciais {
   display: grid;
   place-items: center;
   background-color: #1e1b4b;
@@ -70,6 +92,64 @@
   color: #ffffff;
   font-size: 1.25rem;
   font-weight: 800;
+}
+
+.perfil-foto-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.perfil-foto-botao,
+.perfil-foto-remover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 10px;
+  border: 1px solid #c4b5fd;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.perfil-foto-botao {
+  color: #5b21b6;
+}
+
+.perfil-foto-botao:hover {
+  background-color: #f5f3ff;
+}
+
+.perfil-foto-remover {
+  background-color: #ffffff;
+  color: #b91c1c;
+  border-color: #fecaca;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.perfil-foto-remover:hover {
+  background-color: #fef2f2;
+}
+
+.perfil-foto-remover:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.perfil-foto-remover[hidden] {
+  display: none;
+}
+
+.perfil-foto-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .perfil-resumo h2 {
@@ -198,6 +278,53 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.perfil-contato-grade {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.perfil-contato-item {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #fbfbff;
+}
+
+.perfil-contato-item span {
+  color: #6b7280;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.perfil-contato-item strong {
+  overflow-wrap: anywhere;
+  color: #1e1b4b;
+  font-size: 0.92rem;
+}
+
+.perfil-contato-item button {
+  width: fit-content;
+  border: 1px solid #c4b5fd;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #5b21b6;
+  padding: 7px 10px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.perfil-contato-item button:hover {
+  background-color: #f5f3ff;
+}
+
 .perfil-campo input:focus {
   border-color: #7c3aed;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.13);
@@ -258,6 +385,155 @@
   opacity: 0.65;
 }
 
+.perfil-candidaturas {
+  width: min(1040px, 100%);
+  margin: 28px auto 0;
+  padding: 30px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.perfil-vagas-link {
+  padding: 9px 12px;
+  border: 1px solid #c4b5fd;
+  border-radius: 8px;
+  color: #5b21b6;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.perfil-vagas-link:hover {
+  background-color: #f5f3ff;
+}
+
+.perfil-candidaturas-lista {
+  display: grid;
+  gap: 14px;
+}
+
+.perfil-candidaturas-estado {
+  padding: 18px;
+  border: 1px dashed #c4b5fd;
+  border-radius: 8px;
+  background-color: #f5f3ff;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.perfil-candidatura-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #fbfbff;
+}
+
+.perfil-candidatura-card h3 {
+  margin-bottom: 6px;
+  color: #1e1b4b;
+  font-size: 1rem;
+}
+
+.perfil-candidatura-card p {
+  color: #4b5563;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.perfil-candidatura-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.perfil-candidatura-meta span,
+.perfil-candidatura-status {
+  padding: 5px 8px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.perfil-candidatura-meta span {
+  background-color: #ede9fe;
+  color: #5b21b6;
+}
+
+.perfil-candidatura-status {
+  align-self: start;
+  background-color: #dcfce7;
+  color: #166534;
+  white-space: nowrap;
+}
+
+.perfil-modal[hidden] {
+  display: none;
+}
+
+.perfil-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background-color: rgba(17, 24, 39, 0.58);
+}
+
+.perfil-modal-caixa {
+  width: min(460px, 100%);
+  position: relative;
+  padding: 28px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 24px 80px rgba(30, 27, 75, 0.22);
+}
+
+.perfil-modal-caixa h2 {
+  margin-bottom: 20px;
+  color: #1e1b4b;
+  font-size: 1.25rem;
+}
+
+.perfil-modal-fechar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #4b5563;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.perfil-modal-fechar:hover {
+  background-color: #f5f3ff;
+  color: #5b21b6;
+}
+
+.perfil-modal-form {
+  display: grid;
+  gap: 16px;
+}
+
+.perfil-modal-form .perfil-salvar {
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 @media (max-width: 800px) {
   .perfil-layout {
     grid-template-columns: 1fr;
@@ -269,6 +545,22 @@
 
   .perfil-iniciais {
     margin-left: 0;
+  }
+
+  .perfil-avatar {
+    margin-left: 0;
+  }
+
+  .perfil-contato-grade {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-candidatura-card {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-candidatura-status {
+    width: fit-content;
   }
 }
 
@@ -282,6 +574,10 @@
   }
 
   .perfil-formulario {
+    padding: 24px 18px;
+  }
+
+  .perfil-candidaturas {
     padding: 24px 18px;
   }
 

@@ -5,6 +5,7 @@ const path = require("path");
 const { testarConexao } = require("./config/database");
 const { garantirEstrutura } = require("./database/setup");
 const authRoutes = require("./routes/authRoutes");
+const candidaturasRoutes = require("./routes/candidaturasRoutes");
 const curriculoRoutes = require("./routes/curriculoRoutes");
 const vagasRoutes = require("./routes/vagasRoutes");
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.static(frontendPath));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/candidaturas", candidaturasRoutes);
 app.use("/api/curriculos", curriculoRoutes);
 app.use("/api/vagas", vagasRoutes);
 

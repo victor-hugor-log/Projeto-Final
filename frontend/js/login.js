@@ -34,7 +34,7 @@ async function enviarAutenticacao(endpoint, dados) {
       body: JSON.stringify(dados)
     });
   } catch {
-    throw new Error("Servidor indisponivel. Inicie o backend e o MySQL.");
+    throw new Error("Serviço temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const resultado = await resposta.json().catch(() => ({}));
@@ -53,6 +53,26 @@ function definirFormularioCarregando(formulario, carregando) {
 
 function emailValido(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function mascararEmail(email) {
+  if (!email || !email.includes("@")) return "Nao informado";
+
+  const [nome, dominio] = email.split("@");
+  const nomeVisivel = nome.length <= 2 ? nome[0] || "*" : nome.slice(0, 2);
+  const dominioVisivel = dominio.length <= 6
+    ? dominio[0] || "*"
+    : `${dominio.slice(0, 2)}...${dominio.slice(-4)}`;
+
+  return `${nomeVisivel}***@${dominioVisivel}`;
+}
+
+function mascararTelefone(telefone) {
+  const digitos = String(telefone || "").replace(/\D/g, "");
+  if (!digitos) return "Nao informado";
+  if (digitos.length <= 4) return "****";
+
+  return `(**) *****-${digitos.slice(-4)}`;
 }
 
 function campo(id) {
@@ -136,10 +156,11 @@ function mostrarPerfil() {
   perfilRestrito.hidden = false;
   perfilDados.innerHTML = `
     <p><strong>Nome:</strong> ${usuario.nome}</p>
-    <p><strong>E-mail:</strong> ${usuario.email}</p>
+    <p><strong>E-mail:</strong> ${mascararEmail(usuario.email)}</p>
+    <p><strong>Telefone:</strong> ${mascararTelefone(usuario.telefone)}</p>
     <p><strong>Perfil:</strong> ${usuario.tipo === "empresa" ? "Empresa" : "Jovem"}</p>
     <p><strong>Habilidades/interesses:</strong> ${usuario.habilidades || "Nao informado"}</p>
-    <p><strong>Status:</strong> E-mail confirmado na simulacao do projeto.</p>
+    <p><strong>Status:</strong> Conta ativa.</p>
   `;
 }
 

@@ -127,3 +127,208 @@
 .ajudar-compartilhar button:hover {
   background-color: #6d28d9;
 }
+
+/* ===== CAMADA VISUAL ===== */
+main {
+  background-color: #f8fafc;
+}
+
+.ajudar-intro {
+  position: relative;
+  overflow: hidden;
+  padding: 86px 20px;
+  background:
+    linear-gradient(105deg, rgba(30, 27, 75, 0.96), rgba(76, 29, 149, 0.82)),
+    url("../assets/img/hero-favela-tech-3.png") center 48% / cover;
+}
+
+.ajudar-intro::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 5px;
+  background: linear-gradient(90deg, #16a34a, #7c3aed, #f59e0b, #16a34a);
+  background-size: 220% 100%;
+  animation: linhaAjuda 6s ease-in-out infinite;
+}
+
+.ajudar-intro h1,
+.ajudar-intro p,
+.ajudar-selos {
+  position: relative;
+  z-index: 1;
+}
+
+.ajudar-intro h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.ajudar-selos {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.ajudar-selos span {
+  padding: 8px 12px;
+  border: 1px solid rgba(221, 214, 254, 0.65);
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 800;
+  animation: tagAjuda 4.5s ease-in-out infinite;
+}
+
+.ajudar-selos span:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.ajudar-selos span:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.ajudar-impacto {
+  max-width: 1040px;
+  margin: -34px auto 0;
+  padding: 0 24px 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.ajudar-impacto article,
+.ajudar-passos ul li,
+.ajudar-ongs ul li {
+  box-shadow: 0 14px 30px rgba(30, 27, 75, 0.06);
+}
+
+.ajudar-impacto article {
+  padding: 22px;
+  border-radius: 8px;
+  border: 1px solid #ddd6fe;
+  background-color: #ffffff;
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+
+.ajudar-impacto article:hover,
+.ajudar-passos ul li:hover,
+.ajudar-ongs ul li:hover {
+  transform: translateY(-5px);
+  border-color: #a78bfa;
+}
+
+.ajudar-impacto strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #7c3aed;
+  font-size: 1.1rem;
+}
+
+.ajudar-impacto p {
+  color: #555;
+  line-height: 1.6;
+}
+
+.ajudar-passos,
+.ajudar-ongs {
+  max-width: 900px;
+}
+
+.ajudar-passos ul li {
+  position: relative;
+  border-left: none;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background-color: #ffffff;
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+
+.ajudar-passos ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 4px;
+  border-radius: 999px;
+  background-color: #7c3aed;
+}
+
+.ajudar-ongs ul li {
+  background-color: #ffffff;
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+
+.ajudar-compartilhar {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(245, 243, 255, 0.96), rgba(236, 253, 245, 0.96));
+}
+
+.ajudar-compartilhar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(90deg, rgba(124, 58, 237, 0.08) 1px, transparent 1px);
+  background-size: 42px 100%;
+  animation: gradeAjuda 10s linear infinite;
+}
+
+.ajudar-compartilhar h2,
+.ajudar-compartilhar p,
+.ajudar-compartilhar button {
+  position: relative;
+  z-index: 1;
+}
+
+.ajudar-compartilhar button {
+  transition: transform 0.22s ease, background-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.ajudar-compartilhar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(124, 58, 237, 0.24);
+}
+
+@keyframes linhaAjuda {
+  0%,
+  100% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes tagAjuda {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes gradeAjuda {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 84px 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .ajudar-impacto {
+    grid-template-columns: 1fr;
+  }
+}

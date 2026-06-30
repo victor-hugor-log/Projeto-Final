@@ -12,8 +12,37 @@ function normalizarUsuario(usuario) {
     telefone: usuario.telefone || "",
     tipo: usuario.tipo,
     habilidades: usuario.habilidades,
+    cep: usuario.cep || "",
+    endereco: usuario.endereco || "",
+    numero: usuario.numero || "",
+    complemento: usuario.complemento || "",
+    bairro: usuario.bairro || "",
+    cidade: usuario.cidade || "",
+    estado: usuario.estado || "",
+    fotoPerfil: usuario.foto_perfil || "",
     criadoEm: usuario.criado_em
   };
+}
+
+function selecionarCamposUsuario() {
+  return `id, nome, email, telefone, tipo, habilidades, cep, endereco, numero,
+    complemento, bairro, cidade, estado, foto_perfil, criado_em`;
+}
+
+function texto(valor, limite = 255) {
+  return String(valor || "").trim().slice(0, limite);
+}
+
+function normalizarCep(valor) {
+  const digitos = String(valor || "").replace(/\D/g, "").slice(0, 8);
+  return digitos.length === 8 ? `${digitos.slice(0, 5)}-${digitos.slice(5)}` : digitos;
+}
+
+function fotoPerfilValida(fotoPerfil) {
+  if (!fotoPerfil) return true;
+
+  return /^data:image\/(png|jpe?g|webp);base64,/i.test(fotoPerfil)
+    && fotoPerfil.length <= 1200000;
 }
 
 function validarCadastro({ nome, email, senha, tipo, habilidades }) {
@@ -62,7 +91,7 @@ async function cadastrar(req, res) {
     );
 
     const [usuarios] = await pool.execute(
-      `SELECT id, nome, email, telefone, tipo, habilidades, criado_em
+      `SELECT ${selecionarCamposUsuario()}
        FROM usuarios
        WHERE id = ?`,
       [resultado.insertId]
@@ -89,7 +118,7 @@ async function login(req, res) {
 
   try {
     const [usuarios] = await pool.execute(
-      `SELECT id, nome, email, telefone, senha, tipo, habilidades, criado_em
+      `SELECT ${selecionarCamposUsuario()}, senha
        FROM usuarios
        WHERE email = ?
        LIMIT 1`,
@@ -117,26 +146,29 @@ async function login(req, res) {
 async function atualizarPerfil(req, res) {
   const id = Number(req.body.id);
   const nome = String(req.body.nome || "").trim();
-  const telefone = String(req.body.telefone || "").trim();
-  const email = String(req.body.email || "").trim().toLowerCase();
   const senhaAtual = String(req.body.senhaAtual || "");
   const novaSenha = String(req.body.novaSenha || "");
+  const fotoPerfil = String(req.body.fotoPerfil || "").trim();
 
-  if (!Number.isInteger(id) || id <= 0 || !nome || !email || !senhaAtual) {
-    return res.status(400).json({ mensagem: "Preencha os campos obrigatorios." });
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(401).json({ mensagem: "Sua sessao expirou. Entre novamente para atualizar o perfil." });
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ mensagem: "Informe um e-mail valido." });
+  if (!nome) {
+    return res.status(400).json({ mensagem: "Informe seu nome completo para salvar o perfil." });
   }
 
   if (novaSenha && novaSenha.length < 6) {
     return res.status(400).json({ mensagem: "A nova senha precisa ter pelo menos 6 caracteres." });
   }
 
+  if (!fotoPerfilValida(fotoPerfil)) {
+    return res.status(400).json({ mensagem: "Envie uma foto PNG, JPG ou WEBP de ate 1 MB." });
+  }
+
   try {
     const [usuarios] = await pool.execute(
-      `SELECT id, nome, email, telefone, senha, tipo, habilidades, criado_em
+      `SELECT ${selecionarCamposUsuario()}, senha
        FROM usuarios
        WHERE id = ?
        LIMIT 1`,
@@ -148,13 +180,29 @@ async function atualizarPerfil(req, res) {
     }
 
     const usuario = usuarios[0];
-    const senhaCorreta = await bcrypt.compare(senhaAtual, usuario.senha);
+    const telefone = texto(req.body.telefone ?? usuario.telefone, 20);
+    const email = String(req.body.email ?? usuario.email).trim().toLowerCase();
+    const alterouEmail = email !== usuario.email;
+    const alterouTelefone = telefone !== (usuario.telefone || "");
+    const alterouSenha = Boolean(novaSenha);
 
-    if (!senhaCorreta) {
-      return res.status(401).json({ mensagem: "A senha atual esta incorreta." });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ mensagem: "Informe um e-mail valido." });
     }
 
-    if (email !== usuario.email) {
+    if ((alterouEmail || alterouTelefone || alterouSenha) && !senhaAtual) {
+      return res.status(400).json({ mensagem: "Confirme sua senha atual para alterar dados sensiveis." });
+    }
+
+    if (senhaAtual) {
+      const senhaCorreta = await bcrypt.compare(senhaAtual, usuario.senha);
+
+      if (!senhaCorreta) {
+        return res.status(401).json({ mensagem: "A senha atual esta incorreta." });
+      }
+    }
+
+    if (alterouEmail) {
       const [emailEmUso] = await pool.execute(
         "SELECT id FROM usuarios WHERE email = ? AND id <> ? LIMIT 1",
         [email, id]
@@ -171,13 +219,28 @@ async function atualizarPerfil(req, res) {
 
     await pool.execute(
       `UPDATE usuarios
-       SET nome = ?, telefone = ?, email = ?, senha = ?
+       SET nome = ?, telefone = ?, email = ?, senha = ?, cep = ?, endereco = ?,
+         numero = ?, complemento = ?, bairro = ?, cidade = ?, estado = ?, foto_perfil = ?
        WHERE id = ?`,
-      [nome, telefone || null, email, senhaCriptografada, id]
+      [
+        texto(nome, 100),
+        telefone || null,
+        email,
+        senhaCriptografada,
+        normalizarCep(req.body.cep),
+        texto(req.body.endereco, 150) || null,
+        texto(req.body.numero, 20) || null,
+        texto(req.body.complemento, 100) || null,
+        texto(req.body.bairro, 100) || null,
+        texto(req.body.cidade, 100) || null,
+        texto(req.body.estado, 2).toUpperCase() || null,
+        fotoPerfil || null,
+        id
+      ]
     );
 
     const [usuariosAtualizados] = await pool.execute(
-      `SELECT id, nome, email, telefone, tipo, habilidades, criado_em
+      `SELECT ${selecionarCamposUsuario()}
        FROM usuarios
        WHERE id = ?`,
       [id]

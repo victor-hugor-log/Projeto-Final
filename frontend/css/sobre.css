@@ -117,3 +117,213 @@ main section {
   color: #888;
   margin-bottom: 5px;
 }
+
+/* ===== ATUALIZAÇÃO VISUAL ===== */
+main {
+  padding: 0;
+  background-color: #f8fafc;
+}
+
+main section {
+  max-width: 1040px;
+}
+
+.sobre-intro {
+  position: relative;
+  max-width: none;
+  min-height: 360px;
+  margin: 0 0 56px;
+  padding: 86px 8%;
+  border-radius: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(105deg, rgba(30, 27, 75, 0.97), rgba(76, 29, 149, 0.78)),
+    url("../assets/img/hero-favela-tech.png") center 42% / cover;
+  text-align: left;
+}
+
+.sobre-intro::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 5px;
+  background: linear-gradient(90deg, #7c3aed, #16a34a, #f59e0b, #7c3aed);
+  background-size: 220% 100%;
+  animation: faixaViva 6s ease-in-out infinite;
+}
+
+.sobre-intro h1,
+.sobre-intro p,
+.sobre-selos {
+  position: relative;
+  z-index: 1;
+}
+
+.sobre-intro h1 {
+  max-width: 680px;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.sobre-intro p {
+  max-width: 680px;
+}
+
+.sobre-selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.sobre-selos span {
+  padding: 8px 12px;
+  border: 1px solid rgba(221, 214, 254, 0.65);
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 800;
+  animation: seloPulso 4s ease-in-out infinite;
+}
+
+.sobre-selos span:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.sobre-selos span:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.sobre-numeros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.sobre-numeros article,
+.sobre-missao,
+.sobre-valores,
+.sobre-dev,
+.sobre-fluxo {
+  background-color: #ffffff;
+  box-shadow: 0 18px 40px rgba(30, 27, 75, 0.06);
+}
+
+.sobre-numeros article {
+  padding: 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.sobre-numeros strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #7c3aed;
+  font-size: 1.35rem;
+}
+
+.sobre-numeros span {
+  color: #555;
+  line-height: 1.55;
+}
+
+.sobre-missao,
+.sobre-valores,
+.sobre-dev,
+.sobre-fluxo {
+  border-color: #e5e7eb;
+}
+
+.sobre-fluxo {
+  padding: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.sobre-fluxo h2 {
+  color: #7c3aed;
+  margin-bottom: 18px;
+}
+
+.sobre-fluxo-lista {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sobre-fluxo-lista article {
+  position: relative;
+  padding: 22px;
+  border-radius: 8px;
+  background-color: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+
+.sobre-fluxo-lista article:hover {
+  transform: translateY(-5px);
+  border-color: #a78bfa;
+}
+
+.sobre-fluxo-lista span {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background-color: #1e1b4b;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.sobre-fluxo-lista h3 {
+  color: #1e1b4b;
+  margin-bottom: 8px;
+}
+
+.sobre-fluxo-lista p {
+  color: #555;
+  line-height: 1.6;
+}
+
+@keyframes faixaViva {
+  0%,
+  100% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes seloPulso {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 760px) {
+  .sobre-intro {
+    padding: 66px 22px;
+  }
+
+  .sobre-numeros,
+  .sobre-fluxo-lista {
+    grid-template-columns: 1fr;
+  }
+
+  main section {
+    width: calc(100% - 36px);
+  }
+
+  .sobre-intro {
+    width: 100%;
+  }
+}

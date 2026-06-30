@@ -155,3 +155,216 @@
 .candidatar-btn:hover {
   background-color: #6d28d9;
 }
+
+.candidatar-btn:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.candidatar-btn-enviado,
+.candidatar-btn-enviado:hover {
+  background-color: #15803d;
+  cursor: default;
+  opacity: 1;
+}
+
+/* ===== CAMADA VISUAL ===== */
+main {
+  background-color: #f8fafc;
+}
+
+.vagas-intro {
+  position: relative;
+  overflow: hidden;
+  padding: 86px 20px;
+  background:
+    linear-gradient(105deg, rgba(30, 27, 75, 0.97), rgba(76, 29, 149, 0.78)),
+    url("../assets/img/hero-favela-tech.png") center 46% / cover;
+}
+
+.vagas-intro::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 5px;
+  background: linear-gradient(90deg, #7c3aed, #16a34a, #f59e0b, #7c3aed);
+  background-size: 220% 100%;
+  animation: linhaVagas 6s ease-in-out infinite;
+}
+
+.vagas-intro h1,
+.vagas-intro p {
+  position: relative;
+  z-index: 1;
+}
+
+.vagas-intro h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.vagas-painel {
+  max-width: 1040px;
+  margin: -34px auto 0;
+  padding: 0 24px 28px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.vagas-painel article {
+  padding: 20px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 14px 30px rgba(30, 27, 75, 0.06);
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+
+.vagas-painel article:hover {
+  transform: translateY(-5px);
+  border-color: #a78bfa;
+}
+
+.vagas-painel span {
+  display: block;
+  margin-bottom: 7px;
+  color: #7c3aed;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.vagas-painel strong {
+  color: #1e1b4b;
+  line-height: 1.35;
+}
+
+.vagas-filtros {
+  background:
+    linear-gradient(135deg, #f5f3ff, #ecfdf5);
+}
+
+.vagas-filtros form {
+  padding: 18px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 30px rgba(30, 27, 75, 0.06);
+}
+
+.vagas-filtros input:focus,
+.vagas-filtros select:focus {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.recomendacao {
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 14px 30px rgba(30, 27, 75, 0.06);
+}
+
+.recomendacao::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 30%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #16a34a, #7c3aed, transparent);
+  animation: brilhoVagas 4.5s ease-in-out infinite;
+}
+
+.vagas-lista {
+  background-color: #f8fafc;
+}
+
+.vaga-card {
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 14px 30px rgba(30, 27, 75, 0.06);
+}
+
+.vaga-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #7c3aed, #16a34a);
+}
+
+.vaga-card:hover {
+  border-color: #a78bfa;
+}
+
+.vaga-card-cabecalho {
+  padding-left: 4px;
+}
+
+.vaga-card .vaga-card-cabecalho .vaga-empresa {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: -6px 0 16px;
+}
+
+.vaga-detalhes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.vaga-detalhes span {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 9px;
+  border-radius: 999px;
+  background-color: #f5f3ff;
+  color: #312e81;
+  font-size: 0.8rem;
+}
+
+.vaga-detalhes strong {
+  color: #6d28d9;
+}
+
+.candidatar-btn {
+  transition: transform 0.22s ease, background-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.candidatar-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(124, 58, 237, 0.22);
+}
+
+@keyframes linhaVagas {
+  0%,
+  100% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes brilhoVagas {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(430%);
+  }
+}
+
+@media (max-width: 760px) {
+  .vagas-painel {
+    grid-template-columns: 1fr;
+  }
+}

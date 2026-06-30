@@ -39,7 +39,15 @@
     <section class="perfil-area">
       <div class="perfil-layout">
         <aside class="perfil-resumo">
-          <div class="perfil-iniciais" id="perfil-iniciais" aria-hidden="true">VH</div>
+          <div class="perfil-avatar">
+            <img id="perfil-foto-preview" src="" alt="Foto de perfil" hidden>
+            <div class="perfil-iniciais" id="perfil-iniciais" aria-hidden="true">VH</div>
+          </div>
+          <div class="perfil-foto-acoes">
+            <label class="perfil-foto-botao" for="perfil-foto">Alterar foto</label>
+            <button class="perfil-foto-remover" id="perfil-foto-remover" type="button" hidden>Remover foto</button>
+          </div>
+          <input id="perfil-foto" class="perfil-foto-input" type="file" accept="image/png,image/jpeg,image/webp">
           <h2 id="perfil-nome-resumo">Victor</h2>
           <p id="perfil-email-resumo">email@exemplo.com</p>
           <span class="perfil-tipo" id="perfil-tipo-resumo">Jovem</span>
@@ -50,6 +58,10 @@
               <dd id="perfil-telefone-resumo">Não informado</dd>
             </div>
             <div>
+              <dt>Endereço</dt>
+              <dd id="perfil-endereco-resumo">Não informado</dd>
+            </div>
+            <div>
               <dt>Habilidades</dt>
               <dd id="perfil-habilidades-resumo">Não informado</dd>
             </div>
@@ -58,7 +70,7 @@
           <a class="perfil-curriculo-link" href="curriculo.html">Abrir meu currículo</a>
         </aside>
 
-        <form class="perfil-formulario" id="form-perfil">
+        <form class="perfil-formulario" id="form-perfil" novalidate>
           <div class="perfil-form-cabecalho">
             <div>
               <p>Dados da conta</p>
@@ -72,42 +84,73 @@
               <span>Nome completo *</span>
               <input id="perfil-nome" name="nome" type="text" autocomplete="name" required>
             </label>
+          </div>
 
-            <label class="perfil-campo">
+          <div class="perfil-contato-grade">
+            <div class="perfil-contato-item">
+              <span>E-mail</span>
+              <strong id="perfil-email-mascarado">em***@exemplo.com</strong>
+              <button type="button" data-abrir-modal="email">Editar</button>
+            </div>
+
+            <div class="perfil-contato-item">
               <span>Telefone</span>
-              <input id="perfil-telefone" name="telefone" type="tel" autocomplete="tel" placeholder="(31) 99999-9999" maxlength="20">
-            </label>
+              <strong id="perfil-telefone-mascarado">Não informado</strong>
+              <button type="button" data-abrir-modal="telefone">Editar</button>
+            </div>
 
-            <label class="perfil-campo">
-              <span>E-mail *</span>
-              <input id="perfil-email" name="email" type="email" autocomplete="email" required>
-            </label>
+            <div class="perfil-contato-item">
+              <span>Senha</span>
+              <strong>********</strong>
+              <button type="button" data-abrir-modal="senha">Alterar</button>
+            </div>
           </div>
 
           <div class="perfil-separador"></div>
 
           <div class="perfil-form-cabecalho">
             <div>
-              <p>Segurança</p>
-              <h2>Alterar senha</h2>
+              <p>Endereço</p>
+              <h2>Dados de localização</h2>
             </div>
+            <span>CEP com busca automática</span>
           </div>
 
           <div class="perfil-form-grade">
+            <label class="perfil-campo">
+              <span>CEP</span>
+              <input id="perfil-cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9">
+              <small id="perfil-cep-status"></small>
+            </label>
+
             <label class="perfil-campo perfil-campo-largo">
-              <span>Senha atual *</span>
-              <input id="perfil-senha-atual" name="senhaAtual" type="password" autocomplete="current-password" required>
-              <small>Confirme sua senha atual para salvar qualquer alteração.</small>
+              <span>Endereço</span>
+              <input id="perfil-endereco" name="endereco" type="text" autocomplete="address-line1" maxlength="150">
             </label>
 
             <label class="perfil-campo">
-              <span>Nova senha</span>
-              <input id="perfil-nova-senha" name="novaSenha" type="password" autocomplete="new-password" minlength="6">
+              <span>Número</span>
+              <input id="perfil-numero" name="numero" type="text" autocomplete="address-line2" maxlength="20">
             </label>
 
             <label class="perfil-campo">
-              <span>Confirmar nova senha</span>
-              <input id="perfil-confirmar-senha" type="password" autocomplete="new-password" minlength="6">
+              <span>Complemento</span>
+              <input id="perfil-complemento" name="complemento" type="text" maxlength="100">
+            </label>
+
+            <label class="perfil-campo">
+              <span>Bairro</span>
+              <input id="perfil-bairro" name="bairro" type="text" maxlength="100">
+            </label>
+
+            <label class="perfil-campo">
+              <span>Cidade</span>
+              <input id="perfil-cidade" name="cidade" type="text" autocomplete="address-level2" maxlength="100">
+            </label>
+
+            <label class="perfil-campo">
+              <span>Estado</span>
+              <input id="perfil-estado" name="estado" type="text" autocomplete="address-level1" maxlength="2">
             </label>
           </div>
 
@@ -117,8 +160,80 @@
           </div>
         </form>
       </div>
+
+      <section class="perfil-candidaturas" aria-labelledby="perfil-candidaturas-titulo">
+        <div class="perfil-form-cabecalho">
+          <div>
+            <p>Oportunidades</p>
+            <h2 id="perfil-candidaturas-titulo">Minhas candidaturas</h2>
+          </div>
+          <a class="perfil-vagas-link" href="vagas.html">Ver vagas</a>
+        </div>
+
+        <div class="perfil-candidaturas-lista" id="perfil-candidaturas-lista">
+          <p class="perfil-candidaturas-estado">Carregando candidaturas...</p>
+        </div>
+      </section>
     </section>
   </main>
+
+  <div class="perfil-modal" id="modal-email" hidden>
+    <div class="perfil-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modal-email-titulo">
+      <button class="perfil-modal-fechar" type="button" data-fechar-modal aria-label="Fechar">X</button>
+      <h2 id="modal-email-titulo">Alterar e-mail</h2>
+      <form id="form-email" class="perfil-modal-form">
+        <label class="perfil-campo">
+          <span>Senha atual *</span>
+          <input id="email-senha-atual" type="password" autocomplete="current-password" required>
+        </label>
+        <label class="perfil-campo">
+          <span>Novo e-mail *</span>
+          <input id="email-novo" type="email" autocomplete="email" required>
+        </label>
+        <button class="perfil-salvar" type="submit">Salvar e-mail</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="perfil-modal" id="modal-telefone" hidden>
+    <div class="perfil-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modal-telefone-titulo">
+      <button class="perfil-modal-fechar" type="button" data-fechar-modal aria-label="Fechar">X</button>
+      <h2 id="modal-telefone-titulo">Alterar telefone</h2>
+      <form id="form-telefone" class="perfil-modal-form">
+        <label class="perfil-campo">
+          <span>Senha atual *</span>
+          <input id="telefone-senha-atual" type="password" autocomplete="current-password" required>
+        </label>
+        <label class="perfil-campo">
+          <span>Novo telefone</span>
+          <input id="telefone-novo" type="tel" autocomplete="tel" maxlength="20">
+        </label>
+        <button class="perfil-salvar" type="submit">Salvar telefone</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="perfil-modal" id="modal-senha" hidden>
+    <div class="perfil-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modal-senha-titulo">
+      <button class="perfil-modal-fechar" type="button" data-fechar-modal aria-label="Fechar">X</button>
+      <h2 id="modal-senha-titulo">Alterar senha</h2>
+      <form id="form-senha" class="perfil-modal-form">
+        <label class="perfil-campo">
+          <span>Senha atual *</span>
+          <input id="senha-atual-modal" type="password" autocomplete="current-password" required>
+        </label>
+        <label class="perfil-campo">
+          <span>Nova senha *</span>
+          <input id="senha-nova-modal" type="password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <label class="perfil-campo">
+          <span>Confirmar nova senha *</span>
+          <input id="senha-confirmar-modal" type="password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <button class="perfil-salvar" type="submit">Salvar senha</button>
+      </form>
+    </div>
+  </div>
 
   <button class="chatbot-button" aria-label="Abrir assistente virtual">
     <img class="chatbot-icon" src="assets/img/chatbot-robo.png" alt="" aria-hidden="true">
@@ -136,7 +251,7 @@
   </div>
 
   <footer>
-    <p>Desenvolvido por Victor Hugor de Souza Lopes - Projeto ODS 8</p>
+    <p>Favela Tech - Conectando talentos da comunidade a oportunidades reais.</p>
   </footer>
 
   <script src="js/main.js"></script>

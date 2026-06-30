@@ -6,6 +6,8 @@ const resumoProfissional = document.getElementById("resumo-profissional");
 const contadorResumo = document.getElementById("contador-resumo");
 const previewCurriculo = document.getElementById("curriculo-preview");
 const limparCurriculo = document.getElementById("limpar-curriculo");
+const verModeloCurriculo = document.getElementById("ver-modelo-curriculo");
+const imprimirCurriculo = document.getElementById("imprimir-curriculo");
 const usuarioCurriculo = JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
 
 function preencherUsuarioLogado() {
@@ -44,7 +46,7 @@ async function acessarCurriculo(metodo, dados) {
       body: metodo === "PUT" ? JSON.stringify(dados) : undefined
     });
   } catch {
-    throw new Error("Servidor indisponível. Inicie o backend e o MySQL.");
+    throw new Error("Serviço temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const resultado = await resposta.json().catch(() => ({}));
@@ -81,13 +83,31 @@ function definirTexto(id, valor, textoPadrao) {
   document.getElementById(id).textContent = valor || textoPadrao;
 }
 
+function formatarDataNascimento(valor) {
+  if (!valor) return "";
+  const [ano, mes, dia] = valor.split("-");
+  if (!ano || !mes || !dia) return valor;
+  return `${dia}/${mes}/${ano}`;
+}
+
 function montarPreview(dados) {
   definirTexto("preview-nome", dados.get("nome"), "Nome completo");
-  definirTexto("preview-cargo", dados.get("cargo"), "Cargo desejado");
+  const objetivo = [dados.get("cargo"), dados.get("area"), dados.get("disponibilidade")]
+    .filter(Boolean)
+    .join(" | ");
+  definirTexto("preview-cargo", objetivo, "Cargo desejado");
   definirTexto("preview-email", dados.get("email"), "E-mail");
   definirTexto("preview-telefone", dados.get("telefone"), "Telefone");
   definirTexto("preview-cidade", dados.get("cidade"), "Cidade");
   definirTexto("preview-resumo", dados.get("resumo"), "Resumo profissional.");
+
+  const dadosPessoais = [
+    formatarDataNascimento(dados.get("data_nascimento")),
+    dados.get("nacionalidade"),
+    dados.get("estado_civil"),
+    dados.get("disponibilidade") ? `Disponibilidade: ${dados.get("disponibilidade")}` : ""
+  ].filter(Boolean).join(" | ");
+  definirTexto("preview-dados-pessoais", dadosPessoais, "Dados pessoais não informados.");
 
   const formacao = [dados.get("escolaridade"), dados.get("curso"), dados.get("instituicao")]
     .filter(Boolean)
@@ -99,11 +119,26 @@ function montarPreview(dados) {
     .join(" - ");
   definirTexto("preview-experiencia", experiencia, "Experiência não informada.");
   definirTexto("preview-habilidades", dados.get("habilidades"), "Habilidades não informadas.");
+
+  const links = [dados.get("linkedin"), dados.get("portfolio")]
+    .filter(Boolean)
+    .join(" | ");
+  definirTexto("preview-links", links, "Links profissionais não informados.");
+}
+
+function exibirModeloCurriculo() {
+  montarPreview(new FormData(formCurriculo));
+  previewCurriculo.hidden = false;
+  previewCurriculo.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 formCurriculo.addEventListener("input", () => {
   atualizarProgresso();
   atualizarContadorResumo();
+
+  if (!previewCurriculo.hidden) {
+    montarPreview(new FormData(formCurriculo));
+  }
 });
 
 formCurriculo.addEventListener("change", atualizarProgresso);
@@ -122,10 +157,8 @@ formCurriculo.addEventListener("submit", async (event) => {
     const dados = Object.fromEntries(new FormData(formCurriculo));
     const curriculo = await acessarCurriculo("PUT", dados);
     preencherFormulario(curriculo);
-    montarPreview(new FormData(formCurriculo));
-    previewCurriculo.hidden = false;
-    previewCurriculo.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.mostrarNotificacao("Seu currículo foi salvo no MySQL.", {
+    exibirModeloCurriculo();
+    window.mostrarNotificacao("Seu currículo foi salvo com sucesso.", {
       titulo: "Currículo atualizado",
       tipo: "sucesso"
     });
@@ -146,6 +179,13 @@ limparCurriculo.addEventListener("click", () => {
   preencherUsuarioLogado();
   atualizarProgresso();
   atualizarContadorResumo();
+});
+
+verModeloCurriculo?.addEventListener("click", exibirModeloCurriculo);
+
+imprimirCurriculo?.addEventListener("click", () => {
+  exibirModeloCurriculo();
+  window.print();
 });
 
 async function iniciarCurriculo() {
