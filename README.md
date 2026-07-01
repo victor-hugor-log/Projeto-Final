@@ -62,7 +62,7 @@ mysql -u root -p < database/migration.sql
 mysql -u root -p < database/seed.sql
 ```
 
-Ao iniciar, o backend tambem garante automaticamente as tabelas de curriculos, candidaturas e os campos extras do perfil. As migrations manuais estao disponiveis em `database/curriculos_migration.sql`, `database/curriculo_extra_migration.sql`, `database/candidaturas_migration.sql` e `database/perfil_extra_migration.sql`.
+Ao iniciar, o backend tambem garante automaticamente as tabelas de curriculos, candidaturas e os campos extras do perfil. As migrations manuais estao disponiveis em `database/curriculos_migration.sql`, `database/curriculo_extra_migration.sql`, `database/candidaturas_migration.sql`, `database/perfil_extra_migration.sql` e `database/email_verification_migration.sql`.
 
 ### Configuracao
 

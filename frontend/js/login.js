@@ -8,6 +8,15 @@ const perfilRestrito = document.getElementById("perfil-restrito");
 const perfilDados = document.getElementById("perfil-dados");
 const sairConta = document.getElementById("sair-conta");
 const recuperarSenha = document.getElementById("recuperar-senha");
+const abrirTermos = document.getElementById("abrir-termos");
+const termosModal = document.getElementById("termos-modal");
+const fecharTermos = document.getElementById("fechar-termos");
+const cancelarTermos = document.getElementById("cancelar-termos");
+const aceitarTermos = document.getElementById("aceitar-termos");
+const verificacaoLocalModal = document.getElementById("verificacao-local-modal");
+const fecharVerificacaoLocal = document.getElementById("fechar-verificacao-local");
+const verificacaoLocalLink = document.getElementById("verificacao-local-link");
+const copiarVerificacaoLocal = document.getElementById("copiar-verificacao-local");
 
 function trocarBalao(tipo) {
   const mostrarCadastro = tipo === "cadastro";
@@ -160,8 +169,37 @@ function mostrarPerfil() {
     <p><strong>Telefone:</strong> ${mascararTelefone(usuario.telefone)}</p>
     <p><strong>Perfil:</strong> ${usuario.tipo === "empresa" ? "Empresa" : "Jovem"}</p>
     <p><strong>Habilidades/interesses:</strong> ${usuario.habilidades || "Nao informado"}</p>
-    <p><strong>Status:</strong> Conta ativa.</p>
+    <p><strong>Status:</strong> ${usuario.emailVerificado ? "E-mail confirmado" : "E-mail pendente de confirmacao"}</p>
   `;
+}
+
+function abrirModalTermos() {
+  if (!termosModal) return;
+
+  termosModal.hidden = false;
+  aceitarTermos?.focus();
+}
+
+function fecharModalTermos() {
+  if (!termosModal) return;
+
+  termosModal.hidden = true;
+  abrirTermos?.focus();
+}
+
+function abrirModalVerificacao(link) {
+  if (!verificacaoLocalModal || !verificacaoLocalLink || !link) return;
+
+  verificacaoLocalLink.href = link;
+  verificacaoLocalLink.textContent = link;
+  verificacaoLocalModal.hidden = false;
+  verificacaoLocalLink.focus();
+}
+
+function fecharModalVerificacao() {
+  if (!verificacaoLocalModal) return;
+
+  verificacaoLocalModal.hidden = true;
 }
 
 function validarLogin() {
@@ -209,6 +247,54 @@ abrirLogin?.addEventListener("click", () => {
   trocarBalao("login");
 });
 
+abrirTermos?.addEventListener("click", abrirModalTermos);
+fecharTermos?.addEventListener("click", fecharModalTermos);
+cancelarTermos?.addEventListener("click", fecharModalTermos);
+
+termosModal?.addEventListener("click", (event) => {
+  if (event.target === termosModal) {
+    fecharModalTermos();
+  }
+});
+
+fecharVerificacaoLocal?.addEventListener("click", fecharModalVerificacao);
+
+verificacaoLocalModal?.addEventListener("click", (event) => {
+  if (event.target === verificacaoLocalModal) {
+    fecharModalVerificacao();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && termosModal && !termosModal.hidden) {
+    fecharModalTermos();
+  }
+
+  if (event.key === "Escape" && verificacaoLocalModal && !verificacaoLocalModal.hidden) {
+    fecharModalVerificacao();
+  }
+});
+
+aceitarTermos?.addEventListener("click", () => {
+  const lgpd = campo("lgpd-cad");
+  const erroLgpd = campo("erro-lgpd-cad");
+
+  lgpd.checked = true;
+  erroLgpd.textContent = "";
+  fecharModalTermos();
+});
+
+copiarVerificacaoLocal?.addEventListener("click", async () => {
+  const link = verificacaoLocalLink?.href;
+  if (!link) return;
+
+  await navigator.clipboard.writeText(link);
+  window.mostrarNotificacao("Link de verificação copiado.", {
+    titulo: "Verificação",
+    tipo: "sucesso"
+  });
+});
+
 document.querySelectorAll(".input-group input, .input-group select").forEach((input) => {
   input.addEventListener("input", () => limparErro(input));
   input.addEventListener("change", () => limparErro(input));
@@ -249,7 +335,7 @@ formCadastro?.addEventListener("submit", async (event) => {
   definirFormularioCarregando(formCadastro, true);
 
   try {
-    const { usuario } = await enviarAutenticacao("cadastro", {
+    const { usuario, verificacao } = await enviarAutenticacao("cadastro", {
       nome,
       email,
       senha,
@@ -258,10 +344,11 @@ formCadastro?.addEventListener("submit", async (event) => {
     });
 
     salvarUsuarioLogado(usuario);
-    window.mostrarNotificacao("Sua conta foi criada e ja esta conectada.", {
-      titulo: "Cadastro concluido",
+    window.mostrarNotificacao("Sua conta foi criada. Confirme seu e-mail para concluir o cadastro.", {
+      titulo: "Cadastro criado",
       tipo: "sucesso"
     });
+    abrirModalVerificacao(verificacao?.link);
     formCadastro.reset();
     document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
     trocarBalao("login");

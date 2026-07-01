@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const bcrypt = require("bcryptjs");
 
 const { pool } = require("../config/database");
@@ -20,13 +22,14 @@ function normalizarUsuario(usuario) {
     cidade: usuario.cidade || "",
     estado: usuario.estado || "",
     fotoPerfil: usuario.foto_perfil || "",
+    emailVerificado: Boolean(usuario.email_verificado),
     criadoEm: usuario.criado_em
   };
 }
 
 function selecionarCamposUsuario() {
   return `id, nome, email, telefone, tipo, habilidades, cep, endereco, numero,
-    complemento, bairro, cidade, estado, foto_perfil, criado_em`;
+    complemento, bairro, cidade, estado, foto_perfil, email_verificado, criado_em`;
 }
 
 function texto(valor, limite = 255) {
@@ -43,6 +46,25 @@ function fotoPerfilValida(fotoPerfil) {
 
   return /^data:image\/(png|jpe?g|webp);base64,/i.test(fotoPerfil)
     && fotoPerfil.length <= 1200000;
+}
+
+function gerarTokenVerificacao() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+function gerarHashToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+function gerarExpiracaoToken() {
+  const data = new Date();
+  data.setHours(data.getHours() + 24);
+  return data;
+}
+
+function gerarLinkVerificacao(req, token) {
+  const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+  return `${baseUrl}/verificar-email.html?token=${token}`;
 }
 
 function validarCadastro({ nome, email, senha, tipo, habilidades }) {
@@ -84,10 +106,15 @@ async function cadastrar(req, res) {
     }
 
     const senhaCriptografada = await bcrypt.hash(senha, 12);
+    const tokenVerificacao = gerarTokenVerificacao();
+    const tokenHash = gerarHashToken(tokenVerificacao);
+    const tokenExpiraEm = gerarExpiracaoToken();
     const [resultado] = await pool.execute(
-      `INSERT INTO usuarios (nome, email, senha, tipo, habilidades)
-       VALUES (?, ?, ?, ?, ?)`,
-      [nome, email, senhaCriptografada, tipo, habilidades]
+      `INSERT INTO usuarios (
+        nome, email, senha, tipo, habilidades,
+        email_verificado, email_token_hash, email_token_expira_em
+      ) VALUES (?, ?, ?, ?, ?, 0, ?, ?)`,
+      [nome, email, senhaCriptografada, tipo, habilidades, tokenHash, tokenExpiraEm]
     );
 
     const [usuarios] = await pool.execute(
@@ -97,7 +124,16 @@ async function cadastrar(req, res) {
       [resultado.insertId]
     );
 
-    return res.status(201).json({ usuario: normalizarUsuario(usuarios[0]) });
+    const linkVerificacao = gerarLinkVerificacao(req, tokenVerificacao);
+    console.log(`Link de verificacao de e-mail (${email}): ${linkVerificacao}`);
+
+    return res.status(201).json({
+      usuario: normalizarUsuario(usuarios[0]),
+      verificacao: {
+        link: linkVerificacao,
+        expiraEm: tokenExpiraEm
+      }
+    });
   } catch (erro) {
     if (erro.code === "ER_DUP_ENTRY") {
       return res.status(409).json({ mensagem: "Este e-mail ja esta cadastrado." });
@@ -105,6 +141,53 @@ async function cadastrar(req, res) {
 
     console.error("Erro ao cadastrar usuario:", erro.message);
     return res.status(500).json({ mensagem: "Nao foi possivel concluir o cadastro." });
+  }
+}
+
+async function verificarEmail(req, res) {
+  const token = String(req.query.token || "").trim();
+
+  if (!token) {
+    return res.status(400).json({ mensagem: "Token de verificacao ausente." });
+  }
+
+  try {
+    const tokenHash = gerarHashToken(token);
+    const [usuarios] = await pool.execute(
+      `SELECT id, email_verificado, email_token_expira_em
+       FROM usuarios
+       WHERE email_token_hash = ?
+       LIMIT 1`,
+      [tokenHash]
+    );
+
+    if (usuarios.length === 0) {
+      return res.status(404).json({ mensagem: "Link de verificacao invalido." });
+    }
+
+    const usuario = usuarios[0];
+
+    if (usuario.email_verificado) {
+      return res.json({ mensagem: "E-mail ja confirmado." });
+    }
+
+    if (usuario.email_token_expira_em && new Date(usuario.email_token_expira_em) < new Date()) {
+      return res.status(410).json({ mensagem: "Link de verificacao expirado. Solicite um novo link." });
+    }
+
+    await pool.execute(
+      `UPDATE usuarios
+       SET email_verificado = 1,
+         email_token_hash = NULL,
+         email_token_expira_em = NULL
+       WHERE id = ?`,
+      [usuario.id]
+    );
+
+    return res.json({ mensagem: "E-mail confirmado com sucesso." });
+  } catch (erro) {
+    console.error("Erro ao verificar e-mail:", erro.message);
+    return res.status(500).json({ mensagem: "Nao foi possivel confirmar o e-mail." });
   }
 }
 
@@ -260,5 +343,6 @@ async function atualizarPerfil(req, res) {
 module.exports = {
   cadastrar,
   login,
-  atualizarPerfil
+  atualizarPerfil,
+  verificarEmail
 };

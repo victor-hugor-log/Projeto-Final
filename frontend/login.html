@@ -99,7 +99,10 @@
 
           <label class="termos">
             <input id="lgpd-cad" type="checkbox">
-            <span>Aceito os termos de uso e a politica de privacidade (LGPD).</span>
+            <span>
+              Aceito os termos de uso e a politica de privacidade (LGPD).
+              <button class="termos-link" id="abrir-termos" type="button">Ler termos</button>
+            </span>
           </label>
           <span class="erro" id="erro-lgpd-cad"></span>
 
@@ -120,6 +123,66 @@
       <button id="sair-conta" type="button">Sair da conta</button>
     </section>
   </main>
+
+  <div class="termos-modal" id="termos-modal" hidden>
+    <div class="termos-caixa" role="dialog" aria-modal="true" aria-labelledby="termos-titulo">
+      <button class="termos-fechar" id="fechar-termos" type="button" aria-label="Fechar termos">X</button>
+
+      <div class="termos-cabecalho">
+        <p>Termos e privacidade</p>
+        <h2 id="termos-titulo">Uso responsável do Favela Tech</h2>
+        <span>Resumo claro sobre cadastro, dados pessoais e uso da plataforma.</span>
+      </div>
+
+      <div class="termos-conteudo">
+        <section>
+          <h3>1. Uso da plataforma</h3>
+          <p>O Favela Tech conecta jovens, empresas e oportunidades. Ao criar uma conta, o usuário se compromete a informar dados verdadeiros e usar o site de forma respeitosa.</p>
+        </section>
+
+        <section>
+          <h3>2. Dados coletados</h3>
+          <p>Podemos solicitar nome, e-mail, senha, telefone, habilidades, endereço, currículo e candidaturas. Esses dados são usados para identificação, recomendações de vagas e organização do perfil.</p>
+        </section>
+
+        <section>
+          <h3>3. Proteção e senha</h3>
+          <p>A senha é protegida de forma criptografada. O usuário deve manter seus dados de acesso em segurança e evitar compartilhar sua conta com terceiros.</p>
+        </section>
+
+        <section>
+          <h3>4. Currículo e candidaturas</h3>
+          <p>As informações do currículo podem ser usadas para aproximar o usuário de oportunidades compatíveis. Candidaturas ficam registradas para acompanhamento na área Minha conta.</p>
+        </section>
+
+        <section>
+          <h3>5. LGPD e privacidade</h3>
+          <p>Os dados são tratados apenas para finalidades ligadas ao funcionamento do portal. O usuário pode atualizar suas informações no perfil e solicitar correções quando necessário.</p>
+        </section>
+
+        <section>
+          <h3>6. Contato</h3>
+          <p>Em caso de dúvidas sobre dados, cadastro ou uso da plataforma, o usuário pode entrar em contato pelos canais informados na página Contato.</p>
+        </section>
+      </div>
+
+      <div class="termos-acoes">
+        <button class="termos-secundario" id="cancelar-termos" type="button">Fechar</button>
+        <button class="termos-principal" id="aceitar-termos" type="button">Li e aceito</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="verificacao-local-modal" id="verificacao-local-modal" hidden>
+    <div class="verificacao-local-caixa" role="dialog" aria-modal="true" aria-labelledby="verificacao-local-titulo">
+      <button class="verificacao-local-fechar" id="fechar-verificacao-local" type="button" aria-label="Fechar verificação">X</button>
+      <p class="verificacao-local-kicker">Modo apresentação</p>
+      <h2 id="verificacao-local-titulo">Confirme seu e-mail</h2>
+      <p>No envio real, este link chegaria por e-mail. Como estamos rodando localmente, use o link abaixo para testar a confirmação.</p>
+      <a id="verificacao-local-link" href="#" target="_blank" rel="noopener">Abrir link de verificação</a>
+      <button id="copiar-verificacao-local" type="button">Copiar link</button>
+    </div>
+  </div>
 
   <button class="chatbot-button" aria-label="Abrir assistente virtual">
     <img class="chatbot-icon" src="assets/img/chatbot-robo.png" alt="" aria-hidden="true">

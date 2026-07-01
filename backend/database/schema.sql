@@ -20,6 +20,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
   cidade VARCHAR(100),
   estado VARCHAR(2),
   foto_perfil LONGTEXT,
+  email_verificado BOOLEAN NOT NULL DEFAULT false,
+  email_token_hash VARCHAR(255),
+  email_token_expira_em DATETIME,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

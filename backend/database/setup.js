@@ -27,9 +27,10 @@ async function indiceExiste(tabela, indice) {
 }
 
 async function garantirColuna(tabela, coluna, definicao) {
-  if (await colunaExiste(tabela, coluna)) return;
+  if (await colunaExiste(tabela, coluna)) return false;
 
   await pool.query(`ALTER TABLE ${tabela} ADD COLUMN ${definicao}`);
+  return true;
 }
 
 async function garantirUsuarios() {
@@ -41,6 +42,19 @@ async function garantirUsuarios() {
   await garantirColuna("usuarios", "cidade", "cidade VARCHAR(100) NULL AFTER bairro");
   await garantirColuna("usuarios", "estado", "estado VARCHAR(2) NULL AFTER cidade");
   await garantirColuna("usuarios", "foto_perfil", "foto_perfil LONGTEXT NULL AFTER estado");
+  const criouEmailVerificado = await garantirColuna("usuarios", "email_verificado", "email_verificado BOOLEAN NOT NULL DEFAULT false AFTER foto_perfil");
+  await garantirColuna("usuarios", "email_token_hash", "email_token_hash VARCHAR(255) NULL AFTER email_verificado");
+  await garantirColuna("usuarios", "email_token_expira_em", "email_token_expira_em DATETIME NULL AFTER email_token_hash");
+
+  if (criouEmailVerificado) {
+    await pool.query(`
+      UPDATE usuarios
+      SET email_verificado = 1
+      WHERE email_verificado = 0
+        AND email_token_hash IS NULL
+        AND email_token_expira_em IS NULL
+    `);
+  }
 }
 
 async function garantirCurriculos() {
