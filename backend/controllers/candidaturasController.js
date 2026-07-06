@@ -43,7 +43,7 @@ async function criarCandidatura(req, res) {
   const vagaId = obterId(req.body.vagaId);
 
   if (!usuarioId || !vagaId) {
-    return res.status(400).json({ mensagem: "Usuario e vaga sao obrigatorios." });
+    return res.status(400).json({ mensagem: "Usuário e vaga são obrigatórios." });
   }
 
   try {
@@ -53,7 +53,7 @@ async function criarCandidatura(req, res) {
     );
 
     if (usuarios.length === 0) {
-      return res.status(404).json({ mensagem: "Usuario nao encontrado." });
+      return res.status(404).json({ mensagem: "Usuário não encontrado." });
     }
 
     const [vagas] = await pool.execute(
@@ -62,7 +62,7 @@ async function criarCandidatura(req, res) {
     );
 
     if (vagas.length === 0) {
-      return res.status(404).json({ mensagem: "Vaga nao encontrada." });
+      return res.status(404).json({ mensagem: "Vaga não encontrada." });
     }
 
     await pool.execute(
@@ -77,13 +77,13 @@ async function criarCandidatura(req, res) {
     if (erro.code === "ER_DUP_ENTRY") {
       const candidatura = await buscarCandidatura(usuarioId, vagaId);
       return res.status(409).json({
-        mensagem: "Voce ja se candidatou para esta vaga.",
+        mensagem: "Você já se candidatou para esta vaga.",
         candidatura
       });
     }
 
     console.error("Erro ao criar candidatura:", erro.message);
-    return res.status(500).json({ mensagem: "Nao foi possivel enviar a candidatura." });
+    return res.status(500).json({ mensagem: "Não foi possível enviar a candidatura." });
   }
 }
 
@@ -91,7 +91,7 @@ async function listarCandidaturasDoUsuario(req, res) {
   const usuarioId = obterId(req.params.usuarioId);
 
   if (!usuarioId) {
-    return res.status(400).json({ mensagem: "Usuario invalido." });
+    return res.status(400).json({ mensagem: "Usuário inválido." });
   }
 
   try {
@@ -111,7 +111,7 @@ async function listarCandidaturasDoUsuario(req, res) {
     });
   } catch (erro) {
     console.error("Erro ao listar candidaturas:", erro.message);
-    return res.status(500).json({ mensagem: "Nao foi possivel carregar as candidaturas." });
+    return res.status(500).json({ mensagem: "Não foi possível carregar as candidaturas." });
   }
 }
 

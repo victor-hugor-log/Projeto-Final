@@ -9,14 +9,31 @@ const cepStatus = document.getElementById("perfil-cep-status");
 const formEmail = document.getElementById("form-email");
 const formTelefone = document.getElementById("form-telefone");
 const formSenha = document.getElementById("form-senha");
+const modalVerificacaoEmail = document.getElementById("modal-verificacao-email");
+const linkVerificacaoEmail = document.getElementById("perfil-verificacao-email-link");
+const abrirVerificacaoEmail = document.getElementById("perfil-verificacao-email-abrir");
+const copiarVerificacaoEmail = document.getElementById("perfil-verificacao-email-copiar");
+const senhaAtualInput = document.getElementById("senha-atual-modal");
+const senhaNovaInput = document.getElementById("senha-nova-modal");
+const senhaConfirmarInput = document.getElementById("senha-confirmar-modal");
+const senhaAtualStatus = document.getElementById("senha-atual-status");
+const senhaConfirmarStatus = document.getElementById("senha-confirmar-status");
+const editorHabilidadesPerfil = window.FavelaTechHabilidades?.criarEditor({
+  campoId: "perfil-habilidades",
+  inputId: "perfil-habilidade-input",
+  listaId: "perfil-habilidades-lista",
+  sugestoesId: "perfil-habilidades-sugestoes"
+});
 let usuarioPerfil = JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
 let fotoPerfilAtual = usuarioPerfil?.fotoPerfil || "";
 let temporizadorCep;
+let temporizadorSenhaAtual;
+let requisicaoSenhaAtual = 0;
 
 function redirecionarParaLogin() {
   sessionStorage.setItem("favelaTechNotificacaoPendente", JSON.stringify({
     mensagem: "Entre na sua conta para acessar o perfil.",
-    titulo: "Acesso necessario",
+    titulo: "Acesso necessário",
     tipo: "aviso"
   }));
   window.location.replace("login.html");
@@ -74,6 +91,15 @@ function preencherTexto(id, valor) {
   if (elemento) elemento.textContent = valor || "";
 }
 
+function formatarRotuloVaga(valor) {
+  const rotulos = {
+    Administracao: "Administração",
+    Estagio: "Estágio"
+  };
+
+  return rotulos[valor] || valor;
+}
+
 function preencherPerfil(usuario) {
   const iniciais = document.getElementById("perfil-iniciais");
 
@@ -106,8 +132,10 @@ function preencherPerfil(usuario) {
   preencherCampo("perfil-bairro", usuario.bairro);
   preencherCampo("perfil-cidade", usuario.cidade);
   preencherCampo("perfil-estado", usuario.estado);
+  preencherCampo("perfil-habilidades", usuario.habilidades);
   preencherCampo("email-novo", usuario.email);
   preencherCampo("telefone-novo", usuario.telefone);
+  editorHabilidadesPerfil?.setSelecionadas(usuario.habilidades);
 }
 
 function dadosPerfilBase() {
@@ -123,6 +151,7 @@ function dadosPerfilBase() {
     bairro: document.getElementById("perfil-bairro").value.trim(),
     cidade: document.getElementById("perfil-cidade").value.trim(),
     estado: document.getElementById("perfil-estado").value.trim().toUpperCase(),
+    habilidades: editorHabilidadesPerfil?.serializar() || document.getElementById("perfil-habilidades").value.trim(),
     fotoPerfil: fotoPerfilAtual
   };
 }
@@ -180,10 +209,37 @@ async function enviarAtualizacao(dados) {
   const resultado = await resposta.json().catch(() => ({}));
 
   if (!resposta.ok) {
-    throw new Error(resultado.mensagem || "Nao foi possivel atualizar o perfil.");
+    throw new Error(resultado.mensagem || "Não foi possível atualizar o perfil.");
   }
 
-  return resultado.usuario;
+  return resultado;
+}
+
+async function verificarSenhaAtualNoBackend(senhaAtual) {
+  let resposta;
+
+  try {
+    resposta = await fetch("/api/auth/verificar-senha", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: usuarioPerfil.id,
+        senhaAtual
+      })
+    });
+  } catch {
+    throw new Error("Não foi possível validar sua senha agora.");
+  }
+
+  const resultado = await resposta.json().catch(() => ({}));
+
+  if (!resposta.ok) {
+    throw new Error(resultado.mensagem || "Não foi possível validar sua senha.");
+  }
+
+  return resultado;
 }
 
 function salvarUsuarioAtualizado(usuario, mensagem) {
@@ -253,7 +309,7 @@ function renderizarCandidaturas(candidaturas) {
     meta.className = "perfil-candidatura-meta";
     meta.append(
       criarMeta(`Data: ${formatarData(candidatura.criadoEm)}`),
-      criarMeta(`Tipo: ${vaga.tipo || "Não informado"}`)
+      criarMeta(`Tipo: ${formatarRotuloVaga(vaga.tipo) || "Não informado"}`)
     );
 
     if (vaga.localizacao) {
@@ -302,11 +358,126 @@ function abrirModal(nome) {
   modal.querySelector("input")?.focus();
 }
 
+function abrirModalVerificacaoEmail(link) {
+  if (!modalVerificacaoEmail || !linkVerificacaoEmail || !abrirVerificacaoEmail || !link) return;
+
+  linkVerificacaoEmail.href = link;
+  linkVerificacaoEmail.textContent = link;
+  abrirVerificacaoEmail.href = link;
+  modalVerificacaoEmail.hidden = false;
+  linkVerificacaoEmail.focus();
+}
+
+function atualizarEstadoCampo(input, estado, mensagem = "") {
+  const grupo = input?.closest(".perfil-campo");
+  const status = grupo?.querySelector("small");
+
+  if (!grupo) return;
+
+  grupo.classList.remove("valido", "invalido");
+
+  if (estado) {
+    grupo.classList.add(estado);
+  }
+
+  if (status) {
+    status.textContent = mensagem;
+  }
+}
+
+function validarConfirmacaoSenha() {
+  if (!senhaNovaInput || !senhaConfirmarInput) return true;
+
+  const senhaAtual = senhaAtualInput?.value || "";
+  const novaSenha = senhaNovaInput.value;
+  const confirmarSenha = senhaConfirmarInput.value;
+
+  atualizarEstadoCampo(senhaNovaInput, "");
+  atualizarEstadoCampo(senhaConfirmarInput, "");
+
+  if (!novaSenha && !confirmarSenha) {
+    if (senhaConfirmarStatus) senhaConfirmarStatus.textContent = "";
+    return false;
+  }
+
+  if (novaSenha && novaSenha.length < 6) {
+    atualizarEstadoCampo(senhaNovaInput, "invalido");
+    if (senhaConfirmarStatus) senhaConfirmarStatus.textContent = "A nova senha precisa ter pelo menos 6 caracteres.";
+    return false;
+  }
+
+  if (senhaAtual && novaSenha && senhaAtual === novaSenha) {
+    atualizarEstadoCampo(senhaNovaInput, "invalido");
+    atualizarEstadoCampo(senhaConfirmarInput, "invalido", "A nova senha precisa ser diferente da atual.");
+    return false;
+  }
+
+  if (!confirmarSenha) {
+    if (senhaConfirmarStatus) senhaConfirmarStatus.textContent = "";
+    return false;
+  }
+
+  if (novaSenha !== confirmarSenha) {
+    atualizarEstadoCampo(senhaConfirmarInput, "invalido", "As senhas ainda não conferem.");
+    return false;
+  }
+
+  atualizarEstadoCampo(senhaNovaInput, "valido");
+  atualizarEstadoCampo(senhaConfirmarInput, "valido", "As senhas conferem.");
+  return true;
+}
+
+function validarSenhaAtualDigitada() {
+  if (!senhaAtualInput) return;
+
+  const senhaAtual = senhaAtualInput.value;
+  requisicaoSenhaAtual += 1;
+  const requisicaoAtual = requisicaoSenhaAtual;
+  clearTimeout(temporizadorSenhaAtual);
+
+  if (!senhaAtual) {
+    atualizarEstadoCampo(senhaAtualInput, "");
+    validarConfirmacaoSenha();
+    return;
+  }
+
+  if (senhaAtual.length < 6) {
+    atualizarEstadoCampo(senhaAtualInput, "invalido", "Digite pelo menos 6 caracteres.");
+    validarConfirmacaoSenha();
+    return;
+  }
+
+  atualizarEstadoCampo(senhaAtualInput, "", "Conferindo senha...");
+
+  temporizadorSenhaAtual = setTimeout(async () => {
+    try {
+      const resultado = await verificarSenhaAtualNoBackend(senhaAtual);
+      if (requisicaoAtual !== requisicaoSenhaAtual) return;
+
+      atualizarEstadoCampo(
+        senhaAtualInput,
+        resultado.valida ? "valido" : "invalido",
+        resultado.mensagem
+      );
+    } catch (erro) {
+      if (requisicaoAtual !== requisicaoSenhaAtual) return;
+      atualizarEstadoCampo(senhaAtualInput, "invalido", erro.message);
+    }
+  }, 450);
+
+  validarConfirmacaoSenha();
+}
+
 function fecharModal(modal) {
   modal.hidden = true;
   modal.querySelector("form")?.reset();
+  clearTimeout(temporizadorSenhaAtual);
+  requisicaoSenhaAtual += 1;
   preencherCampo("email-novo", usuarioPerfil.email);
   preencherCampo("telefone-novo", usuarioPerfil.telefone);
+  atualizarEstadoCampo(senhaAtualInput, "");
+  atualizarEstadoCampo(senhaNovaInput, "");
+  atualizarEstadoCampo(senhaConfirmarInput, "");
 }
 
 document.querySelectorAll("[data-abrir-modal]").forEach((botao) => {
@@ -323,13 +494,28 @@ document.querySelectorAll(".perfil-modal").forEach((modal) => {
   });
 });
 
+copiarVerificacaoEmail?.addEventListener("click", async () => {
+  const link = linkVerificacaoEmail?.href;
+  if (!link) return;
+
+  await navigator.clipboard.writeText(link);
+  window.mostrarNotificacao("Link de verificação copiado.", {
+    titulo: "Verificação de e-mail",
+    tipo: "sucesso"
+  });
+});
+
+senhaAtualInput?.addEventListener("input", validarSenhaAtualDigitada);
+senhaNovaInput?.addEventListener("input", validarConfirmacaoSenha);
+senhaConfirmarInput?.addEventListener("input", validarConfirmacaoSenha);
+
 inputFoto?.addEventListener("change", () => {
   const arquivo = inputFoto.files?.[0];
   if (!arquivo) return;
 
   if (!arquivo.type.startsWith("image/")) {
     window.mostrarNotificacao("Escolha uma imagem PNG, JPG ou WEBP.", {
-      titulo: "Foto invalida",
+      titulo: "Foto inválida",
       tipo: "erro"
     });
     inputFoto.value = "";
@@ -337,7 +523,7 @@ inputFoto?.addEventListener("change", () => {
   }
 
   if (arquivo.size > 900000) {
-    window.mostrarNotificacao("Escolha uma imagem de ate 900 KB.", {
+    window.mostrarNotificacao("Escolha uma imagem de até 900 KB.", {
       titulo: "Foto muito grande",
       tipo: "erro"
     });
@@ -368,15 +554,15 @@ removerFoto?.addEventListener("click", async () => {
   removerFoto.disabled = true;
 
   try {
-    const usuarioAtualizado = await enviarAtualizacao(dadosPerfilBase());
-    salvarUsuarioAtualizado(usuarioAtualizado, "Sua foto foi removida.");
+    const resultado = await enviarAtualizacao(dadosPerfilBase());
+    salvarUsuarioAtualizado(resultado.usuario, "Sua foto foi removida.");
   } catch (erro) {
     fotoPerfilAtual = fotoAnterior;
     fotoPreview.src = fotoPerfilAtual;
     fotoPreview.hidden = false;
     document.getElementById("perfil-iniciais").hidden = true;
     window.mostrarNotificacao(erro.message, {
-      titulo: "Nao foi possivel remover",
+      titulo: "Não foi possível remover",
       tipo: "erro"
     });
   } finally {
@@ -443,11 +629,11 @@ formPerfil?.addEventListener("submit", async (event) => {
   botaoSalvar.disabled = true;
 
   try {
-    const usuarioAtualizado = await enviarAtualizacao(dadosPerfilBase());
-    salvarUsuarioAtualizado(usuarioAtualizado, "Seus dados foram atualizados com sucesso.");
+    const resultado = await enviarAtualizacao(dadosPerfilBase());
+    salvarUsuarioAtualizado(resultado.usuario, "Seus dados foram atualizados com sucesso.");
   } catch (erro) {
     window.mostrarNotificacao(erro.message, {
-      titulo: "Nao foi possivel salvar",
+      titulo: "Não foi possível salvar",
       tipo: "erro"
     });
   } finally {
@@ -458,18 +644,38 @@ formPerfil?.addEventListener("submit", async (event) => {
 formEmail?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const modal = formEmail.closest(".perfil-modal");
+  const novoEmail = document.getElementById("email-novo").value.trim().toLowerCase();
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(novoEmail)) {
+    window.mostrarNotificacao("Informe um e-mail válido para continuar.", {
+      titulo: "E-mail inválido",
+      tipo: "aviso"
+    });
+    document.getElementById("email-novo").focus();
+    return;
+  }
+
+  if (novoEmail === usuarioPerfil.email) {
+    window.mostrarNotificacao("Digite um e-mail diferente do atual.", {
+      titulo: "Nada para alterar",
+      tipo: "aviso"
+    });
+    document.getElementById("email-novo").focus();
+    return;
+  }
 
   try {
-    const usuarioAtualizado = await enviarAtualizacao({
+    const resultado = await enviarAtualizacao({
       ...dadosPerfilBase(),
-      email: document.getElementById("email-novo").value.trim().toLowerCase(),
+      email: novoEmail,
       senhaAtual: document.getElementById("email-senha-atual").value
     });
-    salvarUsuarioAtualizado(usuarioAtualizado, "Seu e-mail foi atualizado.");
     fecharModal(modal);
+    salvarUsuarioAtualizado(resultado.usuario, "Seu e-mail foi atualizado. Confirme o novo endereço antes do próximo login.");
+    abrirModalVerificacaoEmail(resultado.verificacao?.link);
   } catch (erro) {
     window.mostrarNotificacao(erro.message, {
-      titulo: "Nao foi possivel alterar",
+      titulo: "Não foi possível alterar",
       tipo: "erro"
     });
   }
@@ -480,16 +686,16 @@ formTelefone?.addEventListener("submit", async (event) => {
   const modal = formTelefone.closest(".perfil-modal");
 
   try {
-    const usuarioAtualizado = await enviarAtualizacao({
+    const resultado = await enviarAtualizacao({
       ...dadosPerfilBase(),
       telefone: document.getElementById("telefone-novo").value.trim(),
       senhaAtual: document.getElementById("telefone-senha-atual").value
     });
-    salvarUsuarioAtualizado(usuarioAtualizado, "Seu telefone foi atualizado.");
+    salvarUsuarioAtualizado(resultado.usuario, "Seu telefone foi atualizado.");
     fecharModal(modal);
   } catch (erro) {
     window.mostrarNotificacao(erro.message, {
-      titulo: "Nao foi possivel alterar",
+      titulo: "Não foi possível alterar",
       tipo: "erro"
     });
   }
@@ -497,29 +703,52 @@ formTelefone?.addEventListener("submit", async (event) => {
 
 formSenha?.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const novaSenha = document.getElementById("senha-nova-modal").value;
-  const confirmarSenha = document.getElementById("senha-confirmar-modal").value;
+  const senhaAtual = senhaAtualInput.value;
+  const novaSenha = senhaNovaInput.value;
+  const confirmarSenha = senhaConfirmarInput.value;
   const modal = formSenha.closest(".perfil-modal");
 
+  if (!senhaAtual) {
+    atualizarEstadoCampo(senhaAtualInput, "invalido", "Informe sua senha atual.");
+    senhaAtualInput.focus();
+    return;
+  }
+
+  if (novaSenha === senhaAtual) {
+    atualizarEstadoCampo(senhaNovaInput, "invalido");
+    atualizarEstadoCampo(senhaConfirmarInput, "invalido", "A nova senha precisa ser diferente da atual.");
+    senhaNovaInput.focus();
+    return;
+  }
+
   if (novaSenha !== confirmarSenha) {
-    window.mostrarNotificacao("A confirmacao precisa ser igual a nova senha.", {
+    atualizarEstadoCampo(senhaConfirmarInput, "invalido", "As senhas ainda não conferem.");
+    window.mostrarNotificacao("A confirmação precisa ser igual à nova senha.", {
       titulo: "Confira as senhas",
       tipo: "erro"
     });
     return;
   }
 
+  if (!validarConfirmacaoSenha()) {
+    window.mostrarNotificacao("Confira os campos de senha antes de salvar.", {
+      titulo: "Senha",
+      tipo: "aviso"
+    });
+    return;
+  }
+
   try {
-    const usuarioAtualizado = await enviarAtualizacao({
+    const resultado = await enviarAtualizacao({
       ...dadosPerfilBase(),
-      senhaAtual: document.getElementById("senha-atual-modal").value,
+      senhaAtual,
       novaSenha
     });
-    salvarUsuarioAtualizado(usuarioAtualizado, "Sua senha foi atualizada.");
+    salvarUsuarioAtualizado(resultado.usuario, "Sua senha foi atualizada.");
     fecharModal(modal);
   } catch (erro) {
     window.mostrarNotificacao(erro.message, {
-      titulo: "Nao foi possivel alterar",
+      titulo: "Não foi possível alterar",
       tipo: "erro"
     });
   }
@@ -528,8 +757,8 @@ formSenha?.addEventListener("submit", async (event) => {
 sairPerfil?.addEventListener("click", () => {
   localStorage.removeItem("favelaTechUsuarioLogado");
   sessionStorage.setItem("favelaTechNotificacaoPendente", JSON.stringify({
-    mensagem: "Voce saiu da sua conta com seguranca.",
-    titulo: "Sessao encerrada",
+    mensagem: "Você saiu da sua conta com segurança.",
+    titulo: "Sessão encerrada",
     tipo: "info"
   }));
   window.location.replace("login.html");

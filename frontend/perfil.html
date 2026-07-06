@@ -18,8 +18,8 @@
     </a>
 
     <nav>
-      <a href="index.html">Inicio</a>
-      <a href="sobre.html">Sobre Nos</a>
+      <a href="index.html">Início</a>
+      <a href="sobre.html">Sobre Nós</a>
       <a href="vagas.html">Vagas</a>
       <a href="ajudar.html">Como Ajudar</a>
       <a href="contato.html">Contato</a>
@@ -104,6 +104,27 @@
               <strong>********</strong>
               <button type="button" data-abrir-modal="senha">Alterar</button>
             </div>
+          </div>
+
+          <div class="perfil-separador"></div>
+
+          <div class="perfil-form-cabecalho">
+            <div>
+              <p>Recomendações</p>
+              <h2>Habilidades e interesses</h2>
+            </div>
+            <span>Usado para sugerir vagas compatíveis</span>
+          </div>
+
+          <div class="perfil-form-grade">
+            <label class="perfil-campo perfil-campo-largo">
+              <span>Minhas habilidades</span>
+              <input id="perfil-habilidade-input" class="habilidade-input" type="text" placeholder="Digite e aperte Enter">
+              <div class="habilidades-sugestoes" id="perfil-habilidades-sugestoes" aria-label="Sugestões de habilidades"></div>
+              <div class="habilidades-lista" id="perfil-habilidades-lista" aria-live="polite"></div>
+              <input id="perfil-habilidades" type="hidden">
+              <small>Quanto mais preciso estiver seu perfil, melhores ficam as recomendações.</small>
+            </label>
           </div>
 
           <div class="perfil-separador"></div>
@@ -195,6 +216,21 @@
     </div>
   </div>
 
+  <div class="perfil-modal" id="modal-verificacao-email" hidden>
+    <div class="perfil-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modal-verificacao-email-titulo">
+      <button class="perfil-modal-fechar" type="button" data-fechar-modal aria-label="Fechar">X</button>
+      <h2 id="modal-verificacao-email-titulo">Confirme seu novo e-mail</h2>
+      <p class="perfil-modal-texto">
+        Para concluir a alteração, abra o link abaixo. Enquanto o envio automático de e-mail não estiver ativo, use este acesso seguro para validar a mudança.
+      </p>
+      <a class="perfil-verificacao-link" id="perfil-verificacao-email-link" href="#">Link de verificação</a>
+      <div class="perfil-modal-acoes">
+        <button class="perfil-salvar" id="perfil-verificacao-email-copiar" type="button">Copiar link</button>
+        <a class="perfil-verificacao-abrir" id="perfil-verificacao-email-abrir" href="#">Abrir verificação</a>
+      </div>
+    </div>
+  </div>
+
   <div class="perfil-modal" id="modal-telefone" hidden>
     <div class="perfil-modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modal-telefone-titulo">
       <button class="perfil-modal-fechar" type="button" data-fechar-modal aria-label="Fechar">X</button>
@@ -221,6 +257,7 @@
         <label class="perfil-campo">
           <span>Senha atual *</span>
           <input id="senha-atual-modal" type="password" autocomplete="current-password" required>
+          <small id="senha-atual-status"></small>
         </label>
         <label class="perfil-campo">
           <span>Nova senha *</span>
@@ -229,6 +266,7 @@
         <label class="perfil-campo">
           <span>Confirmar nova senha *</span>
           <input id="senha-confirmar-modal" type="password" autocomplete="new-password" minlength="6" required>
+          <small id="senha-confirmar-status"></small>
         </label>
         <button class="perfil-salvar" type="submit">Salvar senha</button>
       </form>
@@ -245,7 +283,7 @@
     </div>
     <div class="chatbot-messages"></div>
     <form class="chatbot-form">
-      <input type="text" placeholder="Digite sua duvida..." required>
+      <input type="text" placeholder="Digite sua dúvida..." required>
       <button type="submit">Enviar</button>
     </form>
   </div>
@@ -254,6 +292,7 @@
     <p>Favela Tech - Conectando talentos da comunidade a oportunidades reais.</p>
   </footer>
 
+  <script src="js/habilidades.js"></script>
   <script src="js/main.js"></script>
   <script src="js/perfil.js"></script>
 </body>

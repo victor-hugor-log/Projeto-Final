@@ -18,8 +18,8 @@
     </a>
 
     <nav>
-      <a href="index.html">Inicio</a>
-      <a href="sobre.html">Sobre Nos</a>
+      <a href="index.html">Início</a>
+      <a href="sobre.html">Sobre Nós</a>
       <a href="vagas.html">Vagas</a>
       <a href="ajudar.html">Como Ajudar</a>
       <a href="contato.html">Contato</a>
@@ -32,7 +32,24 @@
       <div class="auth-card active" id="login-card">
         <p class="auth-kicker">Acesso Favela Tech</p>
         <h1>Entrar</h1>
-        <p class="auth-subtitle">Acesse sua conta para acompanhar vagas, recomendacoes e candidaturas.</p>
+        <p class="auth-subtitle">Acesse sua conta para acompanhar vagas, recomendações e candidaturas.</p>
+
+        <div class="auth-social">
+          <button type="button" class="auth-social-btn auth-social-google" data-provedor="google">
+            <span class="auth-social-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#EA4335" d="M12 10.2v3.6h5.1c-.2 1.2-1.6 3.6-5.1 3.6-3.1 0-5.6-2.5-5.6-5.6S8.9 6.2 12 6.2c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.5 3.9 14.4 3 12 3 7 3 3 7 3 12s4 9 9 9c5.2 0 8.6-3.7 8.6-8.9 0-.6-.1-1.1-.2-1.6H12z"/></svg>
+            </span>
+            Continuar com Google
+          </button>
+          <button type="button" class="auth-social-btn auth-social-facebook" data-provedor="facebook">
+            <span class="auth-social-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#1877F2" d="M13.5 22v-8h2.7l.4-3H13.5V9.1c0-.9.2-1.5 1.5-1.5H16.7V5.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.8v3h2.2v8h3.5z"/></svg>
+            </span>
+            Continuar com Facebook
+          </button>
+        </div>
+
+        <p class="auth-divisor"><span>ou continue com e-mail</span></p>
 
         <form id="form-login" novalidate>
           <div class="input-group">
@@ -52,7 +69,7 @@
         </form>
 
         <p class="switch-text">
-          Nao tem uma conta?
+          Não tem uma conta?
           <button type="button" id="abrir-cadastro">Cadastre-se aqui!</button>
         </p>
       </div>
@@ -60,7 +77,24 @@
       <div class="auth-card" id="cadastro-card" aria-hidden="true">
         <p class="auth-kicker">Novo talento ou empresa</p>
         <h1>Criar conta</h1>
-        <p class="auth-subtitle">Cadastre seu perfil para conectar habilidades, curriculo e oportunidades.</p>
+        <p class="auth-subtitle">Cadastre seu perfil para conectar habilidades, currículo e oportunidades.</p>
+
+        <div class="auth-social">
+          <button type="button" class="auth-social-btn auth-social-google" data-provedor="google">
+            <span class="auth-social-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#EA4335" d="M12 10.2v3.6h5.1c-.2 1.2-1.6 3.6-5.1 3.6-3.1 0-5.6-2.5-5.6-5.6S8.9 6.2 12 6.2c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.5 3.9 14.4 3 12 3 7 3 3 7 3 12s4 9 9 9c5.2 0 8.6-3.7 8.6-8.9 0-.6-.1-1.1-.2-1.6H12z"/></svg>
+            </span>
+            Cadastrar com Google
+          </button>
+          <button type="button" class="auth-social-btn auth-social-facebook" data-provedor="facebook">
+            <span class="auth-social-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#1877F2" d="M13.5 22v-8h2.7l.4-3H13.5V9.1c0-.9.2-1.5 1.5-1.5H16.7V5.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H7.8v3h2.2v8h3.5z"/></svg>
+            </span>
+            Cadastrar com Facebook
+          </button>
+        </div>
+
+        <p class="auth-divisor"><span>ou cadastre com e-mail</span></p>
 
         <form id="form-cadastro" novalidate>
           <div class="input-group">
@@ -84,23 +118,26 @@
           <div class="input-group">
             <label for="tipo-cad">Perfil</label>
             <select id="tipo-cad">
-              <option value="">Escolha uma opcao</option>
+              <option value="">Escolha uma opção</option>
               <option value="jovem">Jovem em busca de oportunidade</option>
               <option value="empresa">Empresa que deseja contratar</option>
             </select>
             <span class="erro" id="erro-tipo-cad"></span>
           </div>
 
-          <div class="input-group">
-            <label for="habilidades-cad">Habilidades ou area de interesse</label>
-            <input id="habilidades-cad" type="text" placeholder="Ex: HTML, atendimento, Excel">
+          <div class="input-group habilidades-grupo">
+            <label for="habilidades-cad">Habilidades ou área de interesse</label>
+            <input id="habilidade-cad-input" class="habilidade-input" type="text" placeholder="Digite e aperte Enter">
+            <div class="habilidades-sugestoes" id="habilidades-cad-sugestoes" aria-label="Sugestões de habilidades"></div>
+            <div class="habilidades-lista" id="habilidades-cad-lista" aria-live="polite"></div>
+            <input id="habilidades-cad" type="hidden">
             <span class="erro" id="erro-habilidades-cad"></span>
           </div>
 
           <label class="termos">
             <input id="lgpd-cad" type="checkbox">
             <span>
-              Aceito os termos de uso e a politica de privacidade (LGPD).
+              Aceito os termos de uso e a política de privacidade (LGPD).
               <button class="termos-link" id="abrir-termos" type="button">Ler termos</button>
             </span>
           </label>
@@ -110,15 +147,15 @@
         </form>
 
         <p class="switch-text">
-          Ja tem uma conta?
+          Já tem uma conta?
           <button type="button" id="abrir-login">Entrar agora</button>
         </p>
       </div>
     </section>
 
     <section class="perfil-restrito" id="perfil-restrito" hidden>
-      <h2>Area restrita</h2>
-      <p>Perfil basico do usuario autenticado.</p>
+      <h2>Área restrita</h2>
+      <p>Perfil básico do usuário autenticado.</p>
       <div id="perfil-dados"></div>
       <button id="sair-conta" type="button">Sair da conta</button>
     </section>
@@ -184,6 +221,50 @@
     </div>
   </div>
 
+  <div class="social-login-modal" id="social-login-modal" hidden>
+    <div class="social-login-caixa" role="dialog" aria-modal="true" aria-labelledby="social-login-titulo">
+      <button class="social-login-fechar" id="fechar-social-login" type="button" aria-label="Fechar login social">X</button>
+      <p class="social-login-kicker">Login social</p>
+      <h2 id="social-login-titulo">Continuar com <span id="social-login-provedor">Google</span></h2>
+      <p>No ambiente de produção, você seria redirecionado para autenticar com a rede social escolhida. Como estamos em modo de demonstração local, use o cadastro ou login com e-mail e senha.</p>
+      <button id="usar-email-social" type="button">Usar e-mail e senha</button>
+    </div>
+  </div>
+
+  <div class="recuperacao-modal" id="recuperacao-modal" hidden>
+    <div class="recuperacao-caixa" role="dialog" aria-modal="true" aria-labelledby="recuperacao-titulo">
+      <button class="recuperacao-fechar" id="fechar-recuperacao" type="button" aria-label="Fechar recuperação de senha">X</button>
+      <p class="recuperacao-kicker">Recuperação de acesso</p>
+      <h2 id="recuperacao-titulo">Redefinir senha</h2>
+      <p>Informe o e-mail da conta para gerar um código temporário. No envio real, esse código chegaria por e-mail.</p>
+
+      <form class="recuperacao-form" id="form-recuperacao-email" novalidate>
+        <label for="recuperacao-email">E-mail cadastrado</label>
+        <input id="recuperacao-email" type="email" autocomplete="email" placeholder="seuemail@exemplo.com">
+        <button type="submit">Gerar código</button>
+      </form>
+
+      <div class="recuperacao-codigo-local" id="recuperacao-codigo-local" hidden>
+        <span>Código local para teste</span>
+        <strong id="recuperacao-codigo-texto">000000</strong>
+        <button id="copiar-codigo-recuperacao" type="button">Copiar código</button>
+      </div>
+
+      <form class="recuperacao-form" id="form-redefinir-senha" hidden novalidate>
+        <label for="recuperacao-codigo">Código recebido</label>
+        <input id="recuperacao-codigo" type="text" inputmode="numeric" maxlength="6" placeholder="000000">
+
+        <label for="recuperacao-nova-senha">Nova senha</label>
+        <input id="recuperacao-nova-senha" type="password" autocomplete="new-password" minlength="6">
+
+        <label for="recuperacao-confirmar-senha">Confirmar nova senha</label>
+        <input id="recuperacao-confirmar-senha" type="password" autocomplete="new-password" minlength="6">
+
+        <button type="submit">Salvar nova senha</button>
+      </form>
+    </div>
+  </div>
+
   <button class="chatbot-button" aria-label="Abrir assistente virtual">
     <img class="chatbot-icon" src="assets/img/chatbot-robo.png" alt="" aria-hidden="true">
   </button>
@@ -194,7 +275,7 @@
     </div>
     <div class="chatbot-messages"></div>
     <form class="chatbot-form">
-      <input type="text" placeholder="Digite sua duvida..." required>
+      <input type="text" placeholder="Digite sua dúvida..." required>
       <button type="submit">Enviar</button>
     </form>
   </div>
@@ -203,6 +284,7 @@
     <p>Favela Tech - Conectando talentos da comunidade a oportunidades reais.</p>
   </footer>
 
+  <script src="js/habilidades.js"></script>
   <script src="js/login.js"></script>
   <script src="js/main.js"></script>
 </body>

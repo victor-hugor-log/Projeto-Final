@@ -97,7 +97,7 @@ async function obterCurriculo(req, res) {
   const usuarioId = obterUsuarioId(req);
 
   if (!usuarioId) {
-    return res.status(400).json({ mensagem: "Usuario invalido." });
+    return res.status(400).json({ mensagem: "Usuário inválido." });
   }
 
   try {
@@ -110,8 +110,8 @@ async function obterCurriculo(req, res) {
       curriculo: curriculos.length ? normalizarCurriculo(curriculos[0]) : null
     });
   } catch (erro) {
-    console.error("Erro ao buscar curriculo:", erro.message);
-    return res.status(500).json({ mensagem: "Nao foi possivel carregar o curriculo." });
+    console.error("Erro ao buscar currículo:", erro.message);
+    return res.status(500).json({ mensagem: "Não foi possível carregar o currículo." });
   }
 }
 
@@ -120,23 +120,23 @@ async function salvarCurriculo(req, res) {
   const dados = normalizarDados(req.body);
 
   if (!usuarioId) {
-    return res.status(400).json({ mensagem: "Usuario invalido." });
+    return res.status(400).json({ mensagem: "Usuário inválido." });
   }
 
   if (CAMPOS_OBRIGATORIOS.some((campo) => !dados[campo])) {
-    return res.status(400).json({ mensagem: "Preencha todos os campos obrigatorios." });
+    return res.status(400).json({ mensagem: "Preencha todos os campos obrigatórios." });
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dados.email)) {
-    return res.status(400).json({ mensagem: "Informe um e-mail valido." });
+    return res.status(400).json({ mensagem: "Informe um e-mail válido." });
   }
 
   if (!dataValida(dados.data_nascimento)) {
-    return res.status(400).json({ mensagem: "Informe uma data de nascimento valida." });
+    return res.status(400).json({ mensagem: "Informe uma data de nascimento válida." });
   }
 
   if (!urlValida(dados.linkedin) || !urlValida(dados.portfolio)) {
-    return res.status(400).json({ mensagem: "Informe links validos, com http ou https." });
+    return res.status(400).json({ mensagem: "Informe links válidos, com http ou https." });
   }
 
   try {
@@ -146,7 +146,7 @@ async function salvarCurriculo(req, res) {
     );
 
     if (usuarios.length === 0) {
-      return res.status(404).json({ mensagem: "Usuario nao encontrado." });
+      return res.status(404).json({ mensagem: "Usuário não encontrado." });
     }
 
     await pool.execute(
@@ -209,8 +209,8 @@ async function salvarCurriculo(req, res) {
 
     return res.json({ curriculo: normalizarCurriculo(curriculos[0]) });
   } catch (erro) {
-    console.error("Erro ao salvar curriculo:", erro.message);
-    return res.status(500).json({ mensagem: "Nao foi possivel salvar o curriculo." });
+    console.error("Erro ao salvar currículo:", erro.message);
+    return res.status(500).json({ mensagem: "Não foi possível salvar o currículo." });
   }
 }
 

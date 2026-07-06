@@ -33,6 +33,28 @@ async function garantirColuna(tabela, coluna, definicao) {
   return true;
 }
 
+async function garantirMigracaoUnica(chave, executar) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS migracoes_sistema (
+      chave VARCHAR(120) PRIMARY KEY,
+      executada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  const [migracoes] = await pool.execute(
+    "SELECT chave FROM migracoes_sistema WHERE chave = ? LIMIT 1",
+    [chave]
+  );
+
+  if (migracoes.length > 0) return;
+
+  await executar();
+  await pool.execute(
+    "INSERT INTO migracoes_sistema (chave) VALUES (?)",
+    [chave]
+  );
+}
+
 async function garantirUsuarios() {
   await garantirColuna("usuarios", "cep", "cep VARCHAR(9) NULL AFTER habilidades");
   await garantirColuna("usuarios", "endereco", "endereco VARCHAR(150) NULL AFTER cep");
@@ -45,6 +67,8 @@ async function garantirUsuarios() {
   const criouEmailVerificado = await garantirColuna("usuarios", "email_verificado", "email_verificado BOOLEAN NOT NULL DEFAULT false AFTER foto_perfil");
   await garantirColuna("usuarios", "email_token_hash", "email_token_hash VARCHAR(255) NULL AFTER email_verificado");
   await garantirColuna("usuarios", "email_token_expira_em", "email_token_expira_em DATETIME NULL AFTER email_token_hash");
+  await garantirColuna("usuarios", "senha_reset_codigo_hash", "senha_reset_codigo_hash VARCHAR(255) NULL AFTER email_token_expira_em");
+  await garantirColuna("usuarios", "senha_reset_expira_em", "senha_reset_expira_em DATETIME NULL AFTER senha_reset_codigo_hash");
 
   if (criouEmailVerificado) {
     await pool.query(`
@@ -53,6 +77,36 @@ async function garantirUsuarios() {
       WHERE email_verificado = 0
         AND email_token_hash IS NULL
         AND email_token_expira_em IS NULL
+    `);
+  }
+}
+
+async function garantirVagas() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS vagas (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      titulo VARCHAR(120) NOT NULL,
+      empresa VARCHAR(100) NOT NULL,
+      localizacao VARCHAR(100) NOT NULL,
+      area VARCHAR(80),
+      tipo VARCHAR(50) NOT NULL,
+      habilidades TEXT,
+      origem VARCHAR(100),
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await garantirColuna("vagas", "external_id", "external_id VARCHAR(120) NULL AFTER id");
+  await garantirColuna("vagas", "url", "url VARCHAR(500) NULL AFTER origem");
+  await garantirColuna("vagas", "salario", "salario VARCHAR(120) NULL AFTER url");
+  await garantirColuna("vagas", "descricao_resumo", "descricao_resumo TEXT NULL AFTER salario");
+  await garantirColuna("vagas", "publicado_em", "publicado_em DATETIME NULL AFTER descricao_resumo");
+  await garantirColuna("vagas", "atualizado_api_em", "atualizado_api_em DATETIME NULL AFTER publicado_em");
+
+  if (!(await indiceExiste("vagas", "vaga_external_id_unica"))) {
+    await pool.query(`
+      ALTER TABLE vagas
+      ADD UNIQUE KEY vaga_external_id_unica (external_id)
     `);
   }
 }
@@ -134,6 +188,18 @@ async function garantirCandidaturas() {
 
 async function garantirEstrutura() {
   await garantirUsuarios();
+  await garantirMigracaoUnica("limpar_habilidades_usuarios_tags_v1", async () => {
+    await pool.query("UPDATE usuarios SET habilidades = NULL");
+  });
+  await garantirVagas();
+  await garantirMigracaoUnica("limpar_html_vagas_exemplo_v1", async () => {
+    await pool.query(`
+      UPDATE vagas
+      SET habilidades = REPLACE(REPLACE(habilidades, 'html, ', ''), ', html', '')
+      WHERE LOWER(habilidades) LIKE '%html%'
+        AND origem IN ('LinkedIn Jobs', 'CIEE', 'Indeed')
+    `);
+  });
   await garantirCurriculos();
   await garantirCandidaturas();
 }

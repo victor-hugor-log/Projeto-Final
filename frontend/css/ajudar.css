@@ -139,7 +139,7 @@ main {
   padding: 86px 20px;
   background:
     linear-gradient(105deg, rgba(30, 27, 75, 0.96), rgba(76, 29, 149, 0.82)),
-    url("../assets/img/hero-favela-tech-3.png") center 48% / cover;
+    url("../assets/img/ajudar-hero.png") center 48% / cover;
 }
 
 .ajudar-intro::after {

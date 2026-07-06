@@ -23,11 +23,14 @@ CREATE TABLE IF NOT EXISTS usuarios (
   email_verificado BOOLEAN NOT NULL DEFAULT false,
   email_token_hash VARCHAR(255),
   email_token_expira_em DATETIME,
+  senha_reset_codigo_hash VARCHAR(255),
+  senha_reset_expira_em DATETIME,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS vagas (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  external_id VARCHAR(120) UNIQUE,
   titulo VARCHAR(120) NOT NULL,
   empresa VARCHAR(100) NOT NULL,
   localizacao VARCHAR(100) NOT NULL,
@@ -35,6 +38,11 @@ CREATE TABLE IF NOT EXISTS vagas (
   tipo VARCHAR(50) NOT NULL,
   habilidades TEXT,
   origem VARCHAR(100),
+  url VARCHAR(500),
+  salario VARCHAR(120),
+  descricao_resumo TEXT,
+  publicado_em DATETIME,
+  atualizado_api_em DATETIME,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -84,4 +92,9 @@ CREATE TABLE IF NOT EXISTS mensagens_contato (
   tipo VARCHAR(60),
   mensagem TEXT NOT NULL,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS migracoes_sistema (
+  chave VARCHAR(120) PRIMARY KEY,
+  executada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,7 +1,92 @@
 let vagas = [];
 
+const ALERTAS_EMAIL_KEY = "favelaTechAlertasEmail";
+const ALERTAS_EMAIL_SESSAO_KEY = "favelaTechAlertasSessao";
+const HABILIDADES_TAGS_MIGRATION_KEY = "favelaTechHabilidadesTagsV1";
+const habilidadesHelper = window.FavelaTechHabilidades || {
+  normalizar,
+  listar: (valor) => String(valor || "").split(/[,;|]/).map((item) => item.trim()).filter(Boolean),
+  serializar: (lista) => lista.join(", ")
+};
+
 function getUsuarioLogado() {
   return JSON.parse(localStorage.getItem("favelaTechUsuarioLogado") || "null");
+}
+
+function getPreferenciaAlertasEmail(usuarioId) {
+  const preferencias = JSON.parse(localStorage.getItem(ALERTAS_EMAIL_KEY) || "{}");
+  return Boolean(preferencias[usuarioId]);
+}
+
+function setPreferenciaAlertasEmail(usuarioId, ativo) {
+  const preferencias = JSON.parse(localStorage.getItem(ALERTAS_EMAIL_KEY) || "{}");
+  preferencias[usuarioId] = ativo;
+  localStorage.setItem(ALERTAS_EMAIL_KEY, JSON.stringify(preferencias));
+}
+
+function limparHabilidadesLocaisAntigas() {
+  if (localStorage.getItem(HABILIDADES_TAGS_MIGRATION_KEY) === "true") return;
+
+  const usuario = getUsuarioLogado();
+  if (usuario?.habilidades) {
+    usuario.habilidades = "";
+    localStorage.setItem("favelaTechUsuarioLogado", JSON.stringify(usuario));
+  }
+
+  localStorage.setItem(HABILIDADES_TAGS_MIGRATION_KEY, "true");
+}
+
+function mascararEmailAlerta(email) {
+  if (!email || !email.includes("@")) return "seu e-mail";
+
+  const [nome, dominio] = email.split("@");
+  const nomeVisivel = nome.length <= 2 ? nome[0] || "*" : nome.slice(0, 2);
+  return `${nomeVisivel}***@${dominio}`;
+}
+
+async function registrarAlertaEmail({ email, tipo, detalhes }) {
+  try {
+    const resposta = await fetch("/api/alertas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, tipo, detalhes })
+    });
+
+    const resultado = await resposta.json().catch(() => ({}));
+    return resposta.ok ? resultado : null;
+  } catch {
+    return null;
+  }
+}
+
+async function notificarAlertaEmail(usuario, tipo, detalhes, opcoes = {}) {
+  if (!usuario?.email || !getPreferenciaAlertasEmail(usuario.id)) return;
+
+  await registrarAlertaEmail({
+    email: usuario.email,
+    tipo,
+    detalhes
+  });
+
+  const emailMascarado = mascararEmailAlerta(usuario.email);
+  const mensagens = {
+    ativacao: `Alertas ativados. Você receberá novidades em ${emailMascarado}.`,
+    recomendacao: `Alerta enviado para ${emailMascarado} com vagas compatíveis com seu perfil.`,
+    candidatura: `Você receberá atualizações sobre esta candidatura em ${emailMascarado}.`
+  };
+
+  if (opcoes.statusElemento) {
+    opcoes.statusElemento.hidden = false;
+    opcoes.statusElemento.textContent = mensagens[tipo] || `Alerta registrado para ${emailMascarado}.`;
+  }
+
+  mostrarNotificacao(mensagens[tipo] || `Alerta registrado para ${emailMascarado}.`, {
+    titulo: "Alerta por e-mail",
+    tipo: "sucesso",
+    duracao: opcoes.duracao || 4500
+  });
 }
 
 function normalizar(texto) {
@@ -40,7 +125,7 @@ function mostrarNotificacao(mensagem, opcoes = {}) {
   const fechar = document.createElement("button");
   fechar.className = "notificacao-fechar";
   fechar.type = "button";
-  fechar.setAttribute("aria-label", "Fechar notificacao");
+  fechar.setAttribute("aria-label", "Fechar notificação");
   fechar.textContent = "X";
 
   conteudo.append(tituloElemento, mensagemElemento);
@@ -82,8 +167,17 @@ function mostrarNotificacaoPendente() {
     const { mensagem, titulo, tipo } = JSON.parse(dadosSalvos);
     mostrarNotificacao(mensagem, { titulo, tipo });
   } catch {
-    mostrarNotificacao("A operacao foi concluida.");
+    mostrarNotificacao("A operação foi concluída.");
   }
+}
+
+function formatarRotuloVaga(valor) {
+  const rotulos = {
+    Administracao: "Administração",
+    Estagio: "Estágio"
+  };
+
+  return rotulos[valor] || valor;
 }
 
 function iniciarChatbot() {
@@ -120,7 +214,7 @@ function iniciarChatbot() {
     const intencoes = [
       {
         nome: "vagas",
-        palavras: ["vaga", "emprego", "oportunidade", "estagio", "aprendiz", "clt", "freelancer", "remoto", "filtro", "buscar", "pesquisar", "area", "contrato"]
+        palavras: ["vaga", "emprego", "oportunidade", "estagio", "aprendiz", "clt", "freelancer", "remoto", "filtro", "buscar", "pesquisar", "area", "contrato", "alerta", "alertas", "e-mail", "email"]
       },
       {
         nome: "curriculo",
@@ -249,7 +343,7 @@ function iniciarChatbot() {
       conta: [
         { rotulo: "Criar conta", pergunta: "Como criar uma conta?" },
         { rotulo: "Perfil", pergunta: "O que tem no perfil?" },
-        { rotulo: "Trocar dados", pergunta: "Como altero telefone, email ou senha?" }
+        { rotulo: "Trocar dados", pergunta: "Como altero telefone, e-mail ou senha?" }
       ],
       candidatura: [
         { rotulo: "Ver candidaturas", pergunta: "Onde vejo minhas candidaturas?" },
@@ -267,7 +361,7 @@ function iniciarChatbot() {
   }
 
   function respostaContinuidade(usuario) {
-    const nome = usuario?.nome?.split(" ")[0] || "voce";
+    const nome = usuario?.nome?.split(" ")[0] || "você";
 
     if (ultimaIntencao === "vagas") {
       return {
@@ -348,6 +442,15 @@ function iniciarChatbot() {
         };
       }
 
+      if (temAlguma(texto, ["alerta", "alertas", "e-mail", "email"])) {
+        return {
+          texto: usuario
+            ? "Na página Vagas, ative Alertas por e-mail na área de recomendação automática. Quando houver vagas compatíveis ou uma candidatura for enviada, o sistema registra o alerta para o seu e-mail."
+            : "Para receber alertas por e-mail, primeiro crie sua conta em Login | Cadastro. Depois, na página Vagas, ative a opção Alertas por e-mail.",
+          atalhos: atalhosPorIntencao("vagas")
+        };
+      }
+
       return {
         texto: "Na aba Vagas você pode buscar por palavra-chave, área e tipo de contratação. Se estiver logado, o site também consegue recomendar oportunidades próximas das suas habilidades.",
         atalhos: atalhosPorIntencao("vagas")
@@ -359,7 +462,7 @@ function iniciarChatbot() {
 
       if (temAlguma(texto, ["duplicada", "duas vezes", "repetir"])) {
         return {
-          texto: "Não dá para se candidatar duas vezes na mesma vaga. O banco bloqueia candidatura duplicada, então fica organizado e evita bagunça no perfil.",
+          texto: "Não dá para se candidatar duas vezes na mesma vaga. O sistema bloqueia candidaturas duplicadas para manter seu perfil organizado.",
           atalhos: atalhosPorIntencao("candidatura")
         };
       }
@@ -540,19 +643,44 @@ function renderizarVagas(lista) {
 
     const detalhes = document.createElement("div");
     detalhes.className = "vaga-detalhes";
-    [
+    const detalhesVaga = [
       ["Local", vaga.localizacao],
-      ["Area", vaga.area],
+      ["Área", vaga.area],
       ["Tipo", vaga.tipo],
       ["Origem", vaga.origem]
-    ].forEach(([rotulo, valor]) => {
+    ];
+
+    if (vaga.salario) {
+      detalhesVaga.splice(3, 0, ["Salário", vaga.salario]);
+    }
+
+    detalhesVaga.forEach(([rotulo, valor]) => {
       const linha = document.createElement("span");
       const destaque = document.createElement("strong");
       destaque.textContent = `${rotulo}: `;
-      linha.append(destaque, document.createTextNode(valor || "Nao informado"));
+      linha.append(destaque, document.createTextNode(formatarRotuloVaga(valor) || "Não informado"));
       detalhes.appendChild(linha);
     });
     card.appendChild(detalhes);
+
+    if (vaga.descricaoResumo) {
+      const resumo = document.createElement("p");
+      resumo.className = "vaga-resumo";
+      resumo.textContent = vaga.descricaoResumo;
+      card.appendChild(resumo);
+    }
+
+    const habilidadesVaga = habilidadesHelper.listar(vaga.habilidades).slice(0, 5);
+    if (habilidadesVaga.length > 0) {
+      const tags = document.createElement("div");
+      tags.className = "vaga-tags";
+      habilidadesVaga.forEach((habilidade) => {
+        const tag = document.createElement("span");
+        tag.textContent = habilidade;
+        tags.appendChild(tag);
+      });
+      card.appendChild(tags);
+    }
 
     const botao = document.createElement("button");
     botao.type = "button";
@@ -561,8 +689,8 @@ function renderizarVagas(lista) {
     botao.addEventListener("click", async () => {
       const usuario = getUsuarioLogado();
       if (!usuario) {
-        mostrarNotificacao("Cadastre-se ou faca login para se candidatar.", {
-          titulo: "Acesso necessario",
+        mostrarNotificacao("Cadastre-se ou faça login para se candidatar.", {
+          titulo: "Acesso necessário",
           tipo: "aviso"
         });
         setTimeout(() => {
@@ -582,6 +710,11 @@ function renderizarVagas(lista) {
           titulo: "Candidatura enviada",
           tipo: "sucesso"
         });
+        await notificarAlertaEmail(
+          usuario,
+          "candidatura",
+          `Candidatura enviada para ${vaga.titulo} - ${vaga.empresa}`
+        );
       } catch (erro) {
         if (erro.status === 409) {
           botao.textContent = "Já candidatado";
@@ -602,7 +735,21 @@ function renderizarVagas(lista) {
       }
     });
 
-    card.appendChild(botao);
+    const acoes = document.createElement("div");
+    acoes.className = "vaga-acoes";
+    acoes.appendChild(botao);
+
+    if (vaga.url) {
+      const linkOriginal = document.createElement("a");
+      linkOriginal.className = "vaga-link-original";
+      linkOriginal.href = vaga.url;
+      linkOriginal.target = "_blank";
+      linkOriginal.rel = "noopener";
+      linkOriginal.textContent = "Ver vaga original";
+      acoes.appendChild(linkOriginal);
+    }
+
+    card.appendChild(acoes);
     fragmento.appendChild(card);
   });
 
@@ -642,10 +789,149 @@ async function iniciarVagas() {
   const selectArea = document.getElementById("area-vaga");
   const selectTipo = document.getElementById("tipo-vaga");
   const textoRecomendacao = document.getElementById("texto-recomendacao");
+  const alertasEmailInput = document.getElementById("alertas-email");
+  const alertasEmailLabel = document.getElementById("alertas-email-label");
+  const alertasEmailStatus = document.getElementById("alertas-email-status");
+  const recomendacaoLista = document.getElementById("recomendacao-lista");
   const container = document.getElementById("vagas-lista");
   const usuario = getUsuarioLogado();
 
   if (!form) return;
+
+  function configurarAlertasEmail() {
+    if (!usuario || !alertasEmailInput || !alertasEmailLabel) return;
+
+    alertasEmailLabel.hidden = false;
+    alertasEmailInput.checked = getPreferenciaAlertasEmail(usuario.id);
+
+    if (alertasEmailInput.checked && alertasEmailStatus) {
+      alertasEmailStatus.hidden = false;
+      alertasEmailStatus.textContent = `Alertas ativos para ${mascararEmailAlerta(usuario.email)}.`;
+    }
+
+    alertasEmailInput.addEventListener("change", async () => {
+      const ativo = alertasEmailInput.checked;
+      setPreferenciaAlertasEmail(usuario.id, ativo);
+
+      if (!ativo) {
+        if (alertasEmailStatus) {
+          alertasEmailStatus.hidden = false;
+          alertasEmailStatus.textContent = "Alertas por e-mail desativados.";
+        }
+
+        mostrarNotificacao("Você não receberá mais alertas por e-mail.", {
+          titulo: "Alertas desativados",
+          tipo: "info"
+        });
+        return;
+      }
+
+      await notificarAlertaEmail(
+        usuario,
+        "ativacao",
+        "Usuário ativou alertas por e-mail de vagas compatíveis.",
+        { statusElemento: alertasEmailStatus }
+      );
+    });
+  }
+
+  configurarAlertasEmail();
+
+  function calcularCompatibilidade(vaga, habilidadesUsuario) {
+    const textoVaga = habilidadesHelper.normalizar([
+      vaga.titulo,
+      vaga.empresa,
+      vaga.area,
+      vaga.tipo,
+      vaga.localizacao,
+      vaga.habilidades,
+      vaga.descricaoResumo
+    ].filter(Boolean).join(" "));
+
+    const habilidadesEncontradas = habilidadesUsuario.filter((habilidade) => {
+      const habilidadeNormalizada = habilidadesHelper.normalizar(habilidade);
+      return habilidadeNormalizada && textoVaga.includes(habilidadeNormalizada);
+    });
+
+    return {
+      vaga,
+      habilidadesEncontradas,
+      percentual: habilidadesUsuario.length
+        ? Math.round((habilidadesEncontradas.length / habilidadesUsuario.length) * 100)
+        : 0
+    };
+  }
+
+  function renderizarRecomendacoes(recomendacoes, habilidadesUsuario) {
+    if (!recomendacaoLista) return;
+
+    if (!usuario) {
+      const mensagem = document.createElement("p");
+      mensagem.className = "recomendacao-vazia";
+      mensagem.textContent = "Entre na sua conta para receber indicações por habilidades.";
+      recomendacaoLista.replaceChildren(mensagem);
+      return;
+    }
+
+    if (habilidadesUsuario.length === 0) {
+      const mensagem = document.createElement("p");
+      mensagem.className = "recomendacao-vazia";
+      mensagem.textContent = "Adicione habilidades no seu perfil para ativar as recomendações.";
+      recomendacaoLista.replaceChildren(mensagem);
+      return;
+    }
+
+    if (recomendacoes.length === 0) {
+      const mensagem = document.createElement("p");
+      mensagem.className = "recomendacao-vazia";
+      mensagem.textContent = "Nenhuma vaga bateu diretamente com suas habilidades ainda.";
+      recomendacaoLista.replaceChildren(mensagem);
+      return;
+    }
+
+    const fragmento = document.createDocumentFragment();
+
+    recomendacoes.slice(0, 4).forEach((recomendacao) => {
+      const card = document.createElement("article");
+      card.className = "recomendacao-card";
+
+      const topo = document.createElement("div");
+      topo.className = "recomendacao-card-topo";
+
+      const titulo = document.createElement("h3");
+      titulo.textContent = recomendacao.vaga.titulo;
+
+      const percentual = document.createElement("span");
+      percentual.textContent = `${recomendacao.percentual}%`;
+
+      topo.append(titulo, percentual);
+
+      const empresa = document.createElement("p");
+      empresa.textContent = `${recomendacao.vaga.empresa || "Empresa parceira"} • ${formatarRotuloVaga(recomendacao.vaga.area) || "Área não informada"}`;
+
+      const tags = document.createElement("div");
+      tags.className = "recomendacao-tags";
+      recomendacao.habilidadesEncontradas.forEach((habilidade) => {
+        const tag = document.createElement("span");
+        tag.textContent = habilidade;
+        tags.appendChild(tag);
+      });
+
+      const botao = document.createElement("button");
+      botao.type = "button";
+      botao.textContent = "Ver vaga";
+      botao.addEventListener("click", () => {
+        inputBusca.value = recomendacao.vaga.titulo;
+        renderizarVagas([recomendacao.vaga]);
+        container.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      card.append(topo, empresa, tags, botao);
+      fragmento.appendChild(card);
+    });
+
+    recomendacaoLista.replaceChildren(fragmento);
+  }
 
   function filtrarVagas() {
     const busca = normalizar(inputBusca.value);
@@ -653,7 +939,7 @@ async function iniciarVagas() {
     const tipo = selectTipo.value;
 
     const filtradas = vagas.filter((vaga) => {
-      const correspondeBusca = !busca || normalizar(`${vaga.titulo} ${vaga.empresa} ${vaga.area} ${vaga.tipo}`).includes(busca);
+      const correspondeBusca = !busca || normalizar(`${vaga.titulo} ${vaga.empresa} ${vaga.area} ${vaga.tipo} ${vaga.localizacao} ${vaga.habilidades} ${vaga.descricaoResumo}`).includes(busca);
       const correspondeArea = !area || vaga.area === area;
       const correspondeTipo = !tipo || vaga.tipo === tipo;
       return correspondeBusca && correspondeArea && correspondeTipo;
@@ -663,19 +949,43 @@ async function iniciarVagas() {
   }
 
   function atualizarRecomendacoes() {
-    if (!textoRecomendacao || !usuario?.habilidades) return;
+    if (!textoRecomendacao) return;
 
-    const habilidadesUsuario = normalizar(usuario.habilidades)
-      .split(/[\s,;]+/)
-      .filter((habilidade) => habilidade.length >= 3);
-    const recomendadas = vagas.filter((vaga) => {
-      const habilidadesVaga = normalizar(vaga.habilidades);
-      return habilidadesUsuario.some((habilidade) => habilidadesVaga.includes(habilidade));
-    });
+    if (!usuario) {
+      textoRecomendacao.textContent = "Entre na sua conta para ver vagas indicadas automaticamente.";
+      renderizarRecomendacoes([], []);
+      return;
+    }
+
+    const habilidadesUsuario = habilidadesHelper.listar(usuario.habilidades);
+    const recomendadas = vagas
+      .map((vaga) => calcularCompatibilidade(vaga, habilidadesUsuario))
+      .filter((recomendacao) => recomendacao.habilidadesEncontradas.length > 0)
+      .sort((a, b) => b.habilidadesEncontradas.length - a.habilidadesEncontradas.length || b.percentual - a.percentual);
+
+    renderizarRecomendacoes(recomendadas, habilidadesUsuario);
+
+    if (habilidadesUsuario.length === 0) {
+      textoRecomendacao.textContent = "Adicione habilidades no perfil para receber recomendações automáticas.";
+      return;
+    }
 
     textoRecomendacao.textContent = recomendadas.length
-      ? `Encontramos ${recomendadas.length} vaga(s) com boa combinacao para suas habilidades: ${usuario.habilidades}.`
-      : "Ainda nao encontramos uma combinacao exata, mas voce pode explorar todas as vagas disponiveis.";
+      ? `Encontramos ${recomendadas.length} vaga(s) compatíveis com: ${habilidadesHelper.serializar(habilidadesUsuario)}.`
+      : "Ainda não encontramos uma combinação exata, mas você pode explorar todas as vagas disponíveis.";
+
+    if (recomendadas.length && getPreferenciaAlertasEmail(usuario.id)) {
+      const chaveSessao = `${ALERTAS_EMAIL_SESSAO_KEY}:${usuario.id}:${habilidadesHelper.normalizar(usuario.habilidades)}`;
+      if (!sessionStorage.getItem(chaveSessao)) {
+        sessionStorage.setItem(chaveSessao, "true");
+        notificarAlertaEmail(
+          usuario,
+          "recomendacao",
+          `${recomendadas.length} vaga(s) compatíveis encontradas: ${recomendadas.slice(0, 3).map((item) => item.vaga.titulo).join(", ")}.`,
+          { statusElemento: alertasEmailStatus }
+        );
+      }
+    }
   }
 
   inputBusca.addEventListener("input", filtrarVagas);
@@ -695,7 +1005,7 @@ async function iniciarVagas() {
     const resultado = await resposta.json().catch(() => []);
 
     if (!resposta.ok || !Array.isArray(resultado)) {
-      throw new Error("Nao foi possivel carregar as vagas.");
+      throw new Error("Não foi possível carregar as vagas.");
     }
 
     vagas = resultado;
@@ -704,7 +1014,7 @@ async function iniciarVagas() {
   } catch (erro) {
     const mensagem = document.createElement("p");
     mensagem.className = "sem-vagas";
-    mensagem.textContent = "Nao foi possivel carregar as vagas agora.";
+    mensagem.textContent = "Não foi possível carregar as vagas agora.";
     container.replaceChildren(mensagem);
     mostrarNotificacao(erro.message, {
       titulo: "Erro ao carregar vagas",
@@ -749,7 +1059,7 @@ function iniciarCompartilhamento() {
   botao.addEventListener("click", async () => {
     const dados = {
       title: "Favela Tech",
-      text: "Conheca o Portal de Oportunidades Favela Tech.",
+      text: "Conheça o Portal de Oportunidades Favela Tech.",
       url: window.location.href
     };
 
@@ -766,6 +1076,64 @@ function iniciarCompartilhamento() {
   });
 }
 
+function iniciarVoltarTopo() {
+  const botao = document.createElement("button");
+  botao.className = "voltar-topo";
+  botao.type = "button";
+  botao.setAttribute("aria-label", "Voltar ao topo");
+  botao.textContent = "↑";
+  document.body.appendChild(botao);
+
+  function atualizarVisibilidade() {
+    botao.classList.toggle("visivel", window.scrollY > 520);
+  }
+
+  botao.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+
+  window.addEventListener("scroll", atualizarVisibilidade, { passive: true });
+  atualizarVisibilidade();
+}
+
+function melhorarFooter(usuario) {
+  const footer = document.querySelector("footer");
+  if (!footer || footer.dataset.enriquecido === "true") return;
+
+  footer.dataset.enriquecido = "true";
+  footer.innerHTML = `
+    <div class="footer-conteudo">
+      <div class="footer-marca">
+        <a class="footer-logo" href="index.html">Favela Tech</a>
+        <p>Conectando talentos da comunidade a oportunidades reais, com currículo, vagas e acompanhamento em um só lugar.</p>
+      </div>
+
+      <nav class="footer-links" aria-label="Links do rodapé">
+        <strong>Navegação</strong>
+        <a href="index.html">Início</a>
+        <a href="vagas.html">Vagas</a>
+        <a href="curriculo.html">Currículo</a>
+        <a href="${usuario ? "perfil.html" : "login.html"}">${usuario ? "Minha conta" : "Login"}</a>
+      </nav>
+
+      <div class="footer-contato">
+        <strong>Projeto</strong>
+        <span>ODS 8: trabalho decente e crescimento econômico</span>
+        <a href="contato.html">Falar com a Favela Tech</a>
+      </div>
+    </div>
+
+    <div class="footer-base">
+      <span>Favela Tech - Portal de Oportunidades</span>
+      <span>Desenvolvido por Victor Lopes</span>
+    </div>
+  `;
+}
+
+limparHabilidadesLocaisAntigas();
 mostrarNotificacaoPendente();
 iniciarChatbot();
 iniciarVagas();
@@ -802,6 +1170,8 @@ function iniciarDOMGlobal() {
   iniciarBoasVindas(usuario, paginaAtual);
   animarSecoes();
   iniciarContadorContato();
+  iniciarVoltarTopo();
+  melhorarFooter(usuario);
 }
 
 function iniciarBoasVindas(usuario, paginaAtual) {

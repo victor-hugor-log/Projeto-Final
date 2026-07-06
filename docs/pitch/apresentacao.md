@@ -1,21 +1,17 @@
 # Pitch - Portal de Oportunidades Favela Tech
 
-## 1. Introducao
+Este arquivo acompanha a apresentação principal em `pitch/apresentacao.md`.
 
-O Portal de Oportunidades Favela Tech e um site criado com foco na ODS 8, que trata de trabalho decente e crescimento economico.
+O pitch explica, em primeira pessoa, como o projeto foi desenvolvido, quais tecnologias foram usadas, quais requisitos do desafio foram atendidos e como demonstrar o site.
 
-## 2. Motivacao
+Arquivo principal:
 
-Muitos jovens da comunidade possuem talento, cursos e vontade de trabalhar, mas enfrentam falta de acesso, visibilidade e conexao com empresas.
+```text
+Projeto-Final/pitch/apresentacao.md
+```
 
-## 3. Desenvolvimento
+Apresentação em PowerPoint:
 
-O projeto foi desenvolvido com HTML, CSS e JavaScript. O site possui paginas de apresentacao, vagas, cadastro, contato, como ajudar, chatbot e banco de dados simulado com LocalStorage.
-
-## 4. Resultados
-
-A plataforma permite cadastrar usuarios, salvar perfil basico, buscar vagas, receber recomendacoes automaticas e simular candidatura.
-
-## 5. Consideracoes finais
-
-O Favela Tech mostra como a tecnologia pode aproximar jovens, empresas e oportunidades, fortalecendo a inclusao produtiva e o crescimento economico local.
+```text
+Projeto-Final/pitch/favela-tech-apresentacao.pptx
+```

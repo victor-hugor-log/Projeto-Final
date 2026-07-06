@@ -1,6 +1,11 @@
 {
-  "name": "Projeto-Final",
-  "lockfileVersion": 3,
-  "requires": true,
-  "packages": {}
+  "name": "favela-tech",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portal de Oportunidades Favela Tech",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev",
+    "install:backend": "npm --prefix backend install"
+  }
 }

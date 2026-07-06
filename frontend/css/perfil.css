@@ -7,7 +7,7 @@
   padding: 46px 24px;
   background:
     linear-gradient(105deg, rgba(30, 27, 75, 0.98), rgba(76, 29, 149, 0.88)),
-    url("../assets/img/hero-favela-tech-3.png") center 46% / cover;
+    url("../assets/img/perfil-hero.png") center 46% / cover;
   color: #ffffff;
 }
 
@@ -330,9 +330,28 @@
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.13);
 }
 
+.perfil-campo.valido input {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+}
+
+.perfil-campo.invalido input {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
 .perfil-campo small {
+  min-height: 16px;
   color: #6b7280;
   font-size: 0.75rem;
+}
+
+.perfil-campo.valido small {
+  color: #166534;
+}
+
+.perfil-campo.invalido small {
+  color: #b91c1c;
 }
 
 .perfil-separador {
@@ -498,6 +517,49 @@
   margin-bottom: 20px;
   color: #1e1b4b;
   font-size: 1.25rem;
+}
+
+.perfil-modal-texto {
+  margin-bottom: 16px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.perfil-verificacao-link {
+  display: block;
+  max-width: 100%;
+  margin-bottom: 18px;
+  padding: 12px;
+  overflow-wrap: anywhere;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background-color: #f5f3ff;
+  color: #5b21b6;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.perfil-modal-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.perfil-verificacao-abrir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 18px;
+  border: 1px solid #c4b5fd;
+  border-radius: 8px;
+  color: #5b21b6;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.perfil-verificacao-abrir:hover {
+  background-color: #f5f3ff;
 }
 
 .perfil-modal-fechar {

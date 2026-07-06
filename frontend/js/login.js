@@ -17,6 +17,28 @@ const verificacaoLocalModal = document.getElementById("verificacao-local-modal")
 const fecharVerificacaoLocal = document.getElementById("fechar-verificacao-local");
 const verificacaoLocalLink = document.getElementById("verificacao-local-link");
 const copiarVerificacaoLocal = document.getElementById("copiar-verificacao-local");
+const recuperacaoModal = document.getElementById("recuperacao-modal");
+const fecharRecuperacao = document.getElementById("fechar-recuperacao");
+const formRecuperacaoEmail = document.getElementById("form-recuperacao-email");
+const formRedefinirSenha = document.getElementById("form-redefinir-senha");
+const recuperacaoEmail = document.getElementById("recuperacao-email");
+const recuperacaoCodigo = document.getElementById("recuperacao-codigo");
+const recuperacaoNovaSenha = document.getElementById("recuperacao-nova-senha");
+const recuperacaoConfirmarSenha = document.getElementById("recuperacao-confirmar-senha");
+const recuperacaoCodigoLocal = document.getElementById("recuperacao-codigo-local");
+const recuperacaoCodigoTexto = document.getElementById("recuperacao-codigo-texto");
+const copiarCodigoRecuperacao = document.getElementById("copiar-codigo-recuperacao");
+const socialLoginModal = document.getElementById("social-login-modal");
+const fecharSocialLogin = document.getElementById("fechar-social-login");
+const socialLoginProvedor = document.getElementById("social-login-provedor");
+const usarEmailSocial = document.getElementById("usar-email-social");
+const editorHabilidadesCadastro = window.FavelaTechHabilidades?.criarEditor({
+  campoId: "habilidades-cad",
+  inputId: "habilidade-cad-input",
+  listaId: "habilidades-cad-lista",
+  sugestoesId: "habilidades-cad-sugestoes",
+  erroId: "erro-habilidades-cad"
+});
 
 function trocarBalao(tipo) {
   const mostrarCadastro = tipo === "cadastro";
@@ -49,7 +71,27 @@ async function enviarAutenticacao(endpoint, dados) {
   const resultado = await resposta.json().catch(() => ({}));
 
   if (!resposta.ok) {
-    throw new Error(resultado.mensagem || "Nao foi possivel acessar o servidor.");
+    throw new Error(resultado.mensagem || "Não foi possível acessar o servidor.");
+  }
+
+  return resultado;
+}
+
+async function buscarSessaoAtual() {
+  let resposta;
+
+  try {
+    resposta = await fetch("/api/auth/sessao", {
+      credentials: "same-origin"
+    });
+  } catch {
+    throw new Error("Não foi possível concluir o login com Google agora.");
+  }
+
+  const resultado = await resposta.json().catch(() => ({}));
+
+  if (!resposta.ok) {
+    throw new Error(resultado.mensagem || "Sessão do Google não encontrada.");
   }
 
   return resultado;
@@ -65,7 +107,7 @@ function emailValido(email) {
 }
 
 function mascararEmail(email) {
-  if (!email || !email.includes("@")) return "Nao informado";
+  if (!email || !email.includes("@")) return "Não informado";
 
   const [nome, dominio] = email.split("@");
   const nomeVisivel = nome.length <= 2 ? nome[0] || "*" : nome.slice(0, 2);
@@ -78,7 +120,7 @@ function mascararEmail(email) {
 
 function mascararTelefone(telefone) {
   const digitos = String(telefone || "").replace(/\D/g, "");
-  if (!digitos) return "Nao informado";
+  if (!digitos) return "Não informado";
   if (digitos.length <= 4) return "****";
 
   return `(**) *****-${digitos.slice(-4)}`;
@@ -129,7 +171,7 @@ function validarEmail(input) {
   }
 
   if (!emailValido(input.value.trim())) {
-    mostrarErro(input, "E-mail invalido.");
+    mostrarErro(input, "E-mail inválido.");
     return false;
   }
 
@@ -168,8 +210,8 @@ function mostrarPerfil() {
     <p><strong>E-mail:</strong> ${mascararEmail(usuario.email)}</p>
     <p><strong>Telefone:</strong> ${mascararTelefone(usuario.telefone)}</p>
     <p><strong>Perfil:</strong> ${usuario.tipo === "empresa" ? "Empresa" : "Jovem"}</p>
-    <p><strong>Habilidades/interesses:</strong> ${usuario.habilidades || "Nao informado"}</p>
-    <p><strong>Status:</strong> ${usuario.emailVerificado ? "E-mail confirmado" : "E-mail pendente de confirmacao"}</p>
+    <p><strong>Habilidades/interesses:</strong> ${usuario.habilidades || "Não informado"}</p>
+    <p><strong>Status:</strong> ${usuario.emailVerificado ? "E-mail confirmado" : "E-mail pendente de confirmação"}</p>
   `;
 }
 
@@ -202,6 +244,80 @@ function fecharModalVerificacao() {
   verificacaoLocalModal.hidden = true;
 }
 
+function abrirModalRecuperacao() {
+  if (!recuperacaoModal || !recuperacaoEmail) return;
+
+  const emailLogin = campo("email-login")?.value.trim().toLowerCase();
+  recuperacaoEmail.value = emailLogin || recuperacaoEmail.value;
+
+  if (recuperacaoCodigoLocal) recuperacaoCodigoLocal.hidden = true;
+  if (formRedefinirSenha) formRedefinirSenha.hidden = true;
+  if (recuperacaoCodigo) recuperacaoCodigo.value = "";
+  if (recuperacaoNovaSenha) recuperacaoNovaSenha.value = "";
+  if (recuperacaoConfirmarSenha) recuperacaoConfirmarSenha.value = "";
+
+  recuperacaoModal.hidden = false;
+  recuperacaoEmail.focus();
+}
+
+function fecharModalRecuperacao() {
+  if (!recuperacaoModal) return;
+
+  recuperacaoModal.hidden = true;
+  recuperarSenha?.focus();
+}
+
+function abrirModalSocialLogin(provedor) {
+  if (!socialLoginModal || !socialLoginProvedor) return;
+
+  socialLoginProvedor.textContent = provedor === "facebook" ? "Facebook" : "Google";
+  socialLoginModal.hidden = false;
+  usarEmailSocial?.focus();
+}
+
+function fecharModalSocialLogin() {
+  if (!socialLoginModal) return;
+
+  socialLoginModal.hidden = true;
+}
+
+async function concluirLoginGoogle() {
+  const parametros = new URLSearchParams(window.location.search);
+  const statusGoogle = parametros.get("google");
+
+  if (!statusGoogle) return;
+
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  if (statusGoogle === "config") {
+    window.mostrarNotificacao("O login com Google ainda precisa das credenciais no backend.", {
+      titulo: "Google não configurado",
+      tipo: "aviso"
+    });
+    return;
+  }
+
+  if (statusGoogle !== "sucesso") {
+    window.mostrarNotificacao("Não foi possível concluir o login com Google. Tente novamente.", {
+      titulo: "Login com Google",
+      tipo: "erro"
+    });
+    return;
+  }
+
+  try {
+    const { usuario } = await buscarSessaoAtual();
+    salvarUsuarioLogado(usuario);
+    sessionStorage.setItem("favelaTechExibirBoasVindas", "true");
+    window.location.replace("index.html");
+  } catch (erro) {
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Login com Google",
+      tipo: "erro"
+    });
+  }
+}
+
 function validarLogin() {
   const email = campo("email-login");
   const senha = campo("senha-login");
@@ -227,10 +343,15 @@ function validarCadastro() {
   valido = validarEmail(email) && valido;
   valido = validarSenha(senha) && valido;
   valido = validarObrigatorio(tipo, "Perfil") && valido;
-  valido = validarObrigatorio(habilidades, "Habilidades") && valido;
+  if (!editorHabilidadesCadastro?.validarMinimo(1, "Adicione pelo menos uma habilidade ou interesse.")) {
+    mostrarErro(habilidades, "Adicione pelo menos uma habilidade ou interesse.");
+    valido = false;
+  } else {
+    mostrarValido(habilidades);
+  }
 
   if (!lgpd.checked) {
-    erroLgpd.textContent = "Voce precisa aceitar os termos/LGPD.";
+    erroLgpd.textContent = "Você precisa aceitar os termos/LGPD.";
     valido = false;
   } else {
     erroLgpd.textContent = "";
@@ -265,6 +386,14 @@ verificacaoLocalModal?.addEventListener("click", (event) => {
   }
 });
 
+fecharRecuperacao?.addEventListener("click", fecharModalRecuperacao);
+
+recuperacaoModal?.addEventListener("click", (event) => {
+  if (event.target === recuperacaoModal) {
+    fecharModalRecuperacao();
+  }
+});
+
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && termosModal && !termosModal.hidden) {
     fecharModalTermos();
@@ -273,6 +402,40 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && verificacaoLocalModal && !verificacaoLocalModal.hidden) {
     fecharModalVerificacao();
   }
+
+  if (event.key === "Escape" && recuperacaoModal && !recuperacaoModal.hidden) {
+    fecharModalRecuperacao();
+  }
+
+  if (event.key === "Escape" && socialLoginModal && !socialLoginModal.hidden) {
+    fecharModalSocialLogin();
+  }
+});
+
+document.querySelectorAll(".auth-social-btn").forEach((botao) => {
+  botao.addEventListener("click", () => {
+    const provedor = botao.dataset.provedor || "google";
+
+    if (provedor === "google") {
+      window.location.href = "/auth/google";
+      return;
+    }
+
+    abrirModalSocialLogin(provedor);
+  });
+});
+
+fecharSocialLogin?.addEventListener("click", fecharModalSocialLogin);
+
+socialLoginModal?.addEventListener("click", (event) => {
+  if (event.target === socialLoginModal) {
+    fecharModalSocialLogin();
+  }
+});
+
+usarEmailSocial?.addEventListener("click", () => {
+  fecharModalSocialLogin();
+  campo("email-login")?.focus();
 });
 
 aceitarTermos?.addEventListener("click", () => {
@@ -291,6 +454,17 @@ copiarVerificacaoLocal?.addEventListener("click", async () => {
   await navigator.clipboard.writeText(link);
   window.mostrarNotificacao("Link de verificação copiado.", {
     titulo: "Verificação",
+    tipo: "sucesso"
+  });
+});
+
+copiarCodigoRecuperacao?.addEventListener("click", async () => {
+  const codigo = recuperacaoCodigoTexto?.textContent.trim();
+  if (!codigo) return;
+
+  await navigator.clipboard.writeText(codigo);
+  window.mostrarNotificacao("Código de recuperação copiado.", {
+    titulo: "Recuperação de senha",
     tipo: "sucesso"
   });
 });
@@ -331,11 +505,11 @@ formCadastro?.addEventListener("submit", async (event) => {
   const email = campo("email-cad").value.trim().toLowerCase();
   const senha = campo("senha-cad").value.trim();
   const tipo = campo("tipo-cad").value;
-  const habilidades = campo("habilidades-cad").value.trim();
+  const habilidades = editorHabilidadesCadastro?.serializar() || campo("habilidades-cad").value.trim();
   definirFormularioCarregando(formCadastro, true);
 
   try {
-    const { usuario, verificacao } = await enviarAutenticacao("cadastro", {
+    const { verificacao } = await enviarAutenticacao("cadastro", {
       nome,
       email,
       senha,
@@ -343,13 +517,15 @@ formCadastro?.addEventListener("submit", async (event) => {
       habilidades
     });
 
-    salvarUsuarioLogado(usuario);
-    window.mostrarNotificacao("Sua conta foi criada. Confirme seu e-mail para concluir o cadastro.", {
+    window.mostrarNotificacao("Sua conta foi criada. Confirme seu e-mail antes de entrar.", {
       titulo: "Cadastro criado",
       tipo: "sucesso"
     });
     abrirModalVerificacao(verificacao?.link);
     formCadastro.reset();
+    editorHabilidadesCadastro?.limpar();
+    campo("email-login").value = email;
+    campo("senha-login").value = "";
     document.querySelectorAll(".input-group").forEach((grupo) => grupo.classList.remove("valid", "invalid"));
     trocarBalao("login");
   } catch (erro) {
@@ -362,23 +538,118 @@ formCadastro?.addEventListener("submit", async (event) => {
 sairConta?.addEventListener("click", () => {
   localStorage.removeItem("favelaTechUsuarioLogado");
   sessionStorage.setItem("favelaTechNotificacaoPendente", JSON.stringify({
-    mensagem: "Voce saiu da sua conta com seguranca.",
-    titulo: "Sessao encerrada",
+    mensagem: "Você saiu da sua conta com segurança.",
+    titulo: "Sessão encerrada",
     tipo: "info"
   }));
   window.location.reload();
 });
 
-recuperarSenha?.addEventListener("click", (event) => {
+formRecuperacaoEmail?.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const email = campo("email-login");
+  const email = recuperacaoEmail.value.trim().toLowerCase();
 
-  if (!validarEmail(email)) return;
+  if (!emailValido(email)) {
+    window.mostrarNotificacao("Informe um e-mail válido para gerar o código.", {
+      titulo: "Recuperação de senha",
+      tipo: "aviso"
+    });
+    recuperacaoEmail.focus();
+    return;
+  }
 
-  window.mostrarNotificacao("Um e-mail seria enviado para redefinir sua senha.", {
-    titulo: "Recuperacao de senha",
-    tipo: "info"
-  });
+  definirFormularioCarregando(formRecuperacaoEmail, true);
+
+  try {
+    const resultado = await enviarAutenticacao("recuperar-senha", { email });
+    formRedefinirSenha.dataset.email = email;
+    formRedefinirSenha.hidden = false;
+
+    if (resultado.recuperacao?.codigo && recuperacaoCodigoTexto && recuperacaoCodigoLocal) {
+      recuperacaoCodigoTexto.textContent = resultado.recuperacao.codigo;
+      recuperacaoCodigoLocal.hidden = false;
+    }
+
+    window.mostrarNotificacao(resultado.mensagem, {
+      titulo: "Código gerado",
+      tipo: "sucesso"
+    });
+    recuperacaoCodigo?.focus();
+  } catch (erro) {
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Não foi possível gerar",
+      tipo: "erro"
+    });
+  } finally {
+    definirFormularioCarregando(formRecuperacaoEmail, false);
+  }
 });
 
+formRedefinirSenha?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const email = formRedefinirSenha.dataset.email || recuperacaoEmail.value.trim().toLowerCase();
+  const codigo = recuperacaoCodigo.value.trim();
+  const novaSenha = recuperacaoNovaSenha.value;
+  const confirmarSenha = recuperacaoConfirmarSenha.value;
+
+  if (!/^\d{6}$/.test(codigo)) {
+    window.mostrarNotificacao("Informe o código de 6 dígitos.", {
+      titulo: "Código inválido",
+      tipo: "aviso"
+    });
+    recuperacaoCodigo.focus();
+    return;
+  }
+
+  if (novaSenha.length < 6) {
+    window.mostrarNotificacao("A nova senha precisa ter pelo menos 6 caracteres.", {
+      titulo: "Senha curta",
+      tipo: "aviso"
+    });
+    recuperacaoNovaSenha.focus();
+    return;
+  }
+
+  if (novaSenha !== confirmarSenha) {
+    window.mostrarNotificacao("A confirmação precisa ser igual à nova senha.", {
+      titulo: "Confira as senhas",
+      tipo: "aviso"
+    });
+    recuperacaoConfirmarSenha.focus();
+    return;
+  }
+
+  definirFormularioCarregando(formRedefinirSenha, true);
+
+  try {
+    const resultado = await enviarAutenticacao("redefinir-senha", {
+      email,
+      codigo,
+      novaSenha
+    });
+
+    campo("email-login").value = email;
+    campo("senha-login").value = "";
+    fecharModalRecuperacao();
+    trocarBalao("login");
+    window.mostrarNotificacao(resultado.mensagem, {
+      titulo: "Senha redefinida",
+      tipo: "sucesso"
+    });
+  } catch (erro) {
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Não foi possível redefinir",
+      tipo: "erro"
+    });
+  } finally {
+    definirFormularioCarregando(formRedefinirSenha, false);
+  }
+});
+
+recuperarSenha?.addEventListener("click", (event) => {
+  event.preventDefault();
+  abrirModalRecuperacao();
+});
+
+concluirLoginGoogle();
 mostrarPerfil();
