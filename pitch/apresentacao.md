@@ -28,7 +28,7 @@ Com o Favela Tech, o usuário consegue:
 
 ## Tecnologias utilizadas
 
-Usei **HTML5** para estruturar as páginas, **CSS3** para o visual, responsividade, animações e identidade do site, e **JavaScript** para interatividade, manipulação do DOM, busca de vagas, chatbot, notificações e comunicação com o backend.
+Usei **HTML5** para estruturar as páginas, **CSS3** para o visual, responsividade, animações e identidade do site, e **JavaScript** para interatividade, manipulação do DOM, busca de vagas, notificações e comunicação com o backend.
 
 No backend, usei **Node.js** com **Express** para criar o servidor e as rotas da API. A conexão com o banco foi feita com **MySQL2**, e o banco escolhido foi **MySQL**.
 
@@ -81,7 +81,7 @@ Para vagas, criei filtros e busca em tempo real no frontend. No backend, criei u
 
 Para candidaturas, criei rotas e controller específicos. Quando o usuário clica em Candidatar-se, o backend salva usuário, vaga, data e status. Também criei bloqueio para impedir candidatura duplicada na mesma vaga.
 
-Para o chatbot, substituí uma versão simples por uma conversa mais natural, com respostas por assunto, atalhos, efeito de digitando e convite inicial no botão do assistente.
+Para o chatbot, criei uma conversa guiada em JavaScript. Ele identifica palavras-chave da pergunta, escolhe uma intenção provável e responde com orientações sobre vagas, currículo, conta, candidatura, contato e ODS 8.
 
 ## Roteiro de apresentação por slide
 
