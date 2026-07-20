@@ -22,7 +22,7 @@ O objetivo do projeto e conectar jovens capacitados da comunidade a empresas loc
 - Pagina Como Ajudar com acoes praticas, links para organizacoes e compartilhamento.
 - Cadastro, login, recuperacao de senha e troca de senha conectados ao MySQL com senhas criptografadas.
 - Pagina de Contato com formulario, canais diretos e mapa com localizacao.
-- Chatbot disponivel em todas as paginas, com respostas por intencao e efeito de digitacao.
+- Chatbot disponível em todas as páginas, com respostas por intenção e efeito de digitação.
 
 ## Tecnologias utilizadas
 
@@ -87,7 +87,7 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
 SESSION_SECRET=uma_frase_segura_para_sessao
 ```
 
-No Google Cloud, configure o redirect autorizado como:
+No Google Cloud, configurei o redirect autorizado como:
 
 ```text
 http://localhost:3000/auth/google/callback
