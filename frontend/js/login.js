@@ -28,10 +28,6 @@ const recuperacaoConfirmarSenha = document.getElementById("recuperacao-confirmar
 const recuperacaoCodigoLocal = document.getElementById("recuperacao-codigo-local");
 const recuperacaoCodigoTexto = document.getElementById("recuperacao-codigo-texto");
 const copiarCodigoRecuperacao = document.getElementById("copiar-codigo-recuperacao");
-const socialLoginModal = document.getElementById("social-login-modal");
-const fecharSocialLogin = document.getElementById("fechar-social-login");
-const socialLoginProvedor = document.getElementById("social-login-provedor");
-const usarEmailSocial = document.getElementById("usar-email-social");
 const editorHabilidadesCadastro = window.FavelaTechHabilidades?.criarEditor({
   campoId: "habilidades-cad",
   inputId: "habilidade-cad-input",
@@ -267,20 +263,6 @@ function fecharModalRecuperacao() {
   recuperarSenha?.focus();
 }
 
-function abrirModalSocialLogin(provedor) {
-  if (!socialLoginModal || !socialLoginProvedor) return;
-
-  socialLoginProvedor.textContent = provedor === "facebook" ? "Facebook" : "Google";
-  socialLoginModal.hidden = false;
-  usarEmailSocial?.focus();
-}
-
-function fecharModalSocialLogin() {
-  if (!socialLoginModal) return;
-
-  socialLoginModal.hidden = true;
-}
-
 async function concluirLoginGoogle() {
   const parametros = new URLSearchParams(window.location.search);
   const statusGoogle = parametros.get("google");
@@ -407,9 +389,6 @@ document.addEventListener("keydown", (event) => {
     fecharModalRecuperacao();
   }
 
-  if (event.key === "Escape" && socialLoginModal && !socialLoginModal.hidden) {
-    fecharModalSocialLogin();
-  }
 });
 
 document.querySelectorAll(".auth-social-btn").forEach((botao) => {
@@ -420,22 +399,7 @@ document.querySelectorAll(".auth-social-btn").forEach((botao) => {
       window.location.href = "/auth/google";
       return;
     }
-
-    abrirModalSocialLogin(provedor);
   });
-});
-
-fecharSocialLogin?.addEventListener("click", fecharModalSocialLogin);
-
-socialLoginModal?.addEventListener("click", (event) => {
-  if (event.target === socialLoginModal) {
-    fecharModalSocialLogin();
-  }
-});
-
-usarEmailSocial?.addEventListener("click", () => {
-  fecharModalSocialLogin();
-  campo("email-login")?.focus();
 });
 
 aceitarTermos?.addEventListener("click", () => {

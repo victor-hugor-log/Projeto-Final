@@ -129,90 +129,6 @@
   white-space: nowrap;
 }
 
-.social-login-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background-color: rgba(12, 10, 35, 0.72);
-  backdrop-filter: blur(6px);
-}
-
-.social-login-modal[hidden] {
-  display: none;
-}
-
-.social-login-caixa {
-  width: min(520px, 100%);
-  position: relative;
-  overflow: hidden;
-  padding: 34px 32px;
-  border: 1px solid #ddd6fe;
-  border-radius: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.36);
-  animation: abrirTermos 0.26s ease both;
-}
-
-.social-login-caixa::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 5px;
-  background: linear-gradient(90deg, #7c3aed, #22c55e, #1877F2, #7c3aed);
-  background-size: 220% 100%;
-  animation: linhaVerificacaoLocal 5s ease-in-out infinite;
-}
-
-.social-login-fechar {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: 50%;
-  background-color: #f5f3ff;
-  color: #4c1d95;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.social-login-kicker {
-  margin-bottom: 8px;
-  color: #7c3aed;
-  font-size: 0.76rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.social-login-caixa h2 {
-  margin-bottom: 10px;
-  color: #1e1b4b;
-  font-size: 1.55rem;
-}
-
-.social-login-caixa p {
-  margin-bottom: 18px;
-  color: #555;
-  line-height: 1.65;
-}
-
-.social-login-caixa > button:not(.social-login-fechar) {
-  width: 100%;
-  margin-top: 5px;
-  padding: 11px;
-  border: 1px solid #7c3aed;
-  border-radius: 8px;
-  background-color: #7c3aed;
-  color: #ffffff;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  font-weight: 800;
-  cursor: pointer;
-}
-
 .auth-card form {
   display: flex;
   flex-direction: column;
@@ -807,10 +723,6 @@
   }
 
   .recuperacao-modal {
-    padding: 14px;
-  }
-
-  .social-login-modal {
     padding: 14px;
   }
 
