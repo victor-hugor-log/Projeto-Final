@@ -1,214 +1,121 @@
 # Pitch - Portal de Oportunidades Favela Tech
 
-## Visão geral do projeto
+## Roteiro de apresentação - 5 minutos
 
-O **Portal de Oportunidades Favela Tech** é um site interativo e responsivo criado com foco na **ODS 8: trabalho decente e crescimento econômico**.
+Este roteiro foi pensado para apresentar sem correr e sem repetir os mesmos pontos em vários slides. A ideia é falar em média **30 a 40 segundos por slide**, deixando a demonstração ao vivo apenas se sobrar tempo.
 
-A ideia principal é aproximar jovens da comunidade de oportunidades profissionais, reunindo em um só lugar cadastro de conta, perfil, currículo, busca de vagas, candidatura, acompanhamento de status, chatbot e canais de contato.
+## Resumo do projeto
 
-O projeto foi desenvolvido com uma estrutura separada entre **frontend**, **backend** e **banco de dados**, para ficar mais profissional e mais fácil de explicar tecnicamente.
+O **Favela Tech** é um portal responsivo conectado à **ODS 8: trabalho decente e crescimento econômico**. O objetivo é aproximar jovens da comunidade de oportunidades profissionais, reunindo cadastro, login, perfil, currículo, busca de vagas, candidatura, banco de dados, APIs públicas e chatbot em JavaScript.
 
-## Objetivo
+O projeto foi organizado em **frontend**, **backend** e **MySQL**. O frontend cuida das páginas e interações; o backend em Node.js/Express cuida das rotas, regras e validações; e o banco salva usuários, currículos, vagas, candidaturas e dados do perfil.
 
-O objetivo do projeto é criar uma ponte entre jovens capacitados e empresas ou oportunidades reais. Muitos jovens têm cursos, habilidades e vontade de trabalhar, mas enfrentam dificuldade para organizar currículo, encontrar vagas confiáveis e acompanhar candidaturas.
-
-Com o Favela Tech, o usuário consegue:
-
-- criar uma conta;
-- fazer login;
-- completar o perfil;
-- cadastrar endereço com apoio de API de CEP;
-- montar e imprimir um currículo;
-- buscar vagas;
-- se candidatar;
-- acompanhar candidaturas;
-- tirar dúvidas com o chatbot;
-- entrar em contato com o projeto;
-- entender como ajudar a causa.
-
-## Tecnologias utilizadas
-
-Usei **HTML5** para estruturar as páginas, **CSS3** para o visual, responsividade, animações e identidade do site, e **JavaScript** para interatividade, manipulação do DOM, busca de vagas, notificações e comunicação com o backend.
-
-No backend, usei **Node.js** com **Express** para criar o servidor e as rotas da API. A conexão com o banco foi feita com **MySQL2**, e o banco escolhido foi **MySQL**.
-
-Para segurança, usei **Bcrypt** para criptografar senhas antes de salvar no banco. Assim, a senha real do usuário não fica armazenada em texto puro.
-
-Também usei APIs públicas:
-
-- **ViaCEP**, para preencher automaticamente endereço a partir do CEP;
-- **Remotive**, para buscar vagas reais remotas e mostrar oportunidades vindas de uma API externa.
-
-Além disso, implementei um **chatbot em JavaScript**, com respostas por intenção, atalhos de conversa, convite inicial e efeito de digitação.
-
-## O que é processado pelo sistema
-
-O sistema processa dados de cadastro, como nome, e-mail, senha, telefone, tipo de usuário e habilidades adicionadas por tags. Também processa dados de perfil, como foto, endereço, CEP, cidade, bairro e estado.
-
-Na parte de currículo, o sistema processa informações como objetivo profissional, formação, experiências, cursos, habilidades, links e dados complementares. Essas informações ficam salvas no MySQL e podem ser carregadas novamente quando o usuário entra na conta.
-
-Na página de vagas, o sistema processa filtros, palavra-chave de busca, tipo de vaga, área de interesse e dados vindos da API Remotive. Também compara as habilidades do usuário com as vagas disponíveis para montar recomendações automáticas. Quando o usuário se candidata, o backend salva a relação entre usuário e vaga no banco de dados.
-
-Na autenticação, o sistema processa login, cadastro, hash de senha, verificação local de e-mail e recuperação de senha por código temporário.
-
-## Informações apresentadas ao usuário
-
-O usuário vê uma página inicial com a proposta do projeto, a ODS 8, chamadas para cadastrar currículo e visualizar vagas.
-
-Na página Sobre Nós, ele entende a missão, os valores e o propósito do Favela Tech. Na página Como Ajudar, ele encontra ações práticas, como divulgar o portal, apoiar jovens com currículo e conhecer organizações ligadas à empregabilidade.
-
-Na página de Vagas, o usuário vê oportunidades, empresa, área, tipo, localização, origem, resumo, link para a vaga original quando existe e uma área de recomendações por compatibilidade. Também pode se candidatar e receber notificações do próprio site.
-
-No Perfil, o usuário vê seus dados, foto, telefone e e-mail parcialmente mascarados, endereço, habilidades editáveis, link para currículo e área de Minhas candidaturas, com vaga, empresa, data e status.
-
-No Currículo, o usuário vê um formulário completo e um modelo de currículo pronto para impressão.
-
-## Como eu fiz
-
-Primeiro organizei a estrutura do projeto em duas áreas principais: **frontend** e **backend**. No frontend ficam os arquivos HTML, CSS, JavaScript e imagens. No backend ficam o servidor, rotas, controllers, configuração de banco e arquivos SQL.
-
-Depois criei as páginas obrigatórias do desafio: Home, Sobre Nós, Vagas, Login/Cadastro, Como Ajudar e Contato. Em seguida, adicionei páginas e fluxos extras, como Perfil, Currículo e Verificação de E-mail.
-
-Para a autenticação, criei rotas no backend para cadastro, login, recuperação de senha e redefinição de senha. No cadastro, a senha passa pelo Bcrypt antes de ir para o MySQL. No login, o backend compara a senha digitada com o hash salvo no banco.
-
-Para o perfil, criei campos para foto, telefone, e-mail, endereço, habilidades e dados pessoais. Também coloquei telefone e e-mail mascarados, para deixar a interface mais parecida com sistemas reais.
-
-Para o endereço, integrei a API ViaCEP. A pessoa informa o CEP e o site busca automaticamente rua, bairro, cidade e estado.
-
-Para currículo, criei um formulário com dados profissionais e um modelo de impressão estilizado com a identidade do Favela Tech.
-
-Para vagas, criei filtros e busca em tempo real no frontend. No backend, criei um controller que busca vagas na API Remotive, normaliza os dados e salva no MySQL. Se a API falhar, o projeto continua usando vagas locais do banco. Também criei uma lógica de recomendação que cruza habilidades do usuário com título, área, descrição e habilidades das vagas.
-
-Para candidaturas, criei rotas e controller específicos. Quando o usuário clica em Candidatar-se, o backend salva usuário, vaga, data e status. Também criei bloqueio para impedir candidatura duplicada na mesma vaga.
-
-Para o chatbot, criei uma conversa guiada em JavaScript. Ele identifica palavras-chave da pergunta, escolhe uma intenção provável e responde com orientações sobre vagas, currículo, conta, candidatura, contato e ODS 8.
-
-## Roteiro de apresentação por slide
+## Roteiro por slide
 
 ### Slide 1 - Capa
 
-Eu apresento o projeto como o Portal de Oportunidades Favela Tech, um site responsivo criado para conectar jovens talentos da comunidade a vagas, currículos, empresas e orientação profissional.
+Eu desenvolvi o Favela Tech como projeto final, conectado à ODS 8, trabalho decente e crescimento econômico.
 
-Falo que o projeto é ligado à ODS 8 e que usa tecnologias de frontend, backend, banco de dados, APIs e chatbot.
+A ideia é criar um portal que aproxima jovens da comunidade de oportunidades profissionais.
 
-### Slide 2 - Motivação
+Em vez de ser só uma página informativa, o site tem login, perfil, currículo, busca de vagas, candidatura, banco de dados, APIs e chatbot.
 
-Aqui eu explico que o problema não é falta de talento. Muitos jovens têm vontade de trabalhar, fazem cursos e desenvolvem habilidades, mas não têm uma ponte clara com oportunidades.
+### Slide 2 - Talento sem ponte
 
-Também explico que vagas ficam espalhadas, currículo pode ser uma barreira e o acompanhamento de candidaturas costuma ser confuso.
+A motivação veio de um problema simples: o talento existe, mas nem sempre encontra caminho.
 
-### Slide 3 - Solução
+Muitos jovens estudam, fazem cursos e querem trabalhar, porém as vagas ficam espalhadas e o currículo vira uma barreira.
 
-Mostro a jornada do usuário:
+Então o projeto tenta organizar essa jornada em um só lugar.
 
-1. Criar conta.
-2. Completar perfil.
-3. Montar currículo.
-4. Buscar vaga.
-5. Candidatar-se.
+### Slide 3 - Do cadastro à candidatura
 
-Esse slide serve para mostrar que o projeto não é só uma página bonita, mas um fluxo completo.
+A solução foi desenhar a jornada do usuário.
 
-### Slide 4 - Requisitos do desafio
+Ele cria conta, completa perfil, monta currículo, busca vagas e se candidata.
 
-Explico que o projeto cobre os principais itens pedidos: Home, Sobre Nós, Contato, Login/Cadastro, Como Ajudar, área restrita, banco de dados, APIs e chatbot.
+O ponto principal é que tudo conversa: dados do perfil ajudam no currículo, as vagas aparecem em uma área própria e as candidaturas ficam registradas.
 
-Também vale comentar que o projeto tem README, pasta pitch e organização profissional das pastas.
+### Slide 4 - Requisitos atendidos
 
-### Slide 5 - Desenvolvimento
+Aqui eu conecto o projeto aos requisitos do desafio.
 
-Explico a separação técnica:
+Implementei as páginas obrigatórias: Home, Sobre Nós, Contato, Login/Cadastro e Como Ajudar.
 
-- Frontend: HTML, CSS e JavaScript.
-- Backend: Node.js e Express.
-- Banco: MySQL.
-- APIs externas: ViaCEP e Remotive.
+Além disso, adicionei área restrita, banco de dados, APIs públicas e chatbot em JavaScript.
 
-Falo que essa divisão facilita manutenção, explicação e evolução do projeto.
+Também organizei README e pasta pitch para entregar o projeto de forma profissional.
 
-### Slide 6 - Banco de dados e autenticação
+### Slide 5 - Frontend, backend e banco
 
-Explico que os dados principais ficam no MySQL. As tabelas principais envolvem usuários, currículos, vagas e candidaturas.
+Na parte técnica, separei frontend e backend.
 
-Também falo sobre Bcrypt, senha criptografada, recuperação de senha por código local e verificação local de e-mail.
+O frontend usa HTML, CSS e JavaScript para telas, formulários, responsividade e interações.
 
-### Slide 7 - Vagas e candidaturas
+O backend usa Node.js e Express para rotas, validações, login, currículo, vagas e candidaturas.
 
-Mostro que a página de vagas tem busca em tempo real, filtros e integração com a API Remotive.
+Os dados ficam no MySQL, e as APIs externas usadas são ViaCEP para endereço e Remotive para vagas reais.
 
-Explico que o backend salva vagas externas no banco e mantém vagas locais como fallback. Também explico que a candidatura fica registrada no MySQL e que o sistema impede candidatura duplicada.
+### Slide 6 - Vagas reais e candidaturas
 
-### Slide 8 - Perfil e currículo
+A página de vagas é uma das partes principais.
 
-Explico que o usuário logado tem uma área Minha conta. Nela, ele vê dados, foto, telefone, e-mail, endereço e candidaturas.
+O usuário pode buscar por palavra-chave, ver vagas do banco e vagas reais vindas da API Remotive.
 
-Também falo que o currículo é salvo no banco e pode ser impresso em um modelo com visual próprio do Favela Tech.
+Quando ele se candidata, o backend salva usuário, vaga, data e status no MySQL.
 
-### Slide 9 - Experiência do usuário
+Também bloqueei candidatura duplicada, para a pessoa não se candidatar duas vezes na mesma vaga.
 
-Falo das melhorias de interface: notificações próprias do site no lugar de alerts do navegador, chatbot mais conversável, efeito digitando, convite inicial e imagens mais coerentes com cada página.
+### Slide 7 - Perfil e currículo
 
-Esse slide ajuda a mostrar preocupação com design e usabilidade.
+No perfil, o usuário consegue atualizar dados pessoais, foto, telefone, endereço e informações profissionais.
 
-### Slide 10 - Responsabilidade e confiança
+O endereço usa ViaCEP: ao digitar o CEP, o site preenche rua, bairro, cidade e estado.
 
-Explico que o projeto lida com dados reais, então tratei segurança e privacidade como parte do produto.
+Também criei um currículo imprimível com layout próprio, usando os dados preenchidos no portal.
 
-Falo sobre aceite de termos/LGPD, senha protegida, dados sensíveis mascarados e ambiente local de apresentação.
+### Slide 8 - Resultado e próximos passos
 
-### Slide 11 - Resultados
+Como resultado, o Favela Tech entrega uma jornada completa: cadastro, login, perfil, currículo, vagas, candidatura e acompanhamento.
 
-Mostro que o protótipo já funciona como portal completo: possui páginas obrigatórias, APIs, rotas no backend, MySQL, currículo, candidaturas e chatbot.
+Ele combina proposta social com tecnologia aplicada: frontend, backend, MySQL, APIs, segurança básica e chatbot.
 
-Também digo que na apresentação posso demonstrar a jornada ao vivo: login, vagas, candidatura e perfil.
+Como próximos passos, eu evoluiria o envio de e-mails, integrações com mais plataformas de vagas e recomendação automática mais inteligente.
 
-### Slide 12 - Considerações finais
+Obrigado.
 
-Finalizo dizendo que o Favela Tech mostra como uma solução web pode aproximar talento, oportunidade e impacto social.
-
-Como próximos passos, eu evoluiria o envio real de e-mails e integrações com plataformas de vagas como CIEE, LinkedIn Jobs e Indeed, dependendo de acesso ou parceria.
-
-## Demonstração sugerida
-
-Na hora de apresentar, a melhor demonstração é curta e direta:
+## Demonstração curta, se sobrar tempo
 
 1. Abrir a Home.
 2. Mostrar rapidamente o chatbot.
 3. Fazer login.
-4. Ir para a página de vagas.
+4. Ir para Vagas.
 5. Pesquisar uma vaga.
 6. Clicar em Candidatar-se.
 7. Abrir Minha conta.
-8. Mostrar Minhas candidaturas.
-9. Abrir currículo e mostrar o modelo de impressão.
+8. Mostrar Minhas candidaturas ou o currículo.
 
 ## Como rodar na apresentação
 
-Para demonstrar o projeto, eu preciso iniciar o MySQL e o backend Node.js.
+Para demonstrar o projeto, preciso iniciar o MySQL e o backend Node.js.
 
-No Mac, o MySQL local pode ser acessado pelo comando:
+No Mac, o MySQL local pode ser acessado com:
 
 ```bash
 /usr/local/mysql/bin/mysql -u root -p
 ```
 
-Para iniciar o backend, entro na pasta:
+Para iniciar o backend:
 
 ```bash
 cd /Users/victorhugor/Documents/GitHub/Projeto-Final/backend
 npm start
 ```
 
-Depois acesso o site por:
+Depois acesso:
 
 ```text
 http://localhost:3000
 ```
 
 Não é ideal abrir o HTML diretamente pelo arquivo, porque login, cadastro, currículo, vagas e candidaturas dependem das rotas do backend.
-
-## Fechamento
-
-O Favela Tech foi pensado para cumprir o desafio técnico e também para parecer um produto real. Ele combina interface responsiva, banco de dados, API, chatbot e uma proposta social clara.
-
-A mensagem principal é: tecnologia simples, bem organizada e conectada a um problema real pode ajudar jovens talentos a chegarem mais perto de oportunidades.

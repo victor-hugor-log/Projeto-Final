@@ -235,7 +235,7 @@ async function login(req, res) {
 
     if (!usuario.email_verificado) {
       return res.status(403).json({
-        mensagem: "Confirme seu e-mail antes de entrar. Use o link de verificação gerado no cadastro."
+        mensagem: "Confirme seu e-mail antes de entrar. Use o link de verificação para concluir a confirmação."
       });
     }
 
@@ -268,7 +268,7 @@ async function solicitarRecuperacaoSenha(req, res) {
     );
 
     const respostaPadrao = {
-      mensagem: "Se o e-mail estiver cadastrado, um código de recuperação será gerado."
+      mensagem: "Se o e-mail estiver cadastrado, enviaremos as instruções de recuperação."
     };
 
     if (usuarios.length === 0) {

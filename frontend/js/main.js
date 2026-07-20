@@ -203,7 +203,7 @@ function iniciarChatbot() {
   ];
 
   function temAlguma(texto, palavras) {
-    return palavras.some((palavra) => texto.includes(palavra));
+    return palavras.some((palavra) => texto.includes(normalizar(palavra)));
   }
 
   function pontuarIntencao(texto, palavras) {
@@ -523,7 +523,7 @@ function iniciarChatbot() {
       return respostaContinuidade(usuario);
     }
 
-    if (temAlguma(texto, ["oi", "ola", "opa", "bom dia", "boa tarde", "boa noite", "e ai", "salve"])) {
+    if (temAlguma(texto, ["oi", "ola", "opa", "bom dia", "boa tarde", "boa noite", "e aí", "salve"])) {
       ultimaIntencao = "";
       return {
         texto: nome

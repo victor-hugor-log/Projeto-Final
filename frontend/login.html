@@ -213,9 +213,9 @@
   <div class="verificacao-local-modal" id="verificacao-local-modal" hidden>
     <div class="verificacao-local-caixa" role="dialog" aria-modal="true" aria-labelledby="verificacao-local-titulo">
       <button class="verificacao-local-fechar" id="fechar-verificacao-local" type="button" aria-label="Fechar verificação">X</button>
-      <p class="verificacao-local-kicker">Modo apresentação</p>
+      <p class="verificacao-local-kicker">Verificação de e-mail</p>
       <h2 id="verificacao-local-titulo">Confirme seu e-mail</h2>
-      <p>No envio real, este link chegaria por e-mail. Como estamos rodando localmente, use o link abaixo para testar a confirmação.</p>
+      <p>Use o link abaixo para concluir a confirmação da conta e liberar o acesso ao portal.</p>
       <a id="verificacao-local-link" href="#" target="_blank" rel="noopener">Abrir link de verificação</a>
       <button id="copiar-verificacao-local" type="button">Copiar link</button>
     </div>
@@ -226,7 +226,7 @@
       <button class="social-login-fechar" id="fechar-social-login" type="button" aria-label="Fechar login social">X</button>
       <p class="social-login-kicker">Login social</p>
       <h2 id="social-login-titulo">Continuar com <span id="social-login-provedor">Google</span></h2>
-      <p>No ambiente de produção, você seria redirecionado para autenticar com a rede social escolhida. Como estamos em modo de demonstração local, use o cadastro ou login com e-mail e senha.</p>
+      <p>Para continuar com segurança, utilize o acesso por e-mail e senha cadastrado no portal.</p>
       <button id="usar-email-social" type="button">Usar e-mail e senha</button>
     </div>
   </div>
@@ -236,16 +236,16 @@
       <button class="recuperacao-fechar" id="fechar-recuperacao" type="button" aria-label="Fechar recuperação de senha">X</button>
       <p class="recuperacao-kicker">Recuperação de acesso</p>
       <h2 id="recuperacao-titulo">Redefinir senha</h2>
-      <p>Informe o e-mail da conta para gerar um código temporário. No envio real, esse código chegaria por e-mail.</p>
+      <p>Informe o e-mail da conta para receber um código temporário de recuperação.</p>
 
       <form class="recuperacao-form" id="form-recuperacao-email" novalidate>
         <label for="recuperacao-email">E-mail cadastrado</label>
         <input id="recuperacao-email" type="email" autocomplete="email" placeholder="seuemail@exemplo.com">
-        <button type="submit">Gerar código</button>
+        <button type="submit">Receber código</button>
       </form>
 
       <div class="recuperacao-codigo-local" id="recuperacao-codigo-local" hidden>
-        <span>Código local para teste</span>
+        <span>Código de segurança</span>
         <strong id="recuperacao-codigo-texto">000000</strong>
         <button id="copiar-codigo-recuperacao" type="button">Copiar código</button>
       </div>

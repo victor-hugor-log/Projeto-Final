@@ -550,7 +550,7 @@ formRecuperacaoEmail?.addEventListener("submit", async (event) => {
   const email = recuperacaoEmail.value.trim().toLowerCase();
 
   if (!emailValido(email)) {
-    window.mostrarNotificacao("Informe um e-mail válido para gerar o código.", {
+    window.mostrarNotificacao("Informe um e-mail válido para receber o código.", {
       titulo: "Recuperação de senha",
       tipo: "aviso"
     });
@@ -571,13 +571,13 @@ formRecuperacaoEmail?.addEventListener("submit", async (event) => {
     }
 
     window.mostrarNotificacao(resultado.mensagem, {
-      titulo: "Código gerado",
+      titulo: "Código de segurança",
       tipo: "sucesso"
     });
     recuperacaoCodigo?.focus();
   } catch (erro) {
     window.mostrarNotificacao(erro.message, {
-      titulo: "Não foi possível gerar",
+      titulo: "Não foi possível continuar",
       tipo: "erro"
     });
   } finally {
