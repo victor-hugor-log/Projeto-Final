@@ -33,14 +33,14 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  max-width: 900px;
+  max-width: 1080px;
   margin: 0 auto;
 }
 
 .vagas-filtros input,
 .vagas-filtros select {
   flex: 1;
-  min-width: 180px;
+  min-width: 170px;
   padding: 10px 14px;
   border: 1px solid #ddd6fe;
   border-radius: 8px;

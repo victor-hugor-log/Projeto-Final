@@ -3,6 +3,7 @@ let vagas = [];
 const ALERTAS_EMAIL_KEY = "favelaTechAlertasEmail";
 const ALERTAS_EMAIL_SESSAO_KEY = "favelaTechAlertasSessao";
 const HABILIDADES_TAGS_MIGRATION_KEY = "favelaTechHabilidadesTagsV1";
+const VAGAS_CACHE_KEY = "favelaTechVagasCache";
 const habilidadesHelper = window.FavelaTechHabilidades || {
   normalizar,
   listar: (valor) => String(valor || "").split(/[,;|]/).map((item) => item.trim()).filter(Boolean),
@@ -97,7 +98,8 @@ function mostrarNotificacao(mensagem, opcoes = {}) {
   const {
     titulo = "Favela Tech",
     tipo = "info",
-    duracao = 4000
+    duracao = 4000,
+    acao = null
   } = opcoes;
   let container = document.getElementById("notificacoes-site");
 
@@ -122,13 +124,33 @@ function mostrarNotificacao(mensagem, opcoes = {}) {
   const mensagemElemento = document.createElement("p");
   mensagemElemento.textContent = mensagem;
 
+  conteudo.append(tituloElemento, mensagemElemento);
+
+  if (acao?.rotulo) {
+    const acaoElemento = document.createElement("button");
+    acaoElemento.className = "notificacao-acao";
+    acaoElemento.type = "button";
+    acaoElemento.textContent = acao.rotulo;
+    acaoElemento.addEventListener("click", () => {
+      remover();
+
+      if (acao.href) {
+        window.location.href = acao.href;
+      }
+
+      if (typeof acao.aoClicar === "function") {
+        acao.aoClicar();
+      }
+    });
+    conteudo.appendChild(acaoElemento);
+  }
+
   const fechar = document.createElement("button");
   fechar.className = "notificacao-fechar";
   fechar.type = "button";
   fechar.setAttribute("aria-label", "Fechar notificação");
   fechar.textContent = "X";
 
-  conteudo.append(tituloElemento, mensagemElemento);
   notificacao.append(conteudo, fechar);
   container.appendChild(notificacao);
 
@@ -174,10 +196,241 @@ function mostrarNotificacaoPendente() {
 function formatarRotuloVaga(valor) {
   const rotulos = {
     Administracao: "Administração",
-    Estagio: "Estágio"
+    Estagio: "Estágio",
+    bh: "Belo Horizonte",
+    metropolitana: "Região Metropolitana",
+    minas: "Minas Gerais",
+    sudeste: "Sudeste",
+    remoto: "Remoto"
   };
 
   return rotulos[valor] || valor;
+}
+
+const REGIOES_VAGAS = {
+  bh: ["belo horizonte", "bh"],
+  metropolitana: [
+    "belo horizonte",
+    "bh",
+    "contagem",
+    "betim",
+    "nova lima",
+    "sabara",
+    "ribeirao das neves",
+    "santa luzia",
+    "ibirite",
+    "vespasiano"
+  ],
+  minas: [
+    "mg",
+    "minas gerais",
+    "belo horizonte",
+    "contagem",
+    "betim",
+    "nova lima",
+    "uberlandia",
+    "juiz de fora"
+  ],
+  sudeste: [
+    "mg",
+    "sp",
+    "rj",
+    "es",
+    "minas gerais",
+    "sao paulo",
+    "rio de janeiro",
+    "espirito santo"
+  ],
+  remoto: ["remoto", "remote", "worldwide", "internacional"]
+};
+
+function textoCompletoVaga(vaga) {
+  return normalizar([
+    vaga.titulo,
+    vaga.empresa,
+    vaga.localizacao,
+    vaga.area,
+    vaga.tipo,
+    vaga.habilidades,
+    vaga.origem,
+    vaga.descricaoResumo
+  ].filter(Boolean).join(" "));
+}
+
+function vagaPertenceRegiao(vaga, regiao) {
+  if (!regiao) return true;
+
+  const termos = REGIOES_VAGAS[regiao] || [regiao];
+  const local = normalizar(vaga.localizacao);
+  return termos.some((termo) => local.includes(termo));
+}
+
+function vagaCorrespondeFiltros(vaga, filtros = {}) {
+  const busca = normalizar(filtros.busca);
+  const area = normalizar(filtros.area);
+  const tipo = normalizar(filtros.tipo);
+  const cidade = normalizar(filtros.cidade);
+  const textoVaga = textoCompletoVaga(vaga);
+  const local = normalizar(vaga.localizacao);
+
+  return (!busca || textoVaga.includes(busca))
+    && (!area || normalizar(vaga.area) === area)
+    && (!tipo || normalizar(vaga.tipo) === tipo)
+    && (!cidade || local.includes(cidade))
+    && vagaPertenceRegiao(vaga, filtros.regiao);
+}
+
+function montarParametrosVagas(filtros = {}) {
+  const params = new URLSearchParams();
+
+  ["busca", "area", "tipo", "cidade", "regiao", "limite"].forEach((campo) => {
+    if (filtros[campo]) {
+      params.set(campo, filtros[campo]);
+    }
+  });
+
+  return params;
+}
+
+function criarLinkVagas(filtros = {}) {
+  const params = montarParametrosVagas(filtros);
+  return params.toString() ? `vagas.html?${params.toString()}` : "vagas.html";
+}
+
+async function consultarVagasApi(filtros = {}) {
+  const params = montarParametrosVagas(filtros);
+  const rota = params.toString() ? `/api/vagas?${params.toString()}` : "/api/vagas";
+  const resposta = await fetch(rota);
+  const resultado = await resposta.json().catch(() => []);
+
+  if (!resposta.ok || !Array.isArray(resultado)) {
+    throw new Error("Não foi possível carregar as vagas.");
+  }
+
+  return resultado;
+}
+
+function esperar(tempoMs) {
+  return new Promise((resolve) => setTimeout(resolve, tempoMs));
+}
+
+function salvarCacheVagas(lista) {
+  try {
+    localStorage.setItem(VAGAS_CACHE_KEY, JSON.stringify({
+      salvoEm: Date.now(),
+      vagas: lista
+    }));
+  } catch {
+    // O cache é apenas um reforço; se falhar, o site continua funcionando.
+  }
+}
+
+function lerCacheVagas() {
+  try {
+    const cache = JSON.parse(localStorage.getItem(VAGAS_CACHE_KEY) || "null");
+    return Array.isArray(cache?.vagas) ? cache.vagas : [];
+  } catch {
+    return [];
+  }
+}
+
+async function carregarVagasComRetry() {
+  try {
+    const resultado = await consultarVagasApi();
+    salvarCacheVagas(resultado);
+    return resultado;
+  } catch (erroInicial) {
+    await esperar(1200);
+
+    try {
+      const resultado = await consultarVagasApi();
+      salvarCacheVagas(resultado);
+      return resultado;
+    } catch {
+      const cache = lerCacheVagas();
+      if (cache.length > 0) return cache;
+      throw erroInicial;
+    }
+  }
+}
+
+function detectarAreaVaga(texto) {
+  if (/\b(tecnologia|ti|informatica|programacao|desenvolvedor|suporte|front-end|frontend|html|css|javascript|react|web)\b/.test(texto)) return "Tecnologia";
+  if (/\b(administracao|administrativo|auxiliar administrativo|admin|escritorio)\b/.test(texto)) return "Administracao";
+  if (/\b(atendimento|atendente|vendas|cliente|suporte ao cliente)\b/.test(texto)) return "Atendimento";
+  if (/\b(marketing|social media|redes sociais|conteudo)\b/.test(texto)) return "Marketing";
+  return "";
+}
+
+function detectarTipoVaga(texto) {
+  if (/\b(estagio|estagiario|estagiaria)\b/.test(texto)) return "Estagio";
+  if (/\b(jovem aprendiz|aprendiz)\b/.test(texto)) return "Jovem Aprendiz";
+  if (/\b(freelancer|freela|projeto)\b/.test(texto)) return "Freelancer";
+  if (/\b(clt|efetivo|carteira assinada)\b/.test(texto)) return "CLT";
+  return "";
+}
+
+function detectarRegiaoVaga(texto) {
+  if (/\b(regiao metropolitana|metropolitana|grande bh)\b/.test(texto)) return "metropolitana";
+  if (/\b(minas|minas gerais|mg)\b/.test(texto)) return "minas";
+  if (/\b(sudeste|sp|rj|es)\b/.test(texto)) return "sudeste";
+  if (/\b(remoto|home office|online|a distancia)\b/.test(texto)) return "remoto";
+  return "";
+}
+
+function detectarCidadeVaga(texto) {
+  const cidades = [
+    ["belo horizonte", "Belo Horizonte"],
+    ["bh", "Belo Horizonte"],
+    ["contagem", "Contagem"],
+    ["betim", "Betim"],
+    ["nova lima", "Nova Lima"],
+    ["sabara", "Sabará"],
+    ["ribeirao das neves", "Ribeirão das Neves"],
+    ["santa luzia", "Santa Luzia"],
+    ["ibirite", "Ibirité"],
+    ["vespasiano", "Vespasiano"],
+    ["uberlandia", "Uberlândia"],
+    ["juiz de fora", "Juiz de Fora"]
+  ];
+
+  const encontrada = cidades.find(([termo]) => texto.includes(termo));
+  return encontrada ? encontrada[1] : "";
+}
+
+function extrairFiltrosMensagemVagas(pergunta) {
+  const texto = normalizar(pergunta).replace(/[?!.,;:]/g, " ");
+  const area = detectarAreaVaga(texto);
+  const tipo = detectarTipoVaga(texto);
+  const cidade = detectarCidadeVaga(texto);
+  const regiao = detectarRegiaoVaga(texto);
+  const termoTecnicoVagaCurto = /^(html|css|js|javascript|react|frontend|front-end)$/.test(texto.trim());
+  const acaoBusca = termoTecnicoVagaCurto || /\b(quero|buscar|procuro|procurar|mostrar|ver|listar|encontrar|tem|preciso)\b/.test(texto);
+  const falaDeVaga = /\b(vaga|vagas|emprego|empregos|oportunidade|oportunidades|trabalho|estagio|aprendiz)\b/.test(texto);
+
+  let busca = texto
+    .replace(/\b(quero|buscar|procuro|procurar|mostrar|ver|listar|encontrar|tem|preciso|me|para|por|com|de|do|da|em|na|no|vagas?|empregos?|oportunidades?|trabalho|filtro|filtros|filtrar|cidade|regiao)\b/g, " ")
+    .replace(/\b(tecnologia|ti|informatica|programacao|desenvolvedor|suporte|administracao|administrativo|auxiliar administrativo|admin|escritorio|atendimento|atendente|vendas|cliente|marketing|social media|redes sociais|conteudo|estagio|estagiario|estagiaria|jovem aprendiz|aprendiz|freelancer|freela|projeto|clt|efetivo|carteira assinada|remoto|home office|online|a distancia|regiao metropolitana|metropolitana|grande bh|minas|mineiras|minas gerais|sudeste)\b/g, " ")
+    .replace(/\b(belo horizonte|bh|contagem|betim|nova lima|sabara|ribeirao das neves|santa luzia|ibirite|vespasiano|uberlandia|juiz de fora|mg|sp|rj|es)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (busca.length < 3) busca = "";
+
+  const perguntaSobreProjeto = /\b(site|projeto|favela tech|codigo|tecnologia usada|tecnologias usadas)\b/.test(texto);
+  const buscaPorAssunto = acaoBusca
+    && !perguntaSobreProjeto
+    && Boolean(busca || area || tipo || cidade || regiao)
+    && /\b(tem|temos|existe|existem|quero|buscar|procuro|procurar|mostrar|ver|listar|encontrar|preciso)\b/.test(texto);
+
+  return {
+    ehBuscaVaga: (falaDeVaga || buscaPorAssunto) && (acaoBusca || Boolean(area || tipo || cidade || regiao)),
+    busca,
+    area,
+    tipo,
+    cidade,
+    regiao
+  };
 }
 
 function iniciarChatbot() {
@@ -193,7 +446,7 @@ function iniciarChatbot() {
 
   janela.style.display = "none";
   let ultimaIntencao = "";
-  let temporizadorResposta;
+  let respostaAtual = 0;
 
   const atalhosIniciais = [
     { rotulo: "Buscar vagas", pergunta: "Quero buscar vagas" },
@@ -231,6 +484,10 @@ function iniciarChatbot() {
       {
         nome: "contato",
         palavras: ["contato", "whatsapp", "zap", "mensagem", "falar", "empresa", "contratar", "divulgar vaga", "parceria", "talento", "recrutador"]
+      },
+      {
+        nome: "tecnologia",
+        palavras: ["tecnologia", "tecnologias", "linguagem", "linguagens", "ferramenta", "ferramentas", "html", "css", "javascript", "js", "node", "express", "mysql", "banco", "api", "apis", "viacep", "backend", "back-end", "frontend", "front-end", "responsivo", "layout", "design", "animacao", "animacoes", "codigo", "estrutura", "como foi feito", "como fez"]
       },
       {
         nome: "ajudar",
@@ -303,7 +560,14 @@ function iniciarChatbot() {
       atalho.type = "button";
       atalho.className = "chatbot-atalho";
       atalho.textContent = item.rotulo;
-      atalho.addEventListener("click", () => processarPergunta(item.pergunta, item.rotulo));
+      atalho.addEventListener("click", () => {
+        if (item.href) {
+          window.location.href = item.href;
+          return;
+        }
+
+        processarPergunta(item.pergunta, item.rotulo);
+      });
       grupo.appendChild(atalho);
     });
 
@@ -354,6 +618,11 @@ function iniciarChatbot() {
         { rotulo: "Enviar mensagem", pergunta: "Como envio uma mensagem?" },
         { rotulo: "Sou empresa", pergunta: "Sou empresa e quero falar com vocês" },
         { rotulo: "WhatsApp", pergunta: "Qual o WhatsApp?" }
+      ],
+      tecnologia: [
+        { rotulo: "Tecnologias", pergunta: "Quais tecnologias o site usa?" },
+        { rotulo: "Banco", pergunta: "Como o banco de dados funciona?" },
+        { rotulo: "APIs", pergunta: "Quais APIs o site usa?" }
       ]
     };
 
@@ -379,7 +648,7 @@ function iniciarChatbot() {
 
     if (ultimaIntencao === "candidatura") {
       return {
-        texto: "Quando você se candidata, o site registra sua candidatura com segurança. Depois ela aparece em Minha conta, na área Minhas candidaturas.",
+        texto: "Para se candidatar, você precisa estar logado e ter um currículo salvo. Depois o site registra a candidatura e ela aparece em Minha conta, na área Minhas candidaturas.",
         atalhos: atalhosPorIntencao("candidatura")
       };
     }
@@ -391,10 +660,109 @@ function iniciarChatbot() {
       };
     }
 
+    if (ultimaIntencao === "tecnologia") {
+      return {
+        texto: "Posso explicar por partes: o visual fica no CSS, a interatividade no JavaScript, as rotas no Node/Express e os dados no MySQL. Qual parte você quer ver melhor?",
+        atalhos: atalhosPorIntencao("tecnologia")
+      };
+    }
+
     return {
-      texto: "Fechou. Me fala se você quer ajuda com vagas, currículo, conta, candidatura, contato ou ODS 8.",
+      texto: "Fechou. Me fala se você quer ajuda com vagas, currículo, conta, candidatura, contato, tecnologias ou ODS 8.",
       atalhos: atalhosIniciais
     };
+  }
+
+  function descreverFiltrosVagas(filtros) {
+    const partes = [];
+
+    if (filtros.area) partes.push(formatarRotuloVaga(filtros.area));
+    if (filtros.tipo) partes.push(formatarRotuloVaga(filtros.tipo));
+    if (filtros.cidade) partes.push(filtros.cidade);
+    if (filtros.regiao && !filtros.cidade) partes.push(formatarRotuloVaga(filtros.regiao));
+    if (filtros.busca) partes.push(`"${filtros.busca}"`);
+
+    return partes.length ? partes.join(", ") : "vagas disponíveis";
+  }
+
+  function montarRespostaVagas(vagasEncontradas, filtros, tentouBuscaAmpla = false) {
+    const descricao = descreverFiltrosVagas(filtros);
+    const linhas = vagasEncontradas.slice(0, 3).map((vaga, indice) => {
+      const local = vaga.localizacao || "Local não informado";
+      const empresa = vaga.empresa || "Empresa parceira";
+      return `${indice + 1}. ${vaga.titulo} - ${empresa} (${local})`;
+    });
+
+    return {
+      texto: `${tentouBuscaAmpla ? "Não achei uma vaga exatamente com todos esses filtros, mas encontrei opções próximas." : `Encontrei ${vagasEncontradas.length} vaga(s) para ${descricao}.`}\n\n${linhas.join("\n")}\n\nQuer ver a lista completa? Abre a página de vagas que já deixei o caminho pronto.`,
+      atalhos: [
+        { rotulo: "Abrir vagas", href: criarLinkVagas(filtros) },
+        { rotulo: "Filtrar região", pergunta: "Como filtro vagas por cidade e região?" },
+        { rotulo: "Currículo", pergunta: "Preciso de currículo para me candidatar?" }
+      ]
+    };
+  }
+
+  async function responderBuscaVagas(pergunta) {
+    const filtros = extrairFiltrosMensagemVagas(pergunta);
+    if (!filtros.ehBuscaVaga) return null;
+
+    ultimaIntencao = "vagas";
+
+    const filtrosApi = {
+      busca: filtros.busca,
+      area: filtros.area,
+      tipo: filtros.tipo,
+      cidade: filtros.cidade,
+      regiao: filtros.regiao,
+      limite: 3
+    };
+
+    try {
+      let vagasEncontradas = await consultarVagasApi(filtrosApi);
+      let tentouBuscaAmpla = false;
+
+      if (vagasEncontradas.length === 0 && (filtrosApi.cidade || filtrosApi.regiao || filtrosApi.busca)) {
+        const filtrosAmpliados = {
+          area: filtrosApi.area,
+          tipo: filtrosApi.tipo,
+          limite: 3
+        };
+
+        vagasEncontradas = await consultarVagasApi(filtrosAmpliados);
+        tentouBuscaAmpla = vagasEncontradas.length > 0;
+      }
+
+      if (vagasEncontradas.length === 0) {
+        return {
+          texto: "Consultei as vagas agora e não encontrei resultado com esse perfil. Tenta buscar por uma área mais ampla, tipo Administração, Tecnologia, Atendimento ou Marketing.",
+          atalhos: [
+            { rotulo: "Ver todas", href: "vagas.html" },
+            { rotulo: "Administração BH", pergunta: "Quero vagas de administração em Belo Horizonte" },
+            { rotulo: "Remoto", pergunta: "Quero vagas remotas" }
+          ]
+        };
+      }
+
+      return montarRespostaVagas(vagasEncontradas, filtrosApi, tentouBuscaAmpla);
+    } catch {
+      const cache = lerCacheVagas()
+        .filter((vaga) => vagaCorrespondeFiltros(vaga, filtrosApi))
+        .slice(0, 3);
+
+      if (cache.length > 0) {
+        return montarRespostaVagas(cache, filtrosApi);
+      }
+
+      return {
+        texto: "Tentei consultar as vagas agora, mas o serviço não respondeu. Abre a aba Vagas e tenta de novo em alguns segundos; deixei um carregamento com nova tentativa automática lá.",
+        atalhos: [
+          { rotulo: "Abrir vagas", href: criarLinkVagas(filtrosApi) },
+          { rotulo: "Como filtrar", pergunta: "Como filtro vagas por cidade?" },
+          { rotulo: "Currículo", pergunta: "Como cadastrar meu currículo?" }
+        ]
+      };
+    }
   }
 
   function responderPorIntencao(intencao, texto, usuario, nome) {
@@ -437,7 +805,7 @@ function iniciarChatbot() {
 
       if (temAlguma(texto, ["filtro", "filtrar", "buscar", "pesquisar", "palavra"])) {
         return {
-          texto: "Na busca de vagas, digite uma palavra-chave, escolha área e tipo se quiser, e os resultados aparecem enquanto você digita. O botão continua ali para quem prefere confirmar a pesquisa.",
+          texto: "Na busca de vagas, digite uma palavra-chave e combine com área, tipo, cidade ou região. Os resultados aparecem enquanto você digita ou muda os filtros, e o botão continua ali para quem prefere confirmar a pesquisa.",
           atalhos: atalhosPorIntencao("vagas")
         };
       }
@@ -468,7 +836,7 @@ function iniciarChatbot() {
       }
 
       return {
-        texto: "Para se candidatar, escolha uma vaga e clique em Candidatar-se. O site registra sua candidatura e depois mostra tudo em Minha conta, na área Minhas candidaturas.",
+        texto: "Para se candidatar, escolha uma vaga e clique em Candidatar-se. O portal exige login e currículo salvo antes do envio; depois a candidatura aparece em Minha conta, na área Minhas candidaturas.",
         atalhos: atalhosPorIntencao("candidatura")
       };
     }
@@ -481,6 +849,50 @@ function iniciarChatbot() {
           ? "Se você representa uma empresa, a melhor rota é usar a página Contato. Dá para mandar uma mensagem explicando a vaga, área, local e perfil que procura."
           : "Você pode falar pela página Contato, pelo e-mail informado no site ou pelo WhatsApp. O formulário é bom para dúvidas, parcerias e sugestões.",
         atalhos: atalhosPorIntencao("contato")
+      };
+    }
+
+    if (intencao === "tecnologia") {
+      ultimaIntencao = "tecnologia";
+
+      if (temAlguma(texto, ["html", "estrutura", "pagina", "paginas"])) {
+        return {
+          texto: "Tem HTML sim. Ele organiza a estrutura das páginas: menu, seções, formulários, cards de vagas, área de perfil, currículo e contato. Depois o CSS cuida do visual e o JavaScript deixa tudo interativo.",
+          atalhos: atalhosPorIntencao("tecnologia")
+        };
+      }
+
+      if (temAlguma(texto, ["javascript", "js", "interativo", "interatividade", "chatbot", "filtro", "filtros"])) {
+        return {
+          texto: "O JavaScript cuida da parte viva do portal: chatbot, filtros de vagas, notificações, login no navegador, consumo das rotas do backend e atualização dos elementos na tela sem precisar recarregar tudo.",
+          atalhos: atalhosPorIntencao("tecnologia")
+        };
+      }
+
+      if (temAlguma(texto, ["node", "express", "backend", "back-end", "rota", "rotas", "servidor"])) {
+        return {
+          texto: "O backend foi feito com Node.js e Express. Ele recebe as requisições do site, valida dados, conversa com o MySQL e entrega rotas para login, perfil, currículo, vagas, candidaturas e alertas.",
+          atalhos: atalhosPorIntencao("tecnologia")
+        };
+      }
+
+      if (temAlguma(texto, ["mysql", "banco", "dados", "seguranca", "senha"])) {
+        return {
+          texto: "O banco usado é MySQL. Ele guarda usuários, perfil, currículo, vagas, candidaturas e tokens de segurança. A senha não fica salva em texto puro: ela é protegida antes de ir para o banco.",
+          atalhos: atalhosPorIntencao("tecnologia")
+        };
+      }
+
+      if (temAlguma(texto, ["api", "apis", "viacep", "cep", "vaga", "vagas"])) {
+        return {
+          texto: "O site usa APIs para deixar a experiência mais real. O ViaCEP preenche endereço pelo CEP, e a área de vagas consulta uma fonte externa pelo backend, com fallback local para a lista não ficar vazia se a API oscilar.",
+          atalhos: atalhosPorIntencao("tecnologia")
+        };
+      }
+
+      return {
+        texto: "O Favela Tech foi organizado com frontend, backend, banco de dados e APIs. O frontend monta as telas, o backend processa as regras, o MySQL guarda os dados e as APIs trazem recursos externos como CEP e vagas.",
+        atalhos: atalhosPorIntencao("tecnologia")
       };
     }
 
@@ -513,13 +925,14 @@ function iniciarChatbot() {
     return null;
   }
 
-  function responder(pergunta) {
+  async function responder(pergunta) {
     const texto = normalizar(pergunta);
     const usuario = getUsuarioLogado();
     const nome = usuario?.nome?.split(" ")[0] || "";
     const perguntaCurta = texto.length <= 4;
+    const termoTecnicoCurto = /^(css|html|js|api|apis|node|mysql)$/.test(texto);
 
-    if ((perguntaCurta || /^(sim|quero|pode|ok|beleza|claro|explica|como|ajuda|me ajuda)$/.test(texto)) && ultimaIntencao) {
+    if (!termoTecnicoCurto && (perguntaCurta || /^(sim|quero|pode|ok|beleza|claro|explica|como|ajuda|me ajuda)$/.test(texto)) && ultimaIntencao) {
       return respostaContinuidade(usuario);
     }
 
@@ -532,6 +945,9 @@ function iniciarChatbot() {
         atalhos: atalhosIniciais
       };
     }
+
+    const respostaBuscaVagas = await responderBuscaVagas(pergunta);
+    if (respostaBuscaVagas) return respostaBuscaVagas;
 
     const intencaoProvavel = escolherIntencaoProvavel(texto);
     if (intencaoProvavel.pontos > 0) {
@@ -549,25 +965,38 @@ function iniciarChatbot() {
 
     ultimaIntencao = "";
     return {
-      texto: "Entendi mais ou menos. Posso te guiar melhor se você escolher um caminho: vagas, currículo, login, perfil, candidaturas, contato ou ODS 8.",
+      texto: "Entendi mais ou menos. Posso te guiar melhor se você escolher um caminho: vagas, currículo, login, perfil, candidaturas, contato, tecnologias ou ODS 8.",
       atalhos: atalhosIniciais
     };
   }
 
-  function responderComPausa(resposta) {
-    clearTimeout(temporizadorResposta);
+  function responderComPausa(respostaPromessa) {
+    const idResposta = ++respostaAtual;
     removerDigitando();
     removerAtalhos();
     definirCarregando(true);
     mostrarDigitando();
 
-    temporizadorResposta = setTimeout(() => {
+    Promise.all([
+      Promise.resolve(respostaPromessa),
+      esperar(1000)
+    ]).then(([resposta]) => {
+      if (idResposta !== respostaAtual) return;
+
       removerDigitando();
       adicionarMensagem(resposta.texto, "bot");
       adicionarAtalhos(resposta.atalhos);
       definirCarregando(false);
       input.focus();
-    }, 1000);
+    }).catch(() => {
+      if (idResposta !== respostaAtual) return;
+
+      removerDigitando();
+      adicionarMensagem("Não consegui responder agora. Tenta novamente em alguns segundos.", "bot");
+      adicionarAtalhos(atalhosIniciais);
+      definirCarregando(false);
+      input.focus();
+    });
   }
 
   function processarPergunta(pergunta, textoExibido = pergunta) {
@@ -726,6 +1155,21 @@ function renderizarVagas(lista) {
           return;
         }
 
+        if (erro.status === 428 || erro.codigo === "CURRICULO_OBRIGATORIO") {
+          botao.disabled = false;
+          botao.textContent = "Candidatar-se";
+          mostrarNotificacao("Antes de se candidatar, crie seu currículo no Favela Tech.", {
+            titulo: "Currículo necessário",
+            tipo: "aviso",
+            duracao: 0,
+            acao: {
+              rotulo: "Criar currículo",
+              href: "curriculo.html"
+            }
+          });
+          return;
+        }
+
         botao.disabled = false;
         botao.textContent = "Candidatar-se";
         mostrarNotificacao(erro.message, {
@@ -777,6 +1221,7 @@ async function salvarCandidatura(usuarioId, vagaId) {
   if (!resposta.ok) {
     const erro = new Error(resultado.mensagem || "Não foi possível enviar a candidatura.");
     erro.status = resposta.status;
+    erro.codigo = resultado.codigo;
     throw erro;
   }
 
@@ -788,6 +1233,8 @@ async function iniciarVagas() {
   const inputBusca = document.getElementById("busca-vaga");
   const selectArea = document.getElementById("area-vaga");
   const selectTipo = document.getElementById("tipo-vaga");
+  const inputCidade = document.getElementById("cidade-vaga");
+  const selectRegiao = document.getElementById("regiao-vaga");
   const textoRecomendacao = document.getElementById("texto-recomendacao");
   const alertasEmailInput = document.getElementById("alertas-email");
   const alertasEmailLabel = document.getElementById("alertas-email-label");
@@ -836,6 +1283,28 @@ async function iniciarVagas() {
   }
 
   configurarAlertasEmail();
+
+  function preencherFiltrosPorUrl() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (inputBusca && params.has("busca")) inputBusca.value = params.get("busca");
+    if (selectArea && params.has("area")) selectArea.value = params.get("area");
+    if (selectTipo && params.has("tipo")) selectTipo.value = params.get("tipo");
+    if (inputCidade && params.has("cidade")) inputCidade.value = params.get("cidade");
+    if (selectRegiao && params.has("regiao")) selectRegiao.value = params.get("regiao");
+  }
+
+  function obterFiltrosAtuais() {
+    return {
+      busca: inputBusca?.value || "",
+      area: selectArea?.value || "",
+      tipo: selectTipo?.value || "",
+      cidade: inputCidade?.value || "",
+      regiao: selectRegiao?.value || ""
+    };
+  }
+
+  preencherFiltrosPorUrl();
 
   function calcularCompatibilidade(vaga, habilidadesUsuario) {
     const textoVaga = habilidadesHelper.normalizar([
@@ -934,16 +1403,8 @@ async function iniciarVagas() {
   }
 
   function filtrarVagas() {
-    const busca = normalizar(inputBusca.value);
-    const area = selectArea.value;
-    const tipo = selectTipo.value;
-
-    const filtradas = vagas.filter((vaga) => {
-      const correspondeBusca = !busca || normalizar(`${vaga.titulo} ${vaga.empresa} ${vaga.area} ${vaga.tipo} ${vaga.localizacao} ${vaga.habilidades} ${vaga.descricaoResumo}`).includes(busca);
-      const correspondeArea = !area || vaga.area === area;
-      const correspondeTipo = !tipo || vaga.tipo === tipo;
-      return correspondeBusca && correspondeArea && correspondeTipo;
-    });
+    const filtros = obterFiltrosAtuais();
+    const filtradas = vagas.filter((vaga) => vagaCorrespondeFiltros(vaga, filtros));
 
     renderizarVagas(filtradas);
   }
@@ -989,6 +1450,10 @@ async function iniciarVagas() {
   }
 
   inputBusca.addEventListener("input", filtrarVagas);
+  inputCidade?.addEventListener("input", filtrarVagas);
+  selectArea?.addEventListener("change", filtrarVagas);
+  selectTipo?.addEventListener("change", filtrarVagas);
+  selectRegiao?.addEventListener("change", filtrarVagas);
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1001,15 +1466,8 @@ async function iniciarVagas() {
   container.replaceChildren(carregando);
 
   try {
-    const resposta = await fetch("/api/vagas");
-    const resultado = await resposta.json().catch(() => []);
-
-    if (!resposta.ok || !Array.isArray(resultado)) {
-      throw new Error("Não foi possível carregar as vagas.");
-    }
-
-    vagas = resultado;
-    renderizarVagas(vagas);
+    vagas = await carregarVagasComRetry();
+    filtrarVagas();
     atualizarRecomendacoes();
   } catch (erro) {
     const mensagem = document.createElement("p");
@@ -1107,8 +1565,10 @@ function melhorarFooter(usuario) {
   footer.innerHTML = `
     <div class="footer-conteudo">
       <div class="footer-marca">
-        <a class="footer-logo" href="index.html">Favela Tech</a>
-        <p>Conectando talentos da comunidade a oportunidades reais, com currículo, vagas e acompanhamento em um só lugar.</p>
+        <a class="footer-logo" href="index.html" aria-label="Favela Tech - página inicial">
+          <span>Favela Tech</span>
+        </a>
+        <p>Conectando jovens talentos da comunidade a oportunidades reais de emprego, currículo e crescimento profissional.</p>
       </div>
 
       <nav class="footer-links" aria-label="Links do rodapé">

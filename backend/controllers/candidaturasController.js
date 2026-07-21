@@ -38,6 +38,15 @@ async function buscarCandidatura(usuarioId, vagaId) {
   return candidaturas[0] ? normalizarCandidatura(candidaturas[0]) : null;
 }
 
+async function usuarioTemCurriculo(usuarioId) {
+  const [curriculos] = await pool.execute(
+    "SELECT id FROM curriculos WHERE usuario_id = ? LIMIT 1",
+    [usuarioId]
+  );
+
+  return curriculos.length > 0;
+}
+
 async function criarCandidatura(req, res) {
   const usuarioId = obterId(req.body.usuarioId);
   const vagaId = obterId(req.body.vagaId);
@@ -54,6 +63,13 @@ async function criarCandidatura(req, res) {
 
     if (usuarios.length === 0) {
       return res.status(404).json({ mensagem: "Usuário não encontrado." });
+    }
+
+    if (!(await usuarioTemCurriculo(usuarioId))) {
+      return res.status(428).json({
+        codigo: "CURRICULO_OBRIGATORIO",
+        mensagem: "Crie seu currículo antes de se candidatar."
+      });
     }
 
     const [vagas] = await pool.execute(

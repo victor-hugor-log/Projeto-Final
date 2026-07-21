@@ -26,39 +26,24 @@ header {
 }
 
 .logo span {
-  position: relative;
-  display: inline-block;
-  color: #ffffff;
-  background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 34%, #c084fc 68%, #7c3aed 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  font-family: "Permanent Marker", "Marker Felt", "Chalkduster", "Trebuchet MS", "Segoe UI", sans-serif;
-  font-size: 1.9rem;
-  font-weight: 400;
-  line-height: 0.95;
-  letter-spacing: 0;
-  transform: rotate(-2deg) skewX(-5deg);
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 7px 15px rgba(168, 85, 247, 0.36));
+  display: block;
+  width: clamp(155px, 18vw, 220px);
+  aspect-ratio: 920 / 239;
+  overflow: hidden;
+  background: url("../assets/img/favela-tech-wordmark.png") center / contain no-repeat;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  filter: drop-shadow(0 8px 18px rgba(168, 85, 247, 0.3));
 }
 
 .logo span::after {
-  content: "";
-  position: absolute;
-  left: 2px;
-  right: 1px;
-  bottom: -8px;
-  height: 7px;
-  border-radius: 45% 55% 48% 52%;
-  background:
-    linear-gradient(90deg, transparent 0%, rgba(216, 180, 254, 0.9) 18%, rgba(168, 85, 247, 0.95) 54%, rgba(124, 58, 237, 0.9) 82%, transparent 100%);
-  clip-path: polygon(0 42%, 14% 25%, 33% 56%, 52% 30%, 74% 62%, 100% 38%, 100% 78%, 0 86%);
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);
-  opacity: 0.95;
+  display: none;
 }
 
 .logo {
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 nav {
@@ -770,18 +755,20 @@ footer {
 }
 
 .footer-logo {
-  display: inline-block;
+  display: block;
+  width: min(220px, 72vw);
+  aspect-ratio: 920 / 239;
   margin-bottom: 12px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 34%, #c084fc 68%, #7c3aed 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  font-family: "Permanent Marker", "Marker Felt", "Chalkduster", "Trebuchet MS", "Segoe UI", sans-serif;
-  font-size: 1.7rem;
-  line-height: 0.95;
+  overflow: hidden;
+  background: url("../assets/img/favela-tech-wordmark.png") center / contain no-repeat;
   text-decoration: none;
-  transform: rotate(-2deg) skewX(-5deg);
-  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 10px 22px rgba(168, 85, 247, 0.32));
+}
+
+.footer-logo span {
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
 }
 
 .footer-marca p {
@@ -1287,6 +1274,28 @@ footer {
   color: #4b5563;
   font-size: 0.88rem;
   line-height: 1.45;
+}
+
+.notificacao-acao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c3aed, #4c1d95);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(76, 29, 149, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notificacao-acao:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(76, 29, 149, 0.28);
 }
 
 .notificacao-fechar {

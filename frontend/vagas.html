@@ -8,8 +8,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
   <link rel="icon" type="image/png" sizes="64x64" href="assets/img/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/vagas.css">
+  <link rel="stylesheet" href="css/style.css?v=20260720">
+  <link rel="stylesheet" href="css/vagas.css?v=20260720">
 </head>
 <body>
   <header>
@@ -69,6 +69,17 @@
           <option value="Freelancer">Freelancer</option>
         </select>
 
+        <input id="cidade-vaga" type="text" placeholder="Cidade">
+
+        <select id="regiao-vaga">
+          <option value="">Região</option>
+          <option value="bh">Belo Horizonte</option>
+          <option value="metropolitana">Região Metropolitana</option>
+          <option value="minas">Minas Gerais</option>
+          <option value="sudeste">Sudeste</option>
+          <option value="remoto">Remoto</option>
+        </select>
+
         <button type="submit">Filtrar</button>
       </form>
     </section>
@@ -111,10 +122,36 @@
   </div>
 
   <footer>
-    <p>Favela Tech - Conectando talentos da comunidade a oportunidades reais.</p>
+    <div class="footer-conteudo">
+      <div class="footer-marca">
+        <a class="footer-logo" href="index.html" aria-label="Favela Tech - página inicial">
+          <span>Favela Tech</span>
+        </a>
+        <p>Conectando jovens talentos da comunidade a oportunidades reais de emprego, currículo e crescimento profissional.</p>
+      </div>
+
+      <div class="footer-links">
+        <strong>Navegação</strong>
+        <a href="index.html">Início</a>
+        <a href="vagas.html">Vagas</a>
+        <a href="curriculo.html">Currículo</a>
+        <a href="perfil.html">Minha conta</a>
+      </div>
+
+      <div class="footer-contato">
+        <strong>Contato</strong>
+        <span>Quer divulgar vagas ou apoiar a causa?</span>
+        <a href="contato.html">Fale com a Favela Tech</a>
+      </div>
+    </div>
+
+    <div class="footer-base">
+      <span>Favela Tech - Portal de Oportunidades</span>
+      <span>ODS 8 - Trabalho decente e crescimento econômico</span>
+    </div>
   </footer>
 
   <script src="js/habilidades.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=20260720"></script>
 </body>
 </html>

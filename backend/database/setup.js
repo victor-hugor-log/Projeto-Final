@@ -111,6 +111,127 @@ async function garantirVagas() {
   }
 }
 
+async function garantirVagasBase() {
+  const vagasBase = [
+    {
+      externalId: "local-estagio-suporte-ti-bh",
+      titulo: "Estágio em Suporte de TI",
+      empresa: "Exemplo Tech",
+      localizacao: "Belo Horizonte - MG",
+      area: "Tecnologia",
+      tipo: "Estagio",
+      habilidades: "tecnologia, suporte técnico, informática, atendimento",
+      origem: "Parceiros locais",
+      salario: "Bolsa compatível",
+      descricaoResumo: "Apoio ao time de suporte, atendimento de chamados e manutenção básica de equipamentos."
+    },
+    {
+      externalId: "local-assistente-front-end-remoto",
+      titulo: "Assistente de Front-end Júnior",
+      empresa: "Studio Digital Favela",
+      localizacao: "Remoto",
+      area: "Tecnologia",
+      tipo: "Freelancer",
+      habilidades: "html, css, javascript, responsividade, landing pages, web",
+      origem: "Parceiros locais",
+      salario: "Por projeto",
+      descricaoResumo: "Apoio na criação de páginas responsivas, ajustes visuais com CSS e pequenas interações em JavaScript."
+    },
+    {
+      externalId: "local-jovem-aprendiz-administrativo-bh",
+      titulo: "Jovem Aprendiz Administrativo",
+      empresa: "Comércio Local BH",
+      localizacao: "Belo Horizonte - MG",
+      area: "Administracao",
+      tipo: "Jovem Aprendiz",
+      habilidades: "excel, organização, administração, atendimento",
+      origem: "Parceiros locais",
+      salario: "Bolsa aprendiz",
+      descricaoResumo: "Rotina administrativa, organização de documentos, apoio em planilhas e atendimento interno."
+    },
+    {
+      externalId: "local-atendente-loja-contagem",
+      titulo: "Atendente de Loja",
+      empresa: "Rede Parceira",
+      localizacao: "Contagem - MG",
+      area: "Atendimento",
+      tipo: "CLT",
+      habilidades: "comunicação, atendimento, vendas, organização",
+      origem: "Parceiros locais",
+      salario: "A combinar",
+      descricaoResumo: "Atendimento ao cliente, organização de produtos e apoio nas vendas da unidade."
+    },
+    {
+      externalId: "local-assistente-marketing-remoto",
+      titulo: "Assistente de Marketing Digital",
+      empresa: "Agência Criativa",
+      localizacao: "Remoto",
+      area: "Marketing",
+      tipo: "Freelancer",
+      habilidades: "redes sociais, canva, marketing, criatividade",
+      origem: "Parceiros locais",
+      salario: "Por projeto",
+      descricaoResumo: "Apoio na criação de posts, organização de calendário editorial e acompanhamento de redes sociais."
+    },
+    {
+      externalId: "local-auxiliar-administrativo-contagem",
+      titulo: "Auxiliar Administrativo",
+      empresa: "Centro Empresarial Contagem",
+      localizacao: "Contagem - MG",
+      area: "Administracao",
+      tipo: "CLT",
+      habilidades: "administração, excel, atendimento, organização",
+      origem: "Parceiros locais",
+      salario: "A combinar",
+      descricaoResumo: "Apoio a rotinas administrativas, conferência de documentos e contato com clientes."
+    },
+    {
+      externalId: "local-aprendiz-atendimento-betim",
+      titulo: "Jovem Aprendiz em Atendimento",
+      empresa: "Serviços Betim",
+      localizacao: "Betim - MG",
+      area: "Atendimento",
+      tipo: "Jovem Aprendiz",
+      habilidades: "comunicação, atendimento, organização, vendas",
+      origem: "Parceiros locais",
+      salario: "Bolsa aprendiz",
+      descricaoResumo: "Primeira oportunidade para atuar com atendimento, organização de informações e suporte à equipe."
+    }
+  ];
+
+  for (const vaga of vagasBase) {
+    await pool.execute(
+      `INSERT INTO vagas (
+        external_id, titulo, empresa, localizacao, area, tipo, habilidades,
+        origem, salario, descricao_resumo, atualizado_api_em
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+      ON DUPLICATE KEY UPDATE
+        titulo = VALUES(titulo),
+        empresa = VALUES(empresa),
+        localizacao = VALUES(localizacao),
+        area = VALUES(area),
+        tipo = VALUES(tipo),
+        habilidades = VALUES(habilidades),
+        origem = VALUES(origem),
+        salario = VALUES(salario),
+        descricao_resumo = VALUES(descricao_resumo),
+        atualizado_api_em = NOW()`,
+      [
+        vaga.externalId,
+        vaga.titulo,
+        vaga.empresa,
+        vaga.localizacao,
+        vaga.area,
+        vaga.tipo,
+        vaga.habilidades,
+        vaga.origem,
+        vaga.salario,
+        vaga.descricaoResumo
+      ]
+    );
+  }
+}
+
 async function garantirCurriculos() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS curriculos (
@@ -192,6 +313,7 @@ async function garantirEstrutura() {
     await pool.query("UPDATE usuarios SET habilidades = NULL");
   });
   await garantirVagas();
+  await garantirVagasBase();
   await garantirMigracaoUnica("limpar_html_vagas_exemplo_v1", async () => {
     await pool.query(`
       UPDATE vagas
@@ -205,5 +327,6 @@ async function garantirEstrutura() {
 }
 
 module.exports = {
-  garantirEstrutura
+  garantirEstrutura,
+  garantirVagasBase
 };
