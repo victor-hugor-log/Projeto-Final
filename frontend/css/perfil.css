@@ -152,6 +152,16 @@
   white-space: nowrap;
 }
 
+.perfil-foto-ajuda {
+  display: block;
+  max-width: 220px;
+  margin: -4px auto 18px;
+  color: #6b7280;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .perfil-resumo h2 {
   color: #1e1b4b;
   font-size: 1.25rem;

@@ -21,7 +21,7 @@ O objetivo do projeto e conectar jovens capacitados da comunidade a empresas loc
 - Area restrita com perfil basico do usuario autenticado.
 - Pagina Como Ajudar com acoes praticas, links para organizacoes e compartilhamento.
 - Cadastro, login, recuperacao de senha e troca de senha conectados ao MySQL com senhas criptografadas.
-- Pagina de Contato com formulario, canais diretos e mapa com localizacao.
+- Pagina de Contato com formulario integrado ao Formspree, canais diretos e mapa com localizacao.
 - Chatbot disponível em todas as páginas, com respostas por intenção e efeito de digitação.
 
 ## Tecnologias utilizadas
@@ -38,6 +38,7 @@ O objetivo do projeto e conectar jovens capacitados da comunidade a empresas loc
 - API publica ViaCEP para preenchimento automatico de endereco
 - LocalStorage apenas para manter os dados publicos do usuario logado
 - API publica Remotive para exibicao de vagas reais remotas
+- Formspree para envio do formulario de contato
 - Chatbot com regras em JavaScript
 
 ## Como executar o projeto

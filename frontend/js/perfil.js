@@ -18,6 +18,14 @@ const senhaNovaInput = document.getElementById("senha-nova-modal");
 const senhaConfirmarInput = document.getElementById("senha-confirmar-modal");
 const senhaAtualStatus = document.getElementById("senha-atual-status");
 const senhaConfirmarStatus = document.getElementById("senha-confirmar-status");
+const botaoFotoLabel = document.querySelector(".perfil-foto-botao");
+const FOTO_PERFIL_TIPOS_PERMITIDOS = new Set(["image/png", "image/jpeg", "image/webp"]);
+const FOTO_PERFIL_TAMANHO_MAXIMO_ORIGINAL = 8 * 1024 * 1024;
+const FOTO_PERFIL_TAMANHO_MAXIMO_PROCESSADO = 1900000;
+const FOTO_PERFIL_DIMENSAO_MAXIMA = 1400;
+const FOTO_PERFIL_DIMENSAO_MINIMA = 820;
+const FOTO_PERFIL_QUALIDADE_INICIAL = 0.9;
+const FOTO_PERFIL_QUALIDADE_MINIMA = 0.72;
 const editorHabilidadesPerfil = window.FavelaTechHabilidades?.criarEditor({
   campoId: "perfil-habilidades",
   inputId: "perfil-habilidade-input",
@@ -98,6 +106,95 @@ function formatarRotuloVaga(valor) {
   };
 
   return rotulos[valor] || valor;
+}
+
+function lerArquivoComoDataUrl(arquivo) {
+  return new Promise((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.addEventListener("load", () => resolve(String(leitor.result || "")));
+    leitor.addEventListener("error", () => reject(new Error("Não foi possível carregar a imagem.")));
+    leitor.readAsDataURL(arquivo);
+  });
+}
+
+function carregarImagemPerfil(arquivo) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(arquivo);
+    const imagem = new Image();
+
+    imagem.addEventListener("load", () => {
+      URL.revokeObjectURL(url);
+      resolve(imagem);
+    }, { once: true });
+
+    imagem.addEventListener("error", () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Não foi possível processar essa imagem."));
+    }, { once: true });
+
+    imagem.src = url;
+  });
+}
+
+function criarCanvasFotoPerfil(imagem, dimensaoMaxima) {
+  const larguraOriginal = imagem.naturalWidth || imagem.width;
+  const alturaOriginal = imagem.naturalHeight || imagem.height;
+
+  if (!larguraOriginal || !alturaOriginal) {
+    throw new Error("A imagem escolhida não parece ser válida.");
+  }
+
+  const escala = Math.min(1, dimensaoMaxima / Math.max(larguraOriginal, alturaOriginal));
+  const largura = Math.max(1, Math.round(larguraOriginal * escala));
+  const altura = Math.max(1, Math.round(alturaOriginal * escala));
+  const canvas = document.createElement("canvas");
+  const contexto = canvas.getContext("2d");
+
+  canvas.width = largura;
+  canvas.height = altura;
+  contexto.fillStyle = "#ffffff";
+  contexto.fillRect(0, 0, largura, altura);
+  contexto.imageSmoothingEnabled = true;
+  contexto.imageSmoothingQuality = "high";
+  contexto.drawImage(imagem, 0, 0, largura, altura);
+
+  return canvas;
+}
+
+async function otimizarFotoPerfil(arquivo) {
+  const imagem = await carregarImagemPerfil(arquivo);
+
+  for (
+    let dimensao = FOTO_PERFIL_DIMENSAO_MAXIMA;
+    dimensao >= FOTO_PERFIL_DIMENSAO_MINIMA;
+    dimensao -= 180
+  ) {
+    const canvas = criarCanvasFotoPerfil(imagem, dimensao);
+
+    for (
+      let qualidade = FOTO_PERFIL_QUALIDADE_INICIAL;
+      qualidade >= FOTO_PERFIL_QUALIDADE_MINIMA;
+      qualidade -= 0.06
+    ) {
+      const fotoProcessada = canvas.toDataURL("image/jpeg", Number(qualidade.toFixed(2)));
+
+      if (fotoProcessada.length <= FOTO_PERFIL_TAMANHO_MAXIMO_PROCESSADO) {
+        return fotoProcessada;
+      }
+    }
+  }
+
+  throw new Error("A foto ficou grande demais mesmo após a otimização. Tente outra imagem.");
+}
+
+async function prepararFotoPerfil(arquivo) {
+  const fotoOriginal = await lerArquivoComoDataUrl(arquivo);
+
+  if (fotoOriginal.length <= FOTO_PERFIL_TAMANHO_MAXIMO_PROCESSADO) {
+    return fotoOriginal;
+  }
+
+  return otimizarFotoPerfil(arquivo);
 }
 
 function preencherPerfil(usuario) {
@@ -509,11 +606,11 @@ senhaAtualInput?.addEventListener("input", validarSenhaAtualDigitada);
 senhaNovaInput?.addEventListener("input", validarConfirmacaoSenha);
 senhaConfirmarInput?.addEventListener("input", validarConfirmacaoSenha);
 
-inputFoto?.addEventListener("change", () => {
+inputFoto?.addEventListener("change", async () => {
   const arquivo = inputFoto.files?.[0];
   if (!arquivo) return;
 
-  if (!arquivo.type.startsWith("image/")) {
+  if (!FOTO_PERFIL_TIPOS_PERMITIDOS.has(arquivo.type)) {
     window.mostrarNotificacao("Escolha uma imagem PNG, JPG ou WEBP.", {
       titulo: "Foto inválida",
       tipo: "erro"
@@ -522,8 +619,8 @@ inputFoto?.addEventListener("change", () => {
     return;
   }
 
-  if (arquivo.size > 900000) {
-    window.mostrarNotificacao("Escolha uma imagem de até 900 KB.", {
+  if (arquivo.size > FOTO_PERFIL_TAMANHO_MAXIMO_ORIGINAL) {
+    window.mostrarNotificacao("Escolha uma imagem de até 8 MB.", {
       titulo: "Foto muito grande",
       tipo: "erro"
     });
@@ -531,15 +628,33 @@ inputFoto?.addEventListener("change", () => {
     return;
   }
 
-  const leitor = new FileReader();
-  leitor.addEventListener("load", () => {
-    fotoPerfilAtual = String(leitor.result || "");
+  const textoBotaoFoto = botaoFotoLabel?.textContent || "Alterar foto";
+  inputFoto.disabled = true;
+  removerFoto.disabled = true;
+  if (botaoFotoLabel) botaoFotoLabel.textContent = "Preparando...";
+
+  try {
+    fotoPerfilAtual = await prepararFotoPerfil(arquivo);
     fotoPreview.src = fotoPerfilAtual;
     fotoPreview.hidden = false;
     document.getElementById("perfil-iniciais").hidden = true;
     removerFoto.hidden = false;
-  });
-  leitor.readAsDataURL(arquivo);
+
+    window.mostrarNotificacao("Foto pronta. Clique em Salvar alterações para gravar no perfil.", {
+      titulo: "Foto carregada",
+      tipo: "sucesso"
+    });
+  } catch (erro) {
+    inputFoto.value = "";
+    window.mostrarNotificacao(erro.message, {
+      titulo: "Foto inválida",
+      tipo: "erro"
+    });
+  } finally {
+    inputFoto.disabled = false;
+    removerFoto.disabled = false;
+    if (botaoFotoLabel) botaoFotoLabel.textContent = textoBotaoFoto;
+  }
 });
 
 removerFoto?.addEventListener("click", async () => {

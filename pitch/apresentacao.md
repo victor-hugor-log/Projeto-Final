@@ -2,11 +2,11 @@
 
 ## Roteiro de apresentação - 5 minutos
 
-Este roteiro foi pensado para apresentar sem correr e sem repetir os mesmos pontos em vários slides. A ideia é falar em média **30 a 40 segundos por slide**, deixando a demonstração ao vivo apenas se sobrar tempo.
+Este roteiro foi pensado para apresentar sem correr e sem repetir os mesmos pontos em vários slides. A ideia é falar em média **25 a 35 segundos por slide**, deixando um momento próprio para a demonstração ao vivo.
 
 ## Resumo do projeto
 
-O **Favela Tech** é um portal responsivo conectado à **ODS 8: trabalho decente e crescimento econômico**. O objetivo é aproximar jovens da comunidade de oportunidades profissionais, reunindo cadastro, login, perfil, currículo, busca de vagas, candidatura, banco de dados, APIs públicas e chatbot em JavaScript.
+O **Favela Tech** é um portal responsivo conectado à **ODS 8: trabalho decente e crescimento econômico**. O objetivo é aproximar jovens da comunidade de oportunidades profissionais, reunindo cadastro, login, perfil, currículo, busca de vagas, candidatura, banco de dados, APIs públicas, formulário de contato e chatbot em JavaScript.
 
 O projeto foi organizado em **frontend**, **backend** e **MySQL**. O frontend cuida das páginas e interações; o backend em Node.js/Express cuida das rotas, regras e validações; e o banco salva usuários, currículos, vagas, candidaturas e dados do perfil.
 
@@ -54,7 +54,7 @@ O frontend usa HTML, CSS e JavaScript para telas, formulários, responsividade e
 
 O backend usa Node.js e Express para rotas, validações, login, currículo, vagas e candidaturas.
 
-Os dados ficam no MySQL, e as APIs externas usadas são ViaCEP para endereço e Remotive para vagas reais.
+Os dados ficam no MySQL, e as integrações externas usadas são ViaCEP para endereço, Remotive para vagas reais e Formspree para envio do formulário de contato.
 
 ### Slide 6 - Vagas reais e candidaturas
 
@@ -74,7 +74,7 @@ O endereço usa ViaCEP: ao digitar o CEP, o site preenche rua, bairro, cidade e 
 
 Também criei um currículo imprimível com layout próprio, usando os dados preenchidos no portal.
 
-### Slide 8 - Resultado e próximos passos
+### Slide 8 - Resultado atual
 
 Como resultado, o Favela Tech entrega uma jornada completa: cadastro, login, perfil, currículo, vagas, candidatura e acompanhamento.
 
@@ -82,9 +82,21 @@ Ele combina proposta social com tecnologia aplicada: frontend, backend, MySQL, A
 
 Como próximos passos, eu evoluiria o envio de e-mails, integrações com mais plataformas de vagas e recomendação automática mais inteligente.
 
+### Slide 9 - Hora da apresentação
+
+Neste momento eu paro a fala dos slides e mostro o site real funcionando no navegador.
+
+Vou passar rapidamente pela Home, chatbot, login, perfil, currículo, vagas, candidatura e acompanhamento no perfil.
+
+### Slide 10 - Aprendizados e fechamento
+
+Com esse projeto, aprendi a organizar melhor um sistema completo, separando frontend, backend e banco de dados.
+
+Também pratiquei rotas, validações, integração com APIs, autenticação, segurança básica e apresentação de um produto funcionando.
+
 Obrigado.
 
-## Demonstração curta, se sobrar tempo
+## Demonstração ao vivo
 
 1. Abrir a Home.
 2. Mostrar rapidamente o chatbot.

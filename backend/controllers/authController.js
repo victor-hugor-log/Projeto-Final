@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const { pool } = require("../config/database");
 
 const TIPOS_PERMITIDOS = new Set(["jovem", "empresa"]);
+const FOTO_PERFIL_TAMANHO_MAXIMO = 2400000;
 
 function normalizarUsuario(usuario) {
   return {
@@ -45,7 +46,7 @@ function fotoPerfilValida(fotoPerfil) {
   if (!fotoPerfil) return true;
 
   return /^data:image\/(png|jpe?g|webp);base64,/i.test(fotoPerfil)
-    && fotoPerfil.length <= 1200000;
+    && fotoPerfil.length <= FOTO_PERFIL_TAMANHO_MAXIMO;
 }
 
 function gerarTokenVerificacao() {
@@ -414,7 +415,7 @@ async function atualizarPerfil(req, res) {
   }
 
   if (!fotoPerfilValida(fotoPerfil)) {
-    return res.status(400).json({ mensagem: "Envie uma foto PNG, JPG ou WEBP de até 1 MB." });
+    return res.status(400).json({ mensagem: "A foto processada ficou grande demais. Tente outra imagem PNG, JPG ou WEBP." });
   }
 
   try {
